@@ -44,23 +44,24 @@
 
         /* --- HEADER & INSTALL BUTTON --- */
         .header { 
-            background: white; color: #1b5e20; padding: 15px; 
+            background: white; color: #1b5e20; padding: 10px 15px; 
             text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
             z-index: 10; display: flex; justify-content: space-between; align-items: center; 
         }
         .logo { font-size: 20px; font-weight: 800; color: #1b5e20; }
         .logo span { color: #4caf50; }
         
-        /* Install Button Style */
+        /* Install Button Style (Always Visible) */
         #install-btn { 
-            display: none; /* JS দিয়ে শো হবে */
+            display: flex; /* Always visible */
+            align-items: center; gap: 5px;
             background: #ff9800; color: white; border: none; 
             padding: 8px 15px; border-radius: 20px; 
             cursor: pointer; font-size: 12px; font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            animation: pulse 2s infinite;
+            transition: transform 0.2s;
         }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        #install-btn:active { transform: scale(0.95); }
 
         #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; border-bottom: 1px solid #ffe0b2; }
         .shake-anim { animation: shake 0.5s; background: #ffccbc !important; color: #d32f2f !important; }
@@ -166,28 +167,31 @@
 </div>
 
 <script>
-    // --- PWA INSTALL LOGIC ---
+    // --- PWA INSTALL LOGIC (Always Visible Button) ---
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
 
-    // Browser Install Prompt ধরছে
+    // 1. ব্রাউজার ইভেন্ট ধরছি
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        installBtn.style.display = 'block'; // বাটন শো হবে
         console.log("Install Prompt Ready!");
     });
 
-    // বাটনে ক্লিক করলে ইনস্টল উইন্ডো আসবে
+    // 2. বাটনে ক্লিক ইভেন্ট
     installBtn.addEventListener('click', async () => {
         if (deferredPrompt) {
+            // যদি ব্রাউজার পারমিশন দেয়, তাহলে ইন্সটল পপআপ দেখাবে
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
+            console.log(`User response: ${outcome}`);
             deferredPrompt = null;
             if(outcome === 'accepted') {
-                installBtn.style.display = 'none';
+                installBtn.innerText = "✅ INSTALLED";
             }
+        } else {
+            // যদি ইন্সটল অপশন রেডি না থাকে (অলরেডি ইন্সটল করা বা সাপোর্ট করছে না)
+            alert("অ্যাপটি হয়তো অলরেডি আপনার ফোনে আছে, অথবা ব্রাউজার মেনু (Add to Home Screen) থেকে ম্যানুয়ালি ইনস্টল করুন।");
         }
     });
 
