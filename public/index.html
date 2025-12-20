@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Your 24/7 Spoken Mate</title>
+    <title>Talk24AI | Your AI Spoken Mate</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- THEME VARIABLES --- */
+        /* --- CORE DESIGN SYSTEM --- */
         :root {
             --primary: #58cc02;
             --primary-dark: #46a302;
@@ -21,168 +21,111 @@
 
         /* --- 1. HOME SCREEN --- */
         #home-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        
         .brand { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--primary); margin-bottom: 5px; }
-        
-        /* NEW TAGLINE STYLE */
-        .main-tagline { 
-            background: #fff9c4; color: #f57f17; padding: 8px 15px; 
-            border-radius: 12px; font-weight: 800; font-size: 14px; 
-            margin-bottom: 25px; border: 1px dashed #fbc02d;
-            line-height: 1.4;
-        }
-        
-        .input-group { width: 100%; max-width: 300px; margin-bottom: 15px; }
-        .p-input { width: 100%; padding: 15px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; outline: none; text-align: center; box-sizing: border-box; }
-        .p-input:focus { border-color: var(--blue); }
-        
-        .btn-start { width: 100%; max-width: 300px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; margin-top: 10px; }
-        .btn-start:active { transform: translateY(4px); border-bottom-width: 0; }
+        .main-tagline { background: #fff9c4; color: #f57f17; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-bottom: 25px; border: 1px dashed #fbc02d; line-height: 1.4; }
+        .btn-start { width: 100%; max-width: 300px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; }
 
         /* --- 2. SCENARIO SELECTION --- */
         #scenario-screen { display: none; flex-direction: column; height: 100%; background: #fff; }
-        .sc-header { padding: 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
-        .sc-title { font-size: 20px; font-weight: 800; color: #4b4b4b; }
-        .sc-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
-        
-        .role-card { 
-            border: 2px solid #e5e5e5; border-radius: 16px; padding: 15px; 
-            cursor: pointer; text-align: center; background: white; 
-            transition: 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 120px;
-        }
-        .role-card:active { background: #f0f8ff; border-color: var(--blue); transform: scale(0.98); }
-        .role-icon { font-size: 35px; margin-bottom: 10px; }
-        .role-name { font-weight: 800; font-size: 13px; color: #4b4b4b; line-height: 1.2; }
+        .sc-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .role-card { border: 2px solid #e5e5e5; border-radius: 16px; padding: 15px; cursor: pointer; text-align: center; background: white; display: flex; flex-direction: column; align-items: center; min-height: 120px; justify-content: center; }
+        .role-card:active { background: #f0f8ff; border-color: var(--blue); }
 
-        /* --- 3. CHAT SCREEN --- */
+        /* --- 3. CHAT SCREEN (CHATGPT UI) --- */
         #chat-screen { display: none; flex-direction: column; height: 100%; }
-        
         .top-bar { padding: 10px 15px; background: white; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
-        .partner-info { display: flex; align-items: center; gap: 10px; }
-        .p-avatar { font-size: 28px; }
         .p-name { font-weight: 800; font-size: 16px; color: #4b4b4b; }
         
-        /* MINI TAGLINE IN CHAT */
-        .chat-subtext { font-size: 10px; color: #aaa; font-weight: 700; text-transform: uppercase; }
-
-        .score-pill { background: #fff4db; color: #d68f00; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; }
-
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; scroll-behavior: smooth; }
         
-        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 16px; line-height: 1.5; font-weight: 600; position: relative; animation: popIn 0.3s; }
+        /* Message Bubbles */
+        .bubble { max-width: 85%; padding: 12px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; position: relative; animation: slideUp 0.3s ease-out; }
         .ai { background: #f0f0f0; color: #333; border-bottom-left-radius: 4px; }
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        
+        /* Typing Indicator */
+        .typing { font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 10px; display: none; }
 
         .controls { padding: 15px; background: white; border-top: 2px solid #f0f0f0; display: flex; gap: 10px; }
-        #userInput { flex: 1; padding: 12px 15px; border: 2px solid #e5e5e5; border-radius: 20px; outline: none; font-size: 16px; font-weight: 600; }
-        #mic-btn { width: 50px; height: 50px; border-radius: 16px; background: var(--primary); border: none; color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #userInput { flex: 1; padding: 14px 20px; border: 2px solid #e5e5e5; border-radius: 25px; outline: none; font-size: 16px; font-weight: 600; }
+        #mic-btn { width: 54px; height: 54px; border-radius: 20px; background: var(--primary); border: none; color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .listening { background: #ff4b4b !important; animation: pulse 1s infinite; }
 
-        #bangla-warning { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 30px; font-weight: 800; display: none; z-index: 5000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
-        @keyframes popIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+        @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
         @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4);} 70% {box-shadow: 0 0 0 15px rgba(255, 75, 75, 0);} 100% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0);} }
     </style>
 </head>
 <body>
 
 <audio id="snd-msg" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
-<div id="bangla-warning">🚫 English Only Please!</div>
 
 <div id="home-screen">
     <div class="brand">Talk24AI</div>
-    
-    <div class="main-tagline">
-        No Partner to Practice? <br>
-        Meet Talk24AI: Your 24/7 Spoken English Mate.
-    </div>
-    
-    <div class="input-group">
-        <input type="number" id="age" class="p-input" placeholder="Enter Age" value="20">
-    </div>
-    
-    <div class="input-group">
-        <select id="gender" class="p-input">
+    <div class="main-tagline">No Partner to Practice? <br> Meet Talk24AI: Your 24/7 Spoken English Mate.</div>
+    <div style="width: 100%; max-width: 300px; display: flex; gap: 10px; margin-bottom: 15px;">
+        <input type="number" id="age" class="p-input" value="18" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; text-align:center; font-weight:bold;">
+        <select id="gender" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; font-weight:bold;">
             <option value="Male">Male</option>
             <option value="Female">Female</option>
         </select>
     </div>
-
     <button class="btn-start" onclick="showScenarios()">START SPEAKING</button>
 </div>
 
 <div id="scenario-screen">
-    <div class="sc-header">
-        <div class="sc-title">Choose Your Partner</div>
-        <div style="font-size:11px; color:#aaa; font-weight:800; text-transform:uppercase; margin-top:5px;">Your 24/7 Practice Mate</div>
+    <div style="padding: 20px; text-align: center; border-bottom: 1px solid #eee;">
+        <div style="font-size: 20px; font-weight: 900;">Choose Your Mate</div>
     </div>
     <div class="sc-grid" id="role-grid"></div>
 </div>
 
 <div id="chat-screen">
     <div class="top-bar">
-        <div class="partner-info">
-            <div class="p-avatar" id="p-icon">🤖</div>
-            <div>
-                <div class="p-name" id="p-name">Partner</div>
-                <div class="chat-subtext">24/7 Spoken Mate</div>
-            </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div id="p-icon" style="font-size: 24px;">🤖</div>
+            <div class="p-name" id="p-name">Partner</div>
         </div>
-        <div class="score-pill">⭐ <span id="score">0</span></div>
+        <div style="font-size: 14px; font-weight: 800; color: #ff9600;">💎 <span id="score">0</span></div>
     </div>
 
     <div id="messages"></div>
+    <div id="typing-indicator" class="typing" style="margin-left: 20px;">Mate is typing...</div>
 
     <div class="controls">
-        <input type="text" id="userInput" placeholder="Type here..." onkeypress="handleEnter(event)">
+        <input type="text" id="userInput" placeholder="Ask your mate anything..." onkeypress="handleEnter(event)">
         <button id="mic-btn" onclick="toggleMic()">🎤</button>
     </div>
 </div>
 
 <script>
-    // --- Scenarios Data ---
+    // --- Scenarios Database ---
     const scenarios = {
         junior: [
-            { name: "Islamic Storyteller", icon: "🕌", prompt: "You are a gentle Storyteller. Tell inspiring stories about brave Heroes of Islam (like Khalid bin Walid, Ali RA) or Prophets. Keep it simple and exciting for a child. Ask them what they would do in that situation." },
-            { name: "Best Friend", icon: "🏸", prompt: "You are a best friend at a playground in Bangladesh. Talk about cricket, hide-and-seek, or toys." },
-            { name: "English Teacher", icon: "👩‍🏫", prompt: "You are a kind English Teacher. Ask simple questions about their day/school and correct them gently." },
-            { name: "Shopkeeper", icon: "🍫", prompt: "You own a candy shop. The user wants to buy chocolate. Ask what they want." },
-            { name: "Big Sister", icon: "👧", prompt: "You are a caring big sister helping with homework. Be very supportive." },
-            { name: "Pet Doctor", icon: "🐱", prompt: "You are a Vet. The user brought a sick kitten. Ask what happened." },
-            { name: "Bus Driver", icon: "🚌", prompt: "You drive the school bus. Ask the user if they are ready for school." },
-            { name: "Pizza Chef", icon: "🍕", prompt: "You make pizza. Ask the user what toppings they want." },
-            { name: "Robot Buddy", icon: "🤖", prompt: "You are a friendly robot. Ask the user about humans." },
-            { name: "Gardener", icon: "🌻", prompt: "You are planting flowers. Ask the user to help you." }
+            { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell inspiring stories of Islamic Heroes. Use simple English. Always end with a fun question for the kid." },
+            { name: "Best Friend", icon: "🏸", prompt: "You are a childhood friend. Talk about cricket and toys. Keep it very friendly." },
+            { name: "Shopkeeper", icon: "🍫", prompt: "Own a candy shop. The kid wants chocolate. Ask their favorite flavor." }
         ],
         senior: [
-            { name: "History Explorer", icon: "📜", prompt: "You are an expert on Islamic History. Discuss the Golden Age of Islam, scientific inventions, or history of Mecca/Madina. Be informative." },
-            { name: "Job Interviewer", icon: "💼", prompt: "You are a Hiring Manager. Start the interview immediately. Ask 'Tell me about yourself'." },
-            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "You are an IELTS Speaking Examiner. Start Part 1 immediately. Be formal." },
-            { name: "Visa Officer", icon: "✈️", prompt: "You are a Visa Officer. Ask 'What is the purpose of your visit?' directly." },
-            { name: "Foreign Friend", icon: "🌏", prompt: "You are a tourist visiting Bangladesh. Ask the user about their beautiful country and culture." },
-            { name: "Customer Support", icon: "🎧", prompt: "You are support agent. The user has an internet issue. Ask for details." },
-            { name: "Doctor", icon: "🩺", prompt: "You are a Doctor. The user is a patient. Ask 'What seems to be the problem?'." },
-            { name: "Hotel Reception", icon: "🏨", prompt: "You are a Hotel Receptionist. The user wants to check in. Ask for their ID." },
-            { name: "Gym Trainer", icon: "💪", prompt: "You are a Fitness Coach. Ask the user about their fitness goals." },
-            { name: "Restaurant Waiter", icon: "🍽️", prompt: "You are a waiter. Ask 'Are you ready to order?'." }
+            { name: "History Explorer", icon: "📜", prompt: "Discuss Islamic Golden Age and history. Be intellectual but friendly." },
+            { name: "Job Interviewer", icon: "💼", prompt: "Act as a Hiring Manager. Be formal. Start the interview immediately." },
+            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Strict IELTS Speaking Test. Part 1. Be direct." },
+            { name: "Foreign Friend", icon: "🌏", prompt: "You are a traveler in Bangladesh. Ask the user about local food and culture." }
         ]
     };
 
-    let state = { age: 20, gender: 'Male', currentRole: null, score: 0 };
+    let state = { age: 18, gender: 'Male', currentRole: null, score: 0 };
     let voices = [];
     let isMicOn = false;
 
     function showScenarios() {
         state.age = document.getElementById('age').value;
-        state.gender = document.getElementById('gender').value;
         const list = (state.age < 13) ? scenarios.junior : scenarios.senior;
         const grid = document.getElementById('role-grid');
         grid.innerHTML = ''; 
         list.forEach(role => {
             const div = document.createElement('div');
             div.className = 'role-card';
-            div.innerHTML = `<div class="role-icon">${role.icon}</div><div class="role-name">${role.name}</div>`;
+            div.innerHTML = `<div style="font-size:35px; margin-bottom:10px;">${role.icon}</div><div style="font-weight:800;">${role.name}</div>`;
             div.onclick = () => startChat(role);
             grid.appendChild(div);
         });
@@ -200,34 +143,44 @@
     }
 
     async function triggerAIStart() {
-        const startPayload = {
+        toggleTyping(true);
+        const payload = {
             message: "START_SESSION",
-            email: 'guest',
-            systemInstruction: `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. INSTRUCTION: Start conversation IMMEDIATELY. CONSTRAINT: No conflicting with Islam/Iman. You are a Bangladeshi AI.`
+            systemInstruction: `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: Start conversation IMMEDIATELY. NO BANGLA. You are a Bangladeshi AI Mate.`
         };
-        callAPI(startPayload);
+        callAPI(payload);
     }
 
     async function sendToAI(text) {
-        if(/[\u0980-\u09FF]/.test(text)) {
-            document.getElementById('bangla-warning').style.display = 'block';
-            setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
-            return;
-        }
         addUserMsg(text);
         document.getElementById('userInput').value = '';
-        const systemPrompt = `ACT AS: ${state.currentRole.name}. RULES: 1. No conflict with Islam. 2. Bangladeshi AI context. 3. Formula: Acknowledge->Correct->Praise->HOOK QUESTION. 4. English Only.`;
-        callAPI({ message: text, email: 'guest', systemInstruction: systemPrompt });
+        toggleTyping(true);
+
+        const systemPrompt = `
+            ACT AS: ${state.currentRole.name}.
+            STRICT FORMULA: 
+            1. ACKNOWLEDGE: Answer the user naturally.
+            2. CORRECT: Only if major error, correct in 1-2 words within brackets like (Correct: I went). 
+            3. NO LECTURES: Do not explain grammar rules.
+            4. HOOK: Always end with a short, engaging question.
+            5. ISLAMIC VALUES: Stay respectful. No conflicting content.
+            6. BANGLADESHI CONTEXT: You are a mate from Bangladesh.
+        `;
+
+        callAPI({ message: text, systemInstruction: systemPrompt });
     }
 
     async function callAPI(payload) {
         try {
             const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
+            toggleTyping(false);
             let reply = data.reply.replace(/[\u0980-\u09FF].*/g, '').trim(); 
             addAiMsg(reply);
-        } catch (e) { console.error(e); }
+        } catch (e) { toggleTyping(false); }
     }
+
+    function toggleTyping(show) { document.getElementById('typing-indicator').style.display = show ? 'block' : 'none'; }
 
     function addAiMsg(text) {
         const div = document.createElement('div'); div.className = 'bubble ai'; div.innerText = text;
@@ -250,20 +203,20 @@
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         if(voices.length > 0) {
-            let v = (state.age < 13) ? voices.find(v => v.name.includes("Female")) : voices.find(v => v.name.includes("Male"));
-            utter.voice = v || voices[0];
-            utter.rate = (state.age < 13) ? 0.9 : 1.0;
+            let v = voices.find(v => v.lang.includes("en-US")) || voices[0];
+            utter.voice = v; utter.rate = 1.0;
         }
         window.speechSynthesis.speak(utter);
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition(); recognition.lang = 'en-US';
+    const recognition = new SpeechRecognition(); 
+    recognition.lang = 'en-US';
     function toggleMic() {
         if(!isMicOn) { recognition.start(); document.getElementById('mic-btn').classList.add('listening'); isMicOn = true; }
         else { recognition.stop(); document.getElementById('mic-btn').classList.remove('listening'); isMicOn = false; }
     }
-    recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); toggleMic(); };
+    recognition.onresult = (e) => { sendToAI(e.results[0][0].transcript); toggleMic(); };
 </script>
 </body>
 </html>
