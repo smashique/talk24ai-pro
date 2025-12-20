@@ -3,92 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Your 24/7 Spoken Mate</title>
+    <title>Talk24AI | Your AI Spoken Mate</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- DESIGN SYSTEM --- */
-        :root {
-            --primary: #58cc02; --primary-dark: #46a302;
-            --blue: #1cb0f6; --bg: #f8f9fa;
-            --font: 'Nunito', sans-serif;
-        }
+        :root { --primary: #58cc02; --primary-dark: #46a302; --blue: #1cb0f6; --bg: #ffffff; --font: 'Nunito', sans-serif; }
+        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #333; }
 
-        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        /* Screens */
+        #home-screen, #scenario-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #scenario-screen { display: none; overflow-y: auto; justify-content: start; }
 
-        /* --- HOME SCREEN --- */
-        #home-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        /* Typography */
         .brand { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--primary); margin-bottom: 5px; }
-        .main-tagline { background: #fff9c4; color: #f57f17; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-bottom: 25px; border: 1px dashed #fbc02d; line-height: 1.4; }
-        .btn-start { width: 100%; max-width: 300px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; transition: 0.1s; }
-        .btn-start:active { transform: translateY(4px); border-bottom-width: 0; }
+        .tagline { background: #fff9c4; color: #f57f17; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-bottom: 30px; border: 1px dashed #fbc02d; line-height: 1.4; max-width: 320px; }
+        
+        /* Interactive Elements */
+        .btn-main { width: 100%; max-width: 300px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; }
+        .sc-grid { width: 100%; max-width: 400px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .role-card { border: 2px solid #f0f0f0; border-radius: 20px; padding: 20px; cursor: pointer; text-align: center; background: white; transition: 0.2s; box-shadow: 0 4px 0 #f0f0f0; }
+        .role-card:active { transform: translateY(4px); box-shadow: none; border-color: var(--blue); }
 
-        /* --- SCENARIO GRID --- */
-        #scenario-screen { display: none; flex-direction: column; height: 100%; background: #fff; }
-        .sc-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .role-card { border: 2px solid #e5e5e5; border-radius: 16px; padding: 15px; cursor: pointer; text-align: center; background: white; display: flex; flex-direction: column; align-items: center; min-height: 120px; justify-content: center; transition: 0.1s; }
-        .role-card:active { border-color: var(--blue); background: #f0f8ff; }
-
-        /* --- CHAT AREA --- */
+        /* Chat UI */
         #chat-screen { display: none; flex-direction: column; height: 100%; }
-        .top-bar { padding: 12px 15px; background: white; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
-        .p-name { font-weight: 800; font-size: 16px; color: #4b4b4b; }
-        
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
-        
-        .bubble { max-width: 85%; padding: 12px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; animation: popUp 0.3s; }
+        .top-nav { padding: 12px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; background: #fff; }
+        .bubble { max-width: 85%; padding: 14px 18px; border-radius: 22px; font-size: 16px; line-height: 1.5; font-weight: 600; animation: msgSlide 0.3s ease-out; }
         .ai { background: #f0f0f0; color: #333; border-bottom-left-radius: 4px; }
-        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; border-bottom: 4px solid #1899d6; }
         
-        #typing { font-size: 12px; color: #aaa; margin: 0 0 10px 20px; display: none; font-weight: bold; }
+        .typing { font-size: 12px; color: #aaa; margin: 0 0 10px 25px; font-weight: bold; display: none; }
+        .input-area { padding: 15px 20px 30px 20px; background: white; border-top: 1px solid #eee; display: flex; gap: 12px; align-items: center; }
+        #userInput { flex: 1; background: #f7f7f7; border: 1px solid #eee; padding: 15px 20px; border-radius: 30px; outline: none; font-size: 16px; font-weight: 600; font-family: inherit; }
+        #mic-btn { width: 55px; height: 55px; border-radius: 50%; background: var(--primary); border: none; color: white; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .controls { padding: 15px; background: white; border-top: 2px solid #f0f0f0; display: flex; gap: 10px; }
-        #userInput { flex: 1; padding: 12px 18px; border: 2px solid #e5e5e5; border-radius: 25px; outline: none; font-size: 16px; font-weight: 600; }
-        #mic-btn { width: 50px; height: 50px; border-radius: 16px; background: var(--primary); border: none; color: white; font-size: 24px; cursor: pointer; }
-
-        @keyframes popUp { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+        @keyframes msgSlide { from {opacity: 0; transform: translateY(15px);} to {opacity: 1; transform: translateY(0);} }
     </style>
 </head>
 <body>
 
-<audio id="snd-msg" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
+<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
 
 <div id="home-screen">
     <div class="brand">Talk24AI</div>
-    <div class="main-tagline">No Partner to Practice? <br> Meet Talk24AI: Your 24/7 Spoken English Mate.</div>
-    
+    <div class="tagline">No Partner to Practice? <br> Meet Talk24AI: Your 24/7 Spoken English Mate.</div>
     <div style="width: 100%; max-width: 300px; display: flex; gap: 10px; margin-bottom: 20px;">
-        <input type="number" id="age" value="18" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; text-align:center; font-weight:bold;">
-        <select id="gender" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; font-weight:bold;">
+        <input type="number" id="age" value="18" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; text-align:center; font-weight:900;">
+        <select id="gender" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; font-weight:900;">
             <option value="Male">Male</option>
             <option value="Female">Female</option>
         </select>
     </div>
-    
-    <button class="btn-start" onclick="showScenarios()">START ADVENTURE</button>
+    <button class="btn-main" onclick="showScenarios()">Find My Mate</button>
 </div>
 
 <div id="scenario-screen">
-    <div style="padding:20px; text-align:center; border-bottom:1px solid #eee;">
-        <div style="font-size:20px; font-weight:900;">Choose Your Roleplay Mate</div>
-    </div>
+    <div style="font-size: 22px; font-weight: 900; margin-bottom: 20px;">Choose Your Roleplay</div>
     <div class="sc-grid" id="role-grid"></div>
 </div>
 
 <div id="chat-screen">
-    <div class="top-bar">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div id="p-icon" style="font-size:24px;">🤖</div>
-            <div class="p-name" id="p-name">Mate</div>
+    <div class="top-nav">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div id="p-icon" style="font-size: 28px;">🤖</div>
+            <div style="font-weight: 800; font-size: 17px;" id="p-name">AI Mate</div>
         </div>
-        <div style="font-size:14px; font-weight:800; color:#ff9600;">💎 <span id="score">0</span></div>
+        <div style="background: #fff4db; color: #d68f00; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px;">⭐ <span id="score">0</span></div>
     </div>
-
     <div id="messages"></div>
-    <div id="typing">Partner is typing...</div>
-
-    <div class="controls">
+    <div id="typing-box" class="typing">Mate is thinking...</div>
+    <div class="input-area">
         <input type="text" id="userInput" placeholder="Speak to your mate..." onkeypress="handleEnter(event)">
         <button id="mic-btn" onclick="toggleMic()">🎤</button>
     </div>
@@ -97,14 +82,15 @@
 <script>
     const scenarios = {
         junior: [
-            { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell simple, inspiring stories of Islamic Heroes. Use very easy English. End with a simple question." },
-            { name: "Playground Friend", icon: "🏸", prompt: "Act like a friend at a park. Talk about toys and games." }
+            { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell inspiring stories of Islamic Heroes like Khalid bin Walid or Ali (RA). End with a question for the kid." },
+            { name: "English Teacher", icon: "👩‍🏫", prompt: "Be a kind teacher. Ask about school. Correct very gently in brackets." },
+            { name: "Best Friend", icon: "🏸", prompt: "Talk about cricket or toys. Use very simple friendly English." }
         ],
         senior: [
-            { name: "Job Interviewer", icon: "💼", prompt: "Hiring Manager. Be formal. Start the interview right away." },
-            { name: "History Explorer", icon: "📜", prompt: "Expert in Islamic History. Discuss scientific inventions in Islamic Golden Age." },
-            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Strict IELTS Speaking test Part 1." },
-            { name: "Foreign Friend", icon: "🌏", prompt: "Traveler in Bangladesh. Ask about culture and food." }
+            { name: "History Explorer", icon: "📜", prompt: "Discuss Islamic Golden Age inventions or History of Mecca. Be intellectual." },
+            { name: "Job Interviewer", icon: "💼", prompt: "Start the interview immediately. Ask: 'Tell me about yourself'. No intro." },
+            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Conduct a formal IELTS Speaking test Part 1. Focus on fluency." },
+            { name: "Foreign Friend", icon: "🌏", prompt: "You are a traveler in Dhaka. Ask about local food and culture." }
         ]
     };
 
@@ -119,7 +105,7 @@
         list.forEach(role => {
             const div = document.createElement('div');
             div.className = 'role-card';
-            div.innerHTML = `<div style="font-size:40px; margin-bottom:8px;">${role.icon}</div><div style="font-weight:900;">${role.name}</div>`;
+            div.innerHTML = `<div style="font-size:40px; margin-bottom:10px;">${role.icon}</div><div style="font-weight:900;">${role.name}</div>`;
             div.onclick = () => startChat(role);
             grid.appendChild(div);
         });
@@ -138,24 +124,24 @@
 
     async function triggerAIStart() {
         toggleTyping(true);
-        callAPI({ message: "START_SESSION", systemInstruction: `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: No intro. Start roleplay now. Bangladeshi context.` });
+        const sysPrompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: START THE ROLEPLAY IMMEDIATELY. NO PREAMBLE. ENGLISH ONLY.`;
+        callAPI({ message: "START_ROLEPLAY", systemInstruction: sysPrompt });
     }
 
     async function sendToAI(text) {
-        if(!text) return;
         addUserMsg(text);
         document.getElementById('userInput').value = '';
         toggleTyping(true);
 
         const expertPrompt = `
             ACT AS: ${state.currentRole.name}.
-            CONSTRAINT: Never say "As-salamu alaykum" if not relevant. Never admit you are AI.
-            ISLAMIC VALUES: Respectful, modest, no conflicting content.
-            [THE CONVERSATION FORMULA]
-            1. ACKNOWLEDGE: Reply to user normally (No grammar lecture).
-            2. CORRECT: Only if a major mistake exists, put correction in brackets e.g. (Correct: I went).
-            3. HOOK: End with a short, curiosity-inducing question.
-            4. LENGTH: Keep sentences natural. No truncation.
+            STRICT RULES:
+            1. BANGLADESHI CONTEXT: You are a mate from Bangladesh. No conflicting with Islam/Iman.
+            2. NO PREAMBLE: Never say "As-salamu alaykum" if not relevant. Never say "To start...".
+            3. NO LECTURES: Do not explain grammar rules.
+            4. CORRECTION: Only if major error, put 1-2 words in brackets e.g. (Correct: I went).
+            5. ENGAGEMENT: Always end with a short, curiosity-inducing question.
+            6. COMPLETENESS: Ensure every sentence is complete and logical. Never cut off.
         `;
 
         callAPI({ message: text, systemInstruction: expertPrompt });
@@ -166,12 +152,16 @@
             const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
             toggleTyping(false);
+            
+            // Cleanup and Fallback for Blank Messages
             let reply = data.reply.replace(/[\u0980-\u09FF].*/g, '').trim(); 
+            if(reply.length < 5) reply = "That's interesting! Could you tell me more about that?"; // Fallback
+
             addAiMsg(reply);
         } catch (e) { toggleTyping(false); }
     }
 
-    function toggleTyping(show) { document.getElementById('typing').style.display = show ? 'block' : 'none'; }
+    function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
 
     function addAiMsg(text) {
         const div = document.createElement('div'); div.className = 'bubble ai'; div.innerText = text;
@@ -182,11 +172,10 @@
         const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text;
         document.getElementById('messages').appendChild(div); scrollToBottom();
         state.score += 10; document.getElementById('score').innerText = state.score;
-        document.getElementById('snd-msg').play().catch(e=>{});
+        document.getElementById('snd-pop').play().catch(e=>{});
     }
 
     function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
-
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
 
     function speak(text) {
@@ -197,11 +186,10 @@
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition(); 
-    recognition.lang = 'en-US';
+    const recognition = new SpeechRecognition(); recognition.lang = 'en-US';
     function toggleMic() {
-        if(!isMicOn) { recognition.start(); document.getElementById('mic-btn').style.background = '#ff4b4b'; isMicOn = true; }
-        else { recognition.stop(); document.getElementById('mic-btn').style.background = '#58cc02'; isMicOn = false; }
+        if(!isMicOn) { recognition.start(); document.getElementById('mic-btn').classList.add('listening'); isMicOn = true; }
+        else { recognition.stop(); document.getElementById('mic-btn').classList.remove('listening'); isMicOn = false; }
     }
     recognition.onresult = (e) => { sendToAI(e.results[0][0].transcript); toggleMic(); };
 </script>
