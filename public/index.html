@@ -3,8 +3,8 @@
 <head>
     <meta name="google-site-verification" content="_wCm5qdAT_xwGZoRq8YREotTv3OprJm3Pn_RpYAtIkQ" />
     
-    <meta name="description" content="Talk24Ai - Your Personal English Ustad. Practice English speaking with AI.">
-    <meta name="keywords" content="English Learning AI, Talk24Ai, English Ustad, AI English Tutor">
+    <meta name="description" content="Talk24Ai - Your Personal English Ustad. Learn English with logic and reason.">
+    <meta name="keywords" content="English Learning AI, Talk24Ai, Dr Zakir Naik Style AI, English Tutor">
     <meta name="author" content="Talk24Ai">
     
     <meta charset="UTF-8">
@@ -28,7 +28,7 @@
         /* --- WELCOME SCREEN --- */
         #welcome-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1b5e20, #4caf50);
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
             z-index: 3000; display: flex; flex-direction: column;
             align-items: center; justify-content: center; color: white;
             text-align: center; transition: opacity 0.5s ease-out;
@@ -51,9 +51,9 @@
         .logo { font-size: 20px; font-weight: 800; color: #1b5e20; }
         .logo span { color: #4caf50; }
         
-        /* Install Button Style (Always Visible) */
+        /* Install Button (Always Visible) */
         #install-btn { 
-            display: flex; /* Always visible */
+            display: flex; 
             align-items: center; gap: 5px;
             background: #ff9800; color: white; border: none; 
             padding: 8px 15px; border-radius: 20px; 
@@ -68,7 +68,7 @@
 
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 200px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; word-wrap: break-word; }
+        .msg { max-width: 85%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; word-wrap: break-word; }
         .ai { background: white; align-self: flex-start; color: #333; border-bottom-left-radius: 5px; border: 1px solid #eee; }
         .user { background: #1b5e20; align-self: flex-end; color: white; border-bottom-right-radius: 5px; }
         
@@ -120,22 +120,22 @@
 <body>
 
 <div id="pc-warning">
-    🎧 ভালো সাউন্ডের জন্য এটি <b>মোবাইল ব্রাউজার (Chrome/Safari)</b> দিয়ে ওপেন করুন।
+    🎧 For the best experience, please use <b>Chrome or Safari</b> on mobile.
     <span onclick="this.parentElement.style.display='none'" style="cursor:pointer; margin-left:10px;">✖</span>
 </div>
 
 <div id="welcome-screen">
     <div class="welcome-logo">TALK<span>24</span>AI</div>
-    <div style="font-size: 16px; color: white; margin-bottom: 50px;">👔 English Ustad - Your AI Mentor</div>
+    <div style="font-size: 16px; color: white; margin-bottom: 50px;">👔 English Ustad - Logic & Reason</div>
     <button class="start-btn" onclick="enterClassroom()">
-        <span>▶</span> Start Class
+        <span>▶</span> Start Session
     </button>
 </div>
 
 <div id="login-modal">
     <div class="modal-content">
-        <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ সময় শেষ!</h2>
-        <p style="color:#555; font-size:14px;">ওস্তাদের সাথে আনলিমিটেড কথা বলতে লগইন করুন।</p>
+        <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ Time's Up!</h2>
+        <p style="color:#555; font-size:14px;">Brother, to continue the session, please login.</p>
         <button class="modal-btn" onclick="googleLogin()">G Continue with Google</button>
         <p id="timer-lock-msg" style="font-size: 11px; color: #d32f2f; margin-top: 15px;"></p>
     </div>
@@ -146,13 +146,13 @@
     <button id="install-btn">📲 INSTALL APP</button>
 </div>
 
-<div id="guest-timer">ফ্রি ট্রায়াল: ২:০০ মিনিট বাকি</div>
+<div id="guest-timer">Free Trial: 2:00 Minutes Left</div>
 <div id="chat-box"></div>
 <div id="suggestion-area" class="suggestions-box" style="display: none;"></div>
 
 <div class="voice-controls">
     <div class="text-mode" id="text-area">
-        <input type="text" id="userInput" placeholder="Type here...">
+        <input type="text" id="userInput" placeholder="Ask your question...">
         <button onclick="sendText()" id="send-btn">➤</button>
         <button onclick="toggleInput()" style="background:none; border:none; color:#666; margin-right:10px; cursor:pointer;">✖</button>
     </div>
@@ -167,49 +167,36 @@
 </div>
 
 <script>
-    // --- PWA INSTALL LOGIC (Always Visible Button) ---
+    // --- PWA LOGIC ---
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
-
-    // 1. ব্রাউজার ইভেন্ট ধরছি
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        console.log("Install Prompt Ready!");
     });
-
-    // 2. বাটনে ক্লিক ইভেন্ট
     installBtn.addEventListener('click', async () => {
         if (deferredPrompt) {
-            // যদি ব্রাউজার পারমিশন দেয়, তাহলে ইন্সটল পপআপ দেখাবে
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response: ${outcome}`);
+            if(outcome === 'accepted') installBtn.innerText = "✅ INSTALLED";
             deferredPrompt = null;
-            if(outcome === 'accepted') {
-                installBtn.innerText = "✅ INSTALLED";
-            }
         } else {
-            // যদি ইন্সটল অপশন রেডি না থাকে (অলরেডি ইন্সটল করা বা সাপোর্ট করছে না)
-            alert("অ্যাপটি হয়তো অলরেডি আপনার ফোনে আছে, অথবা ব্রাউজার মেনু (Add to Home Screen) থেকে ম্যানুয়ালি ইনস্টল করুন।");
+            alert("Brother, you can install this app manually from your browser menu.");
         }
     });
-
-    // Service Worker Register
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log("Service Worker Registered"));
+        navigator.serviceWorker.register('/sw.js').then(() => console.log("SW Registered"));
     }
 
-    // --- MAIN APP LOGIC ---
-    const welcomeMsg = "Assalamu Alaikum! আমি English Ustad. বলো, আজ কী নিয়ে প্র্যাকটিস করতে চাও?";
+    // --- PERSONA: DR ZAKIR NAIK (English Only) ---
+    const welcomeMsg = "Assalamu Alaikum wa Rahmatullahi wa Barakatuh. I am your English Ustad. Brother, ask your question regarding the English language, and InshaAllah, I shall answer it with logic and reason.";
     
     const suggestions = [
-        "💼 Job Interview Practice",
-        "🗣️ Daily English Sentences",
-        "📝 Check my Grammar",
-        "✈️ Travel Conversation",
-        "🩺 Talk to a Doctor"
+        "📖 Correct my Grammar",
+        "🗣️ Practice Pronunciation",
+        "❓ Ask a Question",
+        "👔 Interview Preparation",
+        "🧠 Logical Debate"
     ];
 
     let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
@@ -224,7 +211,7 @@
             const hoursPassed = (now - lockTimestamp) / (1000 * 60 * 60);
             if (hoursPassed < 24) {
                 const hoursLeft = Math.ceil(24 - hoursPassed);
-                document.getElementById('timer-lock-msg').innerText = `আবার গেস্ট হিসেবে কথা বলতে ${hoursLeft} ঘণ্টা অপেক্ষা করুন।`;
+                document.getElementById('timer-lock-msg').innerText = `Brother, please wait ${hoursLeft} hours to use guest mode again.`;
                 showLoginModal();
                 document.querySelector('.voice-controls').style.display = 'none';
                 return true;
@@ -247,7 +234,7 @@
     function updateTimerDisplay() {
         let m = Math.floor(timeLeft / 60);
         let s = timeLeft % 60;
-        timerDisplay.innerText = `ফ্রি ট্রায়াল: ${m}:${s < 10 ? '0'+s : s} মিনিট`;
+        timerDisplay.innerText = `Free Trial: ${m}:${s < 10 ? '0'+s : s} Minutes`;
         if (timeLeft < 30) timerDisplay.classList.add('shake-anim');
     }
     updateTimerDisplay();
@@ -258,7 +245,7 @@
             localStorage.setItem('guestTimeLeft', timeLeft);
             updateTimerDisplay();
             
-            if(timeLeft === 60) showSystemNotification("Talk24Ai Official", "আপনার ১ মিনিট সময় বাকি আছে। লগইন করুন।");
+            if(timeLeft === 60) showSystemNotification("Talk24Ai Official", "Brother, you have 1 minute remaining. Please login to continue.");
             
             if(timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -308,7 +295,7 @@
     
     if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
+        recognition.lang = 'en-US'; // ENFORCED ENGLISH
         micBtn.onclick = () => { isListening ? recognition.stop() : recognition.start(); };
         recognition.onstart = () => { 
             isListening = true; micWrapper.classList.add('listening'); 
@@ -331,7 +318,13 @@
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ message: text, isGuest: isGuest, email: 'guest@talk24ai.xyz' })
+                // Sending Persona Instruction to Backend
+                body: JSON.stringify({ 
+                    message: text, 
+                    isGuest: isGuest, 
+                    email: 'guest@talk24ai.xyz',
+                    systemInstruction: "You are Dr. Zakir Naik acting as an English Tutor. Always speak in English. Use logic, reason, and Islamic greetings. Do not speak Bengali." 
+                })
             });
             const data = await res.json();
             box.innerHTML += `<div class="msg ai">${data.reply}</div>`;
@@ -358,14 +351,13 @@
         if(synth.speaking) synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         let voices = synth.getVoices();
-        let ustadVoice = voices.find(v => v.lang.includes('bn'));
+        // SEARCH FOR ENGLISH VOICE (Preferably UK or IN for Dr Zakir Style)
+        let ustadVoice = voices.find(v => v.lang.includes('en-GB')) || voices.find(v => v.lang.includes('en-IN')) || voices.find(v => v.lang.includes('en'));
         if(ustadVoice) {
             utter.voice = ustadVoice;
-            utter.pitch = ustadVoice.name.includes('Female') ? 0.6 : 0.8;
-        } else {
-            utter.pitch = 0.7; 
+            utter.pitch = 1.0; 
+            utter.rate = 1.0;
         }
-        utter.rate = 1.0;
         synth.speak(utter);
     }
 
