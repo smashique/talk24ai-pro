@@ -3,13 +3,13 @@
 <head>
     <meta name="google-site-verification" content="_wCm5qdAT_xwGZoRq8YREotTv3OprJm3Pn_RpYAtIkQ" />
     
-    <meta name="description" content="Talk24Ai - Your Personal English Ustad. Practice English speaking with AI, improve grammar, and prepare for interviews with real-time voice conversation.">
-    <meta name="keywords" content="English Learning AI, Talk24Ai, English Ustad, AI English Tutor, Speaking Practice, Learn English Online">
+    <meta name="description" content="Talk24Ai - Your Personal English Ustad. Practice English speaking with AI.">
+    <meta name="keywords" content="English Learning AI, Talk24Ai, English Ustad, AI English Tutor">
     <meta name="author" content="Talk24Ai">
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talk24Ai | English Ustad - Your Personal AI Mentor</title>
+    <title>Talk24Ai | English Ustad</title>
     
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,10 +22,8 @@
             background: #fff3cd; color: #856404; padding: 12px;
             text-align: center; font-size: 14px; font-weight: 600;
             border-bottom: 1px solid #ffeeba; display: none;
-            animation: slideDown 0.5s ease-out; z-index: 5000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 5000;
         }
-        @keyframes slideDown { from {transform: translateY(-100%);} to {transform: translateY(0);} }
 
         /* --- WELCOME SCREEN --- */
         #welcome-screen {
@@ -35,47 +33,57 @@
             align-items: center; justify-content: center; color: white;
             text-align: center; transition: opacity 0.5s ease-out;
         }
-        .welcome-logo { font-size: 42px; font-weight: 800; margin-bottom: 5px; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .welcome-logo { font-size: 42px; font-weight: 800; margin-bottom: 5px; }
         .welcome-logo span { color: #81c784; }
-        .welcome-sub { font-size: 16px; margin-bottom: 50px; opacity: 0.95; font-weight: 500; }
         .start-btn {
             background: white; color: #1b5e20; border: none;
             padding: 16px 45px; border-radius: 50px; font-size: 18px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 10px;
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
-        .start-btn:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        .header { background: white; color: #1b5e20; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+        /* --- HEADER & INSTALL BUTTON --- */
+        .header { 
+            background: white; color: #1b5e20; padding: 15px; 
+            text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            z-index: 10; display: flex; justify-content: space-between; align-items: center; 
+        }
         .logo { font-size: 20px; font-weight: 800; color: #1b5e20; }
         .logo span { color: #4caf50; }
         
-        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; border-bottom: 1px solid #ffe0b2; transition: 0.3s; }
+        /* Install Button Style */
+        #install-btn { 
+            display: none; /* JS দিয়ে শো হবে */
+            background: #ff9800; color: white; border: none; 
+            padding: 8px 15px; border-radius: 20px; 
+            cursor: pointer; font-size: 12px; font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; border-bottom: 1px solid #ffe0b2; }
         .shake-anim { animation: shake 0.5s; background: #ffccbc !important; color: #d32f2f !important; }
 
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 200px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; word-wrap: break-word; }
         .ai { background: white; align-self: flex-start; color: #333; border-bottom-left-radius: 5px; border: 1px solid #eee; }
         .user { background: #1b5e20; align-self: flex-end; color: white; border-bottom-right-radius: 5px; }
         
-        .system-notif { align-self: center; background: #e3f2fd; color: #0d47a1; font-size: 12px; padding: 8px 15px; border-radius: 12px; margin: 10px 0; font-weight: 600; text-align: center; border: 1px solid #bbdefb; }
+        .system-notif { align-self: center; background: #e3f2fd; color: #0d47a1; font-size: 12px; padding: 8px 15px; border-radius: 12px; margin: 10px 0; font-weight: 600; text-align: center; }
 
+        /* --- SUGGESTIONS & CONTROLS --- */
         .suggestions-box {
             position: fixed; bottom: 130px; left: 0; width: 100%;
             display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px;
             white-space: nowrap; scrollbar-width: none; z-index: 15;
-            -ms-overflow-style: none; 
         }
-        .suggestions-box::-webkit-scrollbar { display: none; }
-
         .chip {
             background: white; border: 1px solid #4caf50; color: #1b5e20;
             padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
-            cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            flex-shrink: 0;
+            cursor: pointer; flex-shrink: 0;
         }
-        .chip:hover { background: #e8f5e9; transform: translateY(-2px); }
 
         .voice-controls { 
             position: fixed; bottom: 0; left: 0; width: 100%; 
@@ -86,51 +94,26 @@
         }
 
         .mic-wrapper { position: relative; width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; }
-        
         #mic-btn { 
             width: 65px; height: 65px; border-radius: 50%; border: none; 
             background: #1b5e20; color: white; font-size: 28px; 
             cursor: pointer; box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3); 
-            transition: 0.3s; z-index: 2; display: flex; align-items: center; justify-content: center;
+            z-index: 2; display: flex; align-items: center; justify-content: center;
         }
-
-        .ripple {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
-            background: rgba(76, 175, 80, 0.4); z-index: 1; opacity: 0;
-        }
-        .listening .ripple { animation: ripple-anim 1.5s infinite; }
         .listening #mic-btn { background: #e53935; }
-
-        @keyframes ripple-anim { 
-            0% { transform: scale(1); opacity: 0.6; } 
-            100% { transform: scale(2.2); opacity: 0; } 
-        }
-
         .hint-text { font-size: 12px; color: #666; font-weight: 500; }
 
-        .toggle-kb { 
-            position: absolute; right: 25px; bottom: 40px; 
-            width: 40px; height: 40px; background: white; border-radius: 50%; 
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; color: #555; font-size: 18px;
-        }
-
-        .text-mode { 
-            display: none; width: 90%; background: white; padding: 5px; 
-            border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
-            align-items: center; margin-bottom: 20px;
-        }
+        .toggle-kb { position: absolute; right: 25px; bottom: 40px; width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 3px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
+        
+        .text-mode { display: none; width: 90%; background: white; padding: 5px; border-radius: 30px; align-items: center; margin-bottom: 20px; }
         #userInput { flex: 1; border: none; padding: 12px 20px; outline: none; font-size: 16px; border-radius: 30px; }
         #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; animation: popUp 0.3s ease-out; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
         .modal-btn { background: #1b5e20; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 15px; margin-top: 20px; cursor: pointer; font-weight: 600; }
         
-        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
-
-        #install-btn { display: none; background: #ff9800; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -142,7 +125,7 @@
 
 <div id="welcome-screen">
     <div class="welcome-logo">TALK<span>24</span>AI</div>
-    <div class="welcome-sub">👔 English Ustad - Your AI Mentor</div>
+    <div style="font-size: 16px; color: white; margin-bottom: 50px;">👔 English Ustad - Your AI Mentor</div>
     <button class="start-btn" onclick="enterClassroom()">
         <span>▶</span> Start Class
     </button>
@@ -151,7 +134,7 @@
 <div id="login-modal">
     <div class="modal-content">
         <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ সময় শেষ!</h2>
-        <p style="color:#555; font-size:14px; line-height:1.5;">ওস্তাদের সাথে আনলিমিটেড কথা বলতে এবং প্রোগ্রেস সেভ করতে লগইন করুন।</p>
+        <p style="color:#555; font-size:14px;">ওস্তাদের সাথে আনলিমিটেড কথা বলতে লগইন করুন।</p>
         <button class="modal-btn" onclick="googleLogin()">G Continue with Google</button>
         <p id="timer-lock-msg" style="font-size: 11px; color: #d32f2f; margin-top: 15px;"></p>
     </div>
@@ -159,13 +142,11 @@
 
 <div class="header">
     <div class="logo">TALK<span>24</span>AI</div>
-    <button id="install-btn">📲 INSTALL</button>
+    <button id="install-btn">📲 INSTALL APP</button>
 </div>
 
 <div id="guest-timer">ফ্রি ট্রায়াল: ২:০০ মিনিট বাকি</div>
-
 <div id="chat-box"></div>
-
 <div id="suggestion-area" class="suggestions-box" style="display: none;"></div>
 
 <div class="voice-controls">
@@ -177,27 +158,54 @@
 
     <div id="mic-container" style="display: flex; flex-direction: column; align-items: center;">
         <div class="mic-wrapper" id="mic-wrapper">
-            <div class="ripple"></div>
             <button id="mic-btn">🎤</button>
         </div>
         <div class="hint-text" id="hint-text">Tap to Speak</div>
     </div>
-
     <div class="toggle-kb" id="kb-btn" onclick="toggleInput()">⌨️</div>
 </div>
 
 <script>
-    const welcomeMsg = "Assalamu Alaikum! আমি English Ustad. বলো, আজ কী নিয়ে প্র্যাকটিস করতে চাও?";
-    let voicesLoaded = false;
-    let hasWarnedPC = false;
+    // --- PWA INSTALL LOGIC ---
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
 
+    // Browser Install Prompt ধরছে
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block'; // বাটন শো হবে
+        console.log("Install Prompt Ready!");
+    });
+
+    // বাটনে ক্লিক করলে ইনস্টল উইন্ডো আসবে
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            if(outcome === 'accepted') {
+                installBtn.style.display = 'none';
+            }
+        }
+    });
+
+    // Service Worker Register
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log("Service Worker Registered"));
+    }
+
+    // --- MAIN APP LOGIC ---
+    const welcomeMsg = "Assalamu Alaikum! আমি English Ustad. বলো, আজ কী নিয়ে প্র্যাকটিস করতে চাও?";
+    
     const suggestions = [
         "💼 Job Interview Practice",
         "🗣️ Daily English Sentences",
         "📝 Check my Grammar",
         "✈️ Travel Conversation",
-        "🩺 Talk to a Doctor",
-        "🛒 Shopping Conversation"
+        "🩺 Talk to a Doctor"
     ];
 
     let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
@@ -246,7 +254,7 @@
             localStorage.setItem('guestTimeLeft', timeLeft);
             updateTimerDisplay();
             
-            if(timeLeft === 60) showSystemNotification("Talk24Ai Official", "আপনার ১ মিনিট সময় বাকি আছে। English Ustad এর সাথে কন্টিনিউ করতে লগইন করুন।");
+            if(timeLeft === 60) showSystemNotification("Talk24Ai Official", "আপনার ১ মিনিট সময় বাকি আছে। লগইন করুন।");
             
             if(timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -269,7 +277,6 @@
             box.innerHTML += `<div class="msg ai">${welcomeMsg}</div>`;
             speak(welcomeMsg);
             renderSuggestions();
-            setTimeout(() => showSystemNotification("Talk24Ai Official", "English Ustad আপনার গাইড। আপনার ভুলগুলো সে কড়াভাবে ধরিয়ে দেবে।"), 3000);
         }, 500);
     }
 
