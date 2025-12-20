@@ -295,7 +295,7 @@
     
     if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US'; // ENFORCED ENGLISH
+        recognition.lang = 'en-US'; // Strict English Input
         micBtn.onclick = () => { isListening ? recognition.stop() : recognition.start(); };
         recognition.onstart = () => { 
             isListening = true; micWrapper.classList.add('listening'); 
@@ -318,7 +318,6 @@
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                // Sending Persona Instruction to Backend
                 body: JSON.stringify({ 
                     message: text, 
                     isGuest: isGuest, 
@@ -346,17 +345,23 @@
         document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight; 
     }
 
+    // --- ZAKIR NAIK VOICE TUNING ---
     function speak(text) {
         const synth = window.speechSynthesis;
         if(synth.speaking) synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         let voices = synth.getVoices();
-        // SEARCH FOR ENGLISH VOICE (Preferably UK or IN for Dr Zakir Style)
-        let ustadVoice = voices.find(v => v.lang.includes('en-GB')) || voices.find(v => v.lang.includes('en-IN')) || voices.find(v => v.lang.includes('en'));
+        
+        // Priority 1: Indian English (His natural accent)
+        // Priority 2: British English (Close to his formal style)
+        let ustadVoice = voices.find(v => v.lang.includes('en-IN')) || 
+                         voices.find(v => v.lang.includes('en-GB')) || 
+                         voices.find(v => v.lang.includes('en'));
+                         
         if(ustadVoice) {
             utter.voice = ustadVoice;
-            utter.pitch = 1.0; 
-            utter.rate = 1.0;
+            utter.pitch = 1.1; // Slightly sharp/authoritative tone
+            utter.rate = 1.15; // Energetic and slightly fast
         }
         synth.speak(utter);
     }
