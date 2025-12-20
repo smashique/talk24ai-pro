@@ -9,18 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Base Design */
+        /* --- Base Styles --- */
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Stats & Gamification */
+        /* Stats & Gamification Bar */
         #stats-bar { background: white; padding: 5px 15px 10px 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 9; }
         .level-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1b5e20; margin-bottom: 5px; }
         .progress-container { width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #4caf50, #81c784); width: 0%; transition: width 0.5s ease-out; }
         
         /* Level Up Modal */
-        #levelup-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; animation: popIn 0.5s; }
-        .levelup-icon { font-size: 60px; margin-bottom: 10px; animation: bounce 1s infinite; }
+        #levelup-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; animation: popIn 0.5s; }
+        .levelup-icon { font-size: 70px; margin-bottom: 10px; animation: bounce 1s infinite; }
+        .levelup-title { font-size: 28px; font-weight: 800; color: #ffeb3b; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         @keyframes popIn { from {transform: scale(0.5); opacity: 0;} to {transform: scale(1); opacity: 1;} }
         @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
 
@@ -29,21 +30,21 @@
         #goal-banner span { color: #d32f2f; font-weight: bold; }
 
         /* Warnings */
-        #bangla-warning { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: white; padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: bold; display: none; z-index: 4000; }
+        #bangla-warning { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #d32f2f; color: white; padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: bold; display: none; z-index: 4000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         #pc-warning { background: #fff3cd; color: #856404; padding: 12px; text-align: center; display: none; z-index: 5000; }
 
-        /* Welcome Screen (CONFIG UI) */
+        /* Welcome & Config Screen */
         #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1b5e20, #2e7d32); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; transition: opacity 0.5s; overflow-y: auto; padding: 20px 0; }
         .welcome-logo { font-size: 32px; font-weight: 800; margin-bottom: 5px; }
         .welcome-logo span { color: #81c784; }
         
-        .config-box { background: white; width: 90%; max-width: 350px; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: #333; margin-top: 10px; text-align: left; }
-        .config-label { font-size: 12px; font-weight: 700; color: #666; margin-bottom: 8px; display: block; text-transform: uppercase; }
+        .config-box { background: white; width: 90%; max-width: 360px; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: #333; margin-top: 10px; text-align: left; }
+        .config-label { font-size: 12px; font-weight: 700; color: #666; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* Mode Grid */
         .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .mode-card { border: 2px solid #eee; border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .mode-card:hover { transform: translateY(-2px); }
+        .mode-card:hover { transform: translateY(-2px); border-color: #81c784; }
         .mode-card.selected { border-color: #1b5e20; background: #e8f5e9; color: #1b5e20; }
         .mode-title { font-weight: 700; font-size: 13px; display: block; margin-bottom: 3px; }
         .mode-desc { font-size: 10px; color: #777; }
@@ -51,10 +52,11 @@
         /* Profile Inputs */
         .input-row { display: flex; gap: 15px; margin-bottom: 25px; }
         .input-group { flex: 1; }
-        .custom-input { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; font-family: 'Poppins'; font-weight: 600; outline: none; box-sizing: border-box; }
+        .custom-input { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; font-family: 'Poppins'; font-weight: 600; outline: none; box-sizing: border-box; font-size: 14px; }
         .custom-input:focus { border-color: #1b5e20; }
 
-        .start-btn { background: #1b5e20; color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(27, 94, 32, 0.4); }
+        .start-btn { background: #1b5e20; color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(27, 94, 32, 0.4); transition: transform 0.2s; }
+        .start-btn:active { transform: scale(0.98); }
 
         /* Header */
         .header { background: white; color: #1b5e20; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; }
@@ -73,21 +75,21 @@
 
         /* Controls */
         .suggestions-box { position: fixed; bottom: 130px; left: 0; width: 100%; display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; z-index: 15; }
-        .chip { background: white; border: 1px solid #4caf50; color: #1b5e20; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0; }
+        .chip { background: white; border: 1px solid #4caf50; color: #1b5e20; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
         .voice-controls { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, #f0f2f5 85%, rgba(240,242,245,0)); padding: 10px 0 30px 0; display: flex; flex-direction: column; align-items: center; z-index: 20; }
         .mic-wrapper { position: relative; width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; }
-        #mic-btn { width: 65px; height: 65px; border-radius: 50%; border: none; background: #1b5e20; color: white; font-size: 28px; cursor: pointer; box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3); z-index: 2; }
-        .listening #mic-btn { background: #e53935; }
+        #mic-btn { width: 65px; height: 65px; border-radius: 50%; border: none; background: #1b5e20; color: white; font-size: 28px; cursor: pointer; box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3); z-index: 2; transition: 0.3s; }
+        .listening #mic-btn { background: #e53935; transform: scale(1.1); }
         .hint-text { font-size: 12px; color: #666; font-weight: 500; }
         
-        .text-mode { display: none; width: 90%; background: white; padding: 5px; border-radius: 30px; margin-bottom: 20px; }
+        .text-mode { display: none; width: 90%; background: white; padding: 5px; border-radius: 30px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         #userInput { flex: 1; border: none; padding: 12px 20px; outline: none; font-size: 16px; border-radius: 30px; }
-        #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .toggle-kb { position: absolute; right: 25px; bottom: 40px; width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
 
         #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; animation: popIn 0.3s; }
         .modal-btn { background: #1b5e20; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
@@ -100,8 +102,9 @@
 
 <div id="levelup-modal" onclick="this.style.display='none'">
     <div class="levelup-icon">🏆</div>
-    <div class="levelup-text">LEVEL UP!</div>
+    <div class="levelup-title">LEVEL UP!</div>
     <div style="font-size: 16px; margin-top: 5px;">MashAllah! You reached Level <span id="new-lvl-disp">2</span></div>
+    <div style="font-size: 12px; margin-top: 20px; color: #ddd;">(Tap to continue)</div>
 </div>
 
 <div id="bangla-warning">⚠️ Brother, English Only!</div>
@@ -141,7 +144,7 @@
         <span class="config-label">2. Your Profile</span>
         <div class="input-row">
             <div class="input-group">
-                <input type="number" id="userAge" class="custom-input" value="25" min="10" max="90">
+                <input type="number" id="userAge" class="custom-input" value="25" min="10" max="90" placeholder="Age">
             </div>
             <div class="input-group">
                 <select id="userGender" class="custom-input">
@@ -158,7 +161,7 @@
 <div id="login-modal">
     <div class="modal-content">
         <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ Time's Up!</h2>
-        <p style="color:#555; font-size:14px;">Brother, to save your Level & XP, please login.</p>
+        <p style="color:#555; font-size:14px;">Brother, to continue learning and save XP, please login.</p>
         <button class="modal-btn" onclick="googleLogin()">G Continue with Google</button>
         <p id="timer-lock-msg" style="font-size: 11px; color: #d32f2f; margin-top: 15px;"></p>
     </div>
@@ -181,7 +184,7 @@
 
 <div id="goal-banner">🎯 Target: <span>Select a Topic</span></div>
 
-<div id="guest-timer">Free Trial: 2:00 Minutes Left</div>
+<div id="guest-timer">Free Trial: 5:00 Minutes Left</div>
 <div id="chat-box"></div>
 <div id="suggestion-area" class="suggestions-box" style="display: none;"></div>
 
@@ -213,14 +216,13 @@
     });
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
-    // --- USER CONFIGURATION ---
-    let selectedMode = 'B1'; // Default
+    // --- USER CONFIGURATION (DEFAULT) ---
+    let selectedMode = 'B1'; 
     let userAge = 25;
     let userGender = 'Male';
 
     function selectMode(mode, el) {
         selectedMode = mode;
-        // Update UI
         document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
     }
@@ -253,11 +255,12 @@
     function showLevelUpModal(lvl) {
         document.getElementById('new-lvl-disp').innerText = lvl;
         document.getElementById('levelup-modal').style.display = 'flex';
+        // Simple sound trigger (browser might block auto-audio)
         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
         audio.play().catch(e => console.log("Audio blocked"));
     }
 
-    // --- START SESSION LOGIC ---
+    // --- SESSION LOGIC ---
     const competencies = {
         "💼 Job Interview": "Mastering the 'Tell me about yourself' answer.",
         "🗣️ Fluency Practice": "Speaking for 1 minute without hesitation.",
@@ -270,7 +273,6 @@
         userAge = document.getElementById('userAge').value;
         userGender = document.getElementById('userGender').value;
         
-        // Check Lock
         if(checkLockStatus()) return;
 
         window.speechSynthesis.resume();
@@ -278,8 +280,8 @@
         setTimeout(() => { 
             document.getElementById('welcome-screen').style.display = 'none'; 
             
-            // Dynamic Welcome Message based on Level
-            let introMsg = `As-salamu Alaykum ${userGender === 'Male' ? 'Brother' : 'Sister'}. I am your English Ustad. We are in ${selectedMode} Mode. Select a topic to begin.`;
+            let address = userGender === 'Male' ? 'Brother' : 'Sister';
+            let introMsg = `As-salamu Alaykum ${address}. I am your English Ustad. We are starting ${selectedMode} level. Please select a topic.`;
             
             const box = document.getElementById('chat-box');
             box.innerHTML += `<div class="msg ai">${introMsg}</div>`;
@@ -288,14 +290,16 @@
         }, 500);
     }
 
-    let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
+    // --- TIMER LOGIC (5 MINUTES) ---
+    const GUEST_LIMIT = 300; 
+    let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || GUEST_LIMIT;
     let isGuest = true;
     let timerActive = false; 
     let msgCount = 0; 
     let voices = [];
     window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
 
-    // --- INPUT VALIDATION ---
+    // Input Warning
     document.getElementById('userInput').addEventListener('input', function(e) {
         if(/[\u0980-\u09FF]/.test(e.target.value)) {
             document.getElementById('bangla-warning').style.display = 'block';
@@ -303,7 +307,6 @@
         }
     });
 
-    // Timer Logic
     function checkLockStatus() {
         const lockTimestamp = localStorage.getItem('guestLockTime');
         if (lockTimestamp) {
@@ -313,7 +316,7 @@
                 showLoginModal();
                 document.querySelector('.voice-controls').style.display = 'none';
                 return true;
-            } else { localStorage.removeItem('guestLockTime'); localStorage.setItem('guestTimeLeft', 120); timeLeft = 120; }
+            } else { localStorage.removeItem('guestLockTime'); localStorage.setItem('guestTimeLeft', GUEST_LIMIT); timeLeft = GUEST_LIMIT; }
         }
         return false;
     }
@@ -357,6 +360,7 @@
         sendToAI(`I want to start: ${topic}`, true);
     }
 
+    // --- SPEECH RECOGNITION ---
     const micBtn = document.getElementById('mic-btn');
     const micWrapper = document.getElementById('mic-wrapper');
     let isListening = false;
@@ -380,6 +384,7 @@
         recognition.onresult = (event) => sendToAI(event.results[0][0].transcript);
     }
 
+    // --- AI COMMUNICATION (CONFIGURED) ---
     async function sendToAI(text, isStart = false) {
         if(!text) return;
         if(/[\u0980-\u09FF]/.test(text)) {
@@ -397,31 +402,64 @@
         if(!isStart) box.innerHTML += `<div class="msg user">${text}</div>`;
         box.scrollTop = box.scrollHeight;
 
-        // --- DYNAMIC SYSTEM PROMPT (CONFIGURED) ---
         let address = userGender === 'Male' ? 'Brother' : 'Sister';
         
-        let levelPrompt = "";
-        if(selectedMode === 'A1') levelPrompt = "Use very simple words. Speak slowly.";
-        else if(selectedMode === 'A2') levelPrompt = "Use simple sentences.";
-        else if(selectedMode === 'B2') levelPrompt = "Use complex logic and idioms.";
-        else if(selectedMode === 'IELTS') levelPrompt = "Act as an IELTS Examiner. Focus on Band 9 vocabulary and fluency.";
-        else if(selectedMode === 'GRE') levelPrompt = "Use advanced GRE vocabulary and critical reasoning.";
-
-        let systemPrompt = `IDENTITY: Dr. Zakir Naik (English Tutor). 
-        USER PROFILE: ${address}, Age ${userAge}, Level: ${selectedMode}.
-        INSTRUCTION: ${levelPrompt}
-        GOAL: The user MUST achieve: "${currentGoal}".
-        METHODOLOGY:
-        1. START: "Brother/Sister, let us master [${currentGoal}] for ${selectedMode} level."
-        2. MIDDLE: Correct mistakes logically.
-        3. END: When user demonstrates mastery, say: "MashAllah, you have achieved this competency."
-        4. RULE: Speak ONLY English. No Bangla. No Goodbye.`;
+        // Configuration Logic
+        let vocabularyInstruction = "";
+        let toneInstruction = "Authoritative and Logical (Dr. Zakir Naik Style).";
         
+        if(selectedMode === 'A1') {
+            vocabularyInstruction = "EXTREMELY SIMPLE. Use words suitable for a 5-year-old. Short sentences only.";
+            toneInstruction = "Very gentle, patient, and slow teacher.";
+        } else if(selectedMode === 'A2') {
+            vocabularyInstruction = "Simple daily life vocabulary. Basic grammar.";
+        } else if(selectedMode === 'B2') {
+            vocabularyInstruction = "Use idioms, complex sentence structures, and connecting words.";
+        } else if(selectedMode === 'IELTS') {
+            vocabularyInstruction = "Use Band 9 lexical resources. Be strict about fluency and cohesion.";
+            toneInstruction = "Professional IELTS Examiner.";
+        } else if(selectedMode === 'GRE') {
+            vocabularyInstruction = "Use sophisticated, academic, and arcane vocabulary (GRE level).";
+        }
+
+        let ageInstruction = "";
+        if(parseInt(userAge) < 13) {
+            ageInstruction = "User is a CHILD. Explain using cartoons, games, or simple analogies. Be very kind.";
+        } else if(parseInt(userAge) > 50) {
+            ageInstruction = "User is an elder. Be very respectful and slow.";
+        } else {
+            ageInstruction = "User is an adult student.";
+        }
+
+        let systemPrompt = `
+        IDENTITY: You are Dr. Zakir Naik acting as an English Tutor.
+        [USER CONFIG]
+        - Age: ${userAge} (${ageInstruction})
+        - Gender: ${userGender} (Address as ${address})
+        - Level: ${selectedMode} (${vocabularyInstruction})
+        [CURRENT GOAL]
+        - Target: "${currentGoal}"
+        [RULES]
+        1. ENGLISH ONLY. NO BANGLA.
+        2. TONE: ${toneInstruction}
+        3. METHOD: Correct mistakes based on LOGIC.
+        4. FLOW: Do NOT say goodbye. Keep conversation going.
+        `;
+        
+        if(msgCount % 5 === 0) {
+            systemPrompt += " STATUS: Covered enough. Say 'MashAllah, achieved' and suggest a NEW topic.";
+        }
+
         try {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ message: text, isGuest: isGuest, email: 'guest@talk24ai.xyz', systemInstruction: systemPrompt })
+                body: JSON.stringify({ 
+                    message: text, 
+                    isGuest: isGuest, 
+                    email: 'guest@talk24ai.xyz',
+                    systemInstruction: systemPrompt 
+                })
             });
             const data = await res.json();
             let cleanReply = data.reply.replace(/[\u0980-\u09FF]/g, '').trim(); 
@@ -449,6 +487,7 @@
         document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight; 
     }
 
+    // --- VOICE TUNING ---
     function speak(text) {
         const synth = window.speechSynthesis;
         if(synth.speaking) synth.cancel();
@@ -465,11 +504,11 @@
                 utter.voice = ustadVoice; 
                 utter.pitch = 0.8; 
                 
-                // ADJUST SPEED BASED ON MODE
-                if(selectedMode === 'A1') utter.rate = 0.85; // Very Slow
-                else if(selectedMode === 'A2') utter.rate = 0.95; // Slow
-                else if(selectedMode === 'IELTS' || selectedMode === 'GRE') utter.rate = 1.2; // Fast
-                else utter.rate = 1.1; // Normal Zakir Naik Speed
+                // SPEED CONFIG
+                if(selectedMode === 'A1') utter.rate = 0.8; 
+                else if(selectedMode === 'A2') utter.rate = 0.9;
+                else if(selectedMode === 'IELTS' || selectedMode === 'GRE') utter.rate = 1.2; 
+                else utter.rate = 1.1; 
             }
             synth.speak(utter);
         });
