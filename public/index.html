@@ -3,389 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Speak Like a Pro</title>
+    <title>Talk24AI | Your 24/7 Spoken Mate</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- DESIGN SYSTEM (Duolingo Inspired) --- */
+        /* --- THEME VARIABLES --- */
         :root {
-            --green: #58cc02; --green-shade: #46a302;
-            --blue: #1cb0f6; --blue-shade: #1899d6;
-            --yellow: #ffc800; --yellow-shade: #e5b400;
-            --red: #ff4b4b; --red-shade: #d32f2f;
-            --gray: #e5e5e5; --text: #4b4b4b;
-            --bg: #fff;
-            --font-main: 'Nunito', sans-serif;
-            --radius: 16px;
+            --primary: #58cc02;
+            --primary-dark: #46a302;
+            --blue: #1cb0f6;
+            --bg: #f8f9fa;
+            --font: 'Nunito', sans-serif;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: var(--font-main); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--text); }
+        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* --- UI COMPONENTS --- */
+        /* --- 1. HOME SCREEN --- */
+        #home-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         
-        /* 1. HEADER (Stats) */
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray); }
-        .brand { font-family: 'Fredoka', sans-serif; font-size: 24px; color: var(--green); letter-spacing: -0.5px; }
-        .stats-row { display: flex; gap: 15px; }
-        .stat-pill { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 15px; color: #afafaf; }
-        .stat-pill.fire { color: #ff9600; }
-        .stat-pill.gem { color: var(--blue); }
-
-        /* 2. PROGRESS BAR (Quest) */
-        .quest-container { padding: 15px 20px; border-bottom: 1px solid var(--gray); display: flex; align-items: center; gap: 15px; }
-        .quest-icon { font-size: 24px; animation: bounce 2s infinite; }
-        .quest-details { flex: 1; }
-        .quest-label { font-size: 11px; font-weight: 800; color: #afafaf; text-transform: uppercase; letter-spacing: 0.5px; }
-        .quest-target { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
-        .progress-track { height: 12px; background: var(--gray); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--yellow); width: 0%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-        /* 3. CHAT AREA */
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        .brand { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--primary); margin-bottom: 5px; }
         
-        .bubble { max-width: 85%; padding: 12px 18px; border-radius: 18px; font-size: 16px; font-weight: 600; line-height: 1.5; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .ai { background: #f7f7f7; color: var(--text); border: 2px solid var(--gray); border-bottom-width: 4px; border-bottom-left-radius: 4px; }
-        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom: 4px solid var(--blue-shade); border-bottom-right-radius: 4px; }
-
-        /* 4. QUIZ CHIPS */
-        .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-        .chip { background: white; border: 2px solid var(--gray); border-bottom-width: 4px; padding: 10px 16px; border-radius: 14px; font-weight: 700; color: var(--text); cursor: pointer; transition: 0.1s; flex: 1; text-align: center; min-width: 45%; }
-        .chip:active { transform: translateY(4px); border-bottom-width: 0px; }
-        .chip.correct { background: #d7ffb8; border-color: var(--green); color: var(--green); }
-        .chip.wrong { background: #ffdfe0; border-color: var(--red); color: var(--red); }
-
-        /* 5. FOOTER CONTROLS */
-        .controls { padding: 15px; border-top: 2px solid var(--gray); background: white; display: flex; gap: 10px; align-items: center; }
-        #userInput { flex: 1; background: #f7f7f7; border: 2px solid var(--gray); padding: 14px; border-radius: 16px; font-family: inherit; font-weight: 600; font-size: 16px; outline: none; }
-        #userInput:focus { background: white; border-color: #afafaf; }
+        /* NEW TAGLINE STYLE */
+        .main-tagline { 
+            background: #fff9c4; color: #f57f17; padding: 8px 15px; 
+            border-radius: 12px; font-weight: 800; font-size: 14px; 
+            margin-bottom: 25px; border: 1px dashed #fbc02d;
+            line-height: 1.4;
+        }
         
-        #mic-btn { width: 56px; height: 56px; border-radius: 18px; background: var(--green); border: none; border-bottom: 4px solid var(--green-shade); color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
-        #mic-btn:active { transform: translateY(4px); border-bottom-width: 0; }
-        .listening #mic-btn { background: var(--red); border-color: var(--red-shade); animation: pulse 1.5s infinite; }
-
-        /* 6. ONBOARDING SCREEN */
-        #setup-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .mascot-lg { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
-        .title-lg { font-size: 28px; font-weight: 800; color: #3c3c3c; margin-bottom: 30px; }
+        .input-group { width: 100%; max-width: 300px; margin-bottom: 15px; }
+        .p-input { width: 100%; padding: 15px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; outline: none; text-align: center; box-sizing: border-box; }
+        .p-input:focus { border-color: var(--blue); }
         
-        .form-group { width: 100%; margin-bottom: 20px; text-align: left; max-width: 350px; }
-        .label { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .input-lg { width: 100%; padding: 16px; border: 2px solid var(--gray); border-radius: 16px; font-size: 18px; font-weight: 700; outline: none; text-align: center; font-family: inherit; }
-        .input-lg:focus { border-color: var(--blue); }
+        .btn-start { width: 100%; max-width: 300px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-start:active { transform: translateY(4px); border-bottom-width: 0; }
 
-        .btn-lg { width: 100%; max-width: 350px; padding: 16px; background: var(--green); border: none; border-bottom: 4px solid var(--green-shade); color: white; font-size: 16px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.1s; }
-        .btn-lg:active { transform: translateY(4px); border-bottom-width: 0; }
+        /* --- 2. SCENARIO SELECTION --- */
+        #scenario-screen { display: none; flex-direction: column; height: 100%; background: #fff; }
+        .sc-header { padding: 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+        .sc-title { font-size: 20px; font-weight: 800; color: #4b4b4b; }
+        .sc-grid { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
+        
+        .role-card { 
+            border: 2px solid #e5e5e5; border-radius: 16px; padding: 15px; 
+            cursor: pointer; text-align: center; background: white; 
+            transition: 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 120px;
+        }
+        .role-card:active { background: #f0f8ff; border-color: var(--blue); transform: scale(0.98); }
+        .role-icon { font-size: 35px; margin-bottom: 10px; }
+        .role-name { font-weight: 800; font-size: 13px; color: #4b4b4b; line-height: 1.2; }
 
-        /* ALERTS */
-        #warning-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--red); color: white; padding: 12px 24px; border-radius: 50px; font-weight: 800; font-size: 14px; z-index: 6000; display: none; box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4); animation: shake 0.4s; }
+        /* --- 3. CHAT SCREEN --- */
+        #chat-screen { display: none; flex-direction: column; height: 100%; }
+        
+        .top-bar { padding: 10px 15px; background: white; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .partner-info { display: flex; align-items: center; gap: 10px; }
+        .p-avatar { font-size: 28px; }
+        .p-name { font-weight: 800; font-size: 16px; color: #4b4b4b; }
+        
+        /* MINI TAGLINE IN CHAT */
+        .chat-subtext { font-size: 10px; color: #aaa; font-weight: 700; text-transform: uppercase; }
 
-        @keyframes popIn { from {opacity: 0; transform: scale(0.8);} to {opacity: 1; transform: scale(1);} }
-        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+        .score-pill { background: #fff4db; color: #d68f00; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; }
+
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
+        
+        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 16px; line-height: 1.5; font-weight: 600; position: relative; animation: popIn 0.3s; }
+        .ai { background: #f0f0f0; color: #333; border-bottom-left-radius: 4px; }
+        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+        .controls { padding: 15px; background: white; border-top: 2px solid #f0f0f0; display: flex; gap: 10px; }
+        #userInput { flex: 1; padding: 12px 15px; border: 2px solid #e5e5e5; border-radius: 20px; outline: none; font-size: 16px; font-weight: 600; }
+        #mic-btn { width: 50px; height: 50px; border-radius: 16px; background: var(--primary); border: none; color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .listening { background: #ff4b4b !important; animation: pulse 1s infinite; }
+
+        #bangla-warning { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 30px; font-weight: 800; display: none; z-index: 5000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        @keyframes popIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
         @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4);} 70% {box-shadow: 0 0 0 15px rgba(255, 75, 75, 0);} 100% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0);} }
-        @keyframes shake { 0%, 100% {transform: translateX(-50%);} 25% {transform: translateX(-55%);} 75% {transform: translateX(-45%);} }
     </style>
 </head>
 <body>
 
-<audio id="sfx-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
-<audio id="sfx-wrong" src="https://assets.mixkit.co/active_storage/sfx/2002/2002-preview.mp3"></audio>
-<audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="snd-msg" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
+<div id="bangla-warning">🚫 English Only Please!</div>
 
-<div id="warning-toast">🚫 Speak in English Please!</div>
-
-<div id="setup-screen">
-    <div class="mascot-lg">🦉</div>
-    <div class="title-lg">Talk24AI Setup</div>
+<div id="home-screen">
+    <div class="brand">Talk24AI</div>
     
-    <div class="form-group">
-        <label class="label">Your Age</label>
-        <input type="number" id="userAge" class="input-lg" value="12" inputmode="numeric">
+    <div class="main-tagline">
+        No Partner to Practice? <br>
+        Meet Talk24AI: Your 24/7 Spoken English Mate.
     </div>
     
-    <div class="form-group">
-        <label class="label">Gender</label>
-        <select id="userGender" class="input-lg">
-            <option value="Boy">Boy</option>
-            <option value="Girl">Girl</option>
+    <div class="input-group">
+        <input type="number" id="age" class="p-input" placeholder="Enter Age" value="20">
+    </div>
+    
+    <div class="input-group">
+        <select id="gender" class="p-input">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
         </select>
     </div>
 
-    <button class="btn-lg" onclick="initApp()">START PLACEMENT TEST</button>
+    <button class="btn-start" onclick="showScenarios()">START SPEAKING</button>
 </div>
 
-<div class="header">
-    <div class="brand">talk24</div>
-    <div class="stats-row">
-        <div class="stat-pill fire">🔥 <span id="streak">0</span></div>
-        <div class="stat-pill gem">💎 <span id="gems">0</span></div>
+<div id="scenario-screen">
+    <div class="sc-header">
+        <div class="sc-title">Choose Your Partner</div>
+        <div style="font-size:11px; color:#aaa; font-weight:800; text-transform:uppercase; margin-top:5px;">Your 24/7 Practice Mate</div>
     </div>
+    <div class="sc-grid" id="role-grid"></div>
 </div>
 
-<div class="quest-container">
-    <div class="quest-icon">🎯</div>
-    <div class="quest-details">
-        <div class="quest-label">DAILY GOAL</div>
-        <div class="quest-target" id="quest-text">Complete Placement Test</div>
-        <div class="progress-track">
-            <div class="progress-fill" id="quest-fill"></div>
+<div id="chat-screen">
+    <div class="top-bar">
+        <div class="partner-info">
+            <div class="p-avatar" id="p-icon">🤖</div>
+            <div>
+                <div class="p-name" id="p-name">Partner</div>
+                <div class="chat-subtext">24/7 Spoken Mate</div>
+            </div>
         </div>
+        <div class="score-pill">⭐ <span id="score">0</span></div>
     </div>
-</div>
 
-<div id="chat-box"></div>
+    <div id="messages"></div>
 
-<div class="controls">
-    <input type="text" id="userInput" placeholder="Type here..." onkeypress="handleEnter(event)">
-    <button id="mic-btn" onclick="toggleMic()">🎤</button>
+    <div class="controls">
+        <input type="text" id="userInput" placeholder="Type here..." onkeypress="handleEnter(event)">
+        <button id="mic-btn" onclick="toggleMic()">🎤</button>
+    </div>
 </div>
 
 <script>
-    // --- APP STATE (Neuromarketing Core) ---
-    let state = {
-        age: 12,
-        gender: 'Boy',
-        level: 'Placement', // Placement -> A1 -> A2...
-        xp: 0,
-        streak: 1,
-        quest: { current: 0, target: 1 },
-        persona: 'Default'
+    // --- Scenarios Data ---
+    const scenarios = {
+        junior: [
+            { name: "Islamic Storyteller", icon: "🕌", prompt: "You are a gentle Storyteller. Tell inspiring stories about brave Heroes of Islam (like Khalid bin Walid, Ali RA) or Prophets. Keep it simple and exciting for a child. Ask them what they would do in that situation." },
+            { name: "Best Friend", icon: "🏸", prompt: "You are a best friend at a playground in Bangladesh. Talk about cricket, hide-and-seek, or toys." },
+            { name: "English Teacher", icon: "👩‍🏫", prompt: "You are a kind English Teacher. Ask simple questions about their day/school and correct them gently." },
+            { name: "Shopkeeper", icon: "🍫", prompt: "You own a candy shop. The user wants to buy chocolate. Ask what they want." },
+            { name: "Big Sister", icon: "👧", prompt: "You are a caring big sister helping with homework. Be very supportive." },
+            { name: "Pet Doctor", icon: "🐱", prompt: "You are a Vet. The user brought a sick kitten. Ask what happened." },
+            { name: "Bus Driver", icon: "🚌", prompt: "You drive the school bus. Ask the user if they are ready for school." },
+            { name: "Pizza Chef", icon: "🍕", prompt: "You make pizza. Ask the user what toppings they want." },
+            { name: "Robot Buddy", icon: "🤖", prompt: "You are a friendly robot. Ask the user about humans." },
+            { name: "Gardener", icon: "🌻", prompt: "You are planting flowers. Ask the user to help you." }
+        ],
+        senior: [
+            { name: "History Explorer", icon: "📜", prompt: "You are an expert on Islamic History. Discuss the Golden Age of Islam, scientific inventions, or history of Mecca/Madina. Be informative." },
+            { name: "Job Interviewer", icon: "💼", prompt: "You are a Hiring Manager. Start the interview immediately. Ask 'Tell me about yourself'." },
+            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "You are an IELTS Speaking Examiner. Start Part 1 immediately. Be formal." },
+            { name: "Visa Officer", icon: "✈️", prompt: "You are a Visa Officer. Ask 'What is the purpose of your visit?' directly." },
+            { name: "Foreign Friend", icon: "🌏", prompt: "You are a tourist visiting Bangladesh. Ask the user about their beautiful country and culture." },
+            { name: "Customer Support", icon: "🎧", prompt: "You are support agent. The user has an internet issue. Ask for details." },
+            { name: "Doctor", icon: "🩺", prompt: "You are a Doctor. The user is a patient. Ask 'What seems to be the problem?'." },
+            { name: "Hotel Reception", icon: "🏨", prompt: "You are a Hotel Receptionist. The user wants to check in. Ask for their ID." },
+            { name: "Gym Trainer", icon: "💪", prompt: "You are a Fitness Coach. Ask the user about their fitness goals." },
+            { name: "Restaurant Waiter", icon: "🍽️", prompt: "You are a waiter. Ask 'Are you ready to order?'." }
+        ]
     };
-    
+
+    let state = { age: 20, gender: 'Male', currentRole: null, score: 0 };
     let voices = [];
     let isMicOn = false;
 
-    // --- INITIALIZATION ---
-    function initApp() {
-        state.age = document.getElementById('userAge').value;
-        state.gender = document.getElementById('userGender').value;
-        
-        // UI Transition
-        document.getElementById('setup-screen').style.display = 'none';
-        
-        // Determine Initial Persona based on Age
-        configurePersona();
-        
-        // Start Placement
-        setTimeout(() => {
-            botSay(`Hi! I'm your AI Buddy. Let's find your English level.`);
-            setTimeout(() => {
-                renderQuiz("Fill in the blank: The bird is _____ in the sky.", ["Flying", "Flys", "Fly"], "Flying");
-            }, 1000);
-        }, 500);
-    }
-
-    // --- LOGIC: PERSONA ENGINE ---
-    function configurePersona() {
-        const root = document.documentElement;
-        if(state.age <= 9) {
-            state.persona = "Junior Buddy"; // Fun, Simple, High Pitch
-            root.style.setProperty('--green', '#ffc800'); // Yellow Theme
-            root.style.setProperty('--green-shade', '#e5b400');
-        } else if(state.age <= 14) {
-            state.persona = "Gaming Coach"; // Cool, Energetic
-            root.style.setProperty('--green', '#1cb0f6'); // Blue Theme
-            root.style.setProperty('--green-shade', '#1899d6');
-        } else {
-            state.persona = "Pro Mentor"; // Professional, Deep Voice
-            root.style.setProperty('--green', '#58cc02'); // Classic Green
-        }
-    }
-
-    // --- UI: CHAT BUBBLES ---
-    function botSay(text) {
-        const chat = document.getElementById('chat-box');
-        chat.innerHTML += `<div class="bubble ai">${text}</div>`;
-        chat.scrollTop = chat.scrollHeight;
-        speak(text);
-    }
-
-    function userSay(text) {
-        const chat = document.getElementById('chat-box');
-        chat.innerHTML += `<div class="bubble user">${text}</div>`;
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    // --- UI: INTERACTIVE QUIZ (Duolingo Style) ---
-    function renderQuiz(question, options, answer) {
-        const chat = document.getElementById('chat-box');
-        const id = Date.now();
-        
-        let html = `
-        <div class="bubble ai" id="q-${id}">
-            <div style="margin-bottom:8px">${question}</div>
-            <div class="chips-container">
-        `;
-        
-        options.forEach(opt => {
-            html += `<div class="chip" onclick="handleQuizClick(this, '${opt}', '${answer}', '${id}')">${opt}</div>`;
+    function showScenarios() {
+        state.age = document.getElementById('age').value;
+        state.gender = document.getElementById('gender').value;
+        const list = (state.age < 13) ? scenarios.junior : scenarios.senior;
+        const grid = document.getElementById('role-grid');
+        grid.innerHTML = ''; 
+        list.forEach(role => {
+            const div = document.createElement('div');
+            div.className = 'role-card';
+            div.innerHTML = `<div class="role-icon">${role.icon}</div><div class="role-name">${role.name}</div>`;
+            div.onclick = () => startChat(role);
+            grid.appendChild(div);
         });
-        
-        html += `</div></div>`;
-        chat.innerHTML += html;
-        chat.scrollTop = chat.scrollHeight;
-        speak(question);
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('scenario-screen').style.display = 'flex';
     }
 
-    function handleQuizClick(el, selected, correct, id) {
-        const parent = document.getElementById(`q-${id}`);
-        if(parent.classList.contains('done')) return; // Prevent double click
-        parent.classList.add('done');
-
-        if(selected === correct) {
-            el.classList.add('correct');
-            document.getElementById('sfx-correct').play();
-            updateProgress(true);
-            
-            // Logic: End Placement
-            if(state.level === 'Placement') {
-                state.level = 'A1';
-                setTimeout(() => {
-                    botSay("Awesome! You are Level A1. Introduce yourself!");
-                    updateQuestUI("Introduce yourself", 0, 1);
-                }, 1500);
-            } else {
-                // Continue Conversation
-                callAI(`User answered correctly: ${selected}. Continue topic.`);
-            }
-        } else {
-            el.classList.add('wrong');
-            document.getElementById('sfx-wrong').play();
-            setTimeout(() => botSay(`Oops! The correct answer was: ${correct}`), 1000);
-        }
+    function startChat(role) {
+        state.currentRole = role;
+        document.getElementById('p-icon').innerText = role.icon;
+        document.getElementById('p-name').innerText = role.name;
+        document.getElementById('scenario-screen').style.display = 'none';
+        document.getElementById('chat-screen').style.display = 'flex';
+        triggerAIStart();
     }
 
-    // --- LOGIC: PROGRESS & REWARDS ---
-    function updateProgress(success) {
-        if(success) {
-            state.quest.current++;
-            const pct = (state.quest.current / state.quest.target) * 100;
-            document.getElementById('quest-fill').style.width = pct + '%';
-            
-            state.xp += 10;
-            document.getElementById('gems').innerText = state.xp;
-            
-            if(state.quest.current >= state.quest.target) {
-                document.getElementById('sfx-win').play();
-                // Reset Quest Loop
-                setTimeout(() => {
-                    updateQuestUI("Speak 5 Sentences", 0, 5);
-                }, 2000);
-            }
-        }
+    async function triggerAIStart() {
+        const startPayload = {
+            message: "START_SESSION",
+            email: 'guest',
+            systemInstruction: `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. INSTRUCTION: Start conversation IMMEDIATELY. CONSTRAINT: No conflicting with Islam/Iman. You are a Bangladeshi AI.`
+        };
+        callAPI(startPayload);
     }
 
-    function updateQuestUI(text, cur, tar) {
-        state.quest.current = cur;
-        state.quest.target = tar;
-        document.getElementById('quest-text').innerText = text;
-        document.getElementById('quest-fill').style.width = '0%';
-    }
-
-    // --- LOGIC: AI BRAIN (Hybrid) ---
-    async function callAI(input) {
-        // 1. Guardrail: Bangla Filter
-        if(/[\u0980-\u09FF]/.test(input)) {
-            showWarning();
+    async function sendToAI(text) {
+        if(/[\u0980-\u09FF]/.test(text)) {
+            document.getElementById('bangla-warning').style.display = 'block';
+            setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
             return;
         }
+        addUserMsg(text);
+        document.getElementById('userInput').value = '';
+        const systemPrompt = `ACT AS: ${state.currentRole.name}. RULES: 1. No conflict with Islam. 2. Bangladeshi AI context. 3. Formula: Acknowledge->Correct->Praise->HOOK QUESTION. 4. English Only.`;
+        callAPI({ message: text, email: 'guest', systemInstruction: systemPrompt });
+    }
 
-        // 2. Persona Prompting
-        let sysPrompt = "";
-        if(state.persona === "Junior Buddy") {
-            sysPrompt = "Role: Friendly Cartoon Character. Tone: Super happy, simple words. Rule: Use emojis.";
-        } else if(state.persona === "Gaming Coach") {
-            sysPrompt = "Role: Esports Coach. Tone: Cool, energetic. Rule: Use gaming slang (XP, Level up).";
-        } else {
-            sysPrompt = "Role: Professional Tutor. Tone: Logical, Polite. Rule: Correct grammar subtly.";
-        }
-        
-        sysPrompt += ` User Age: ${state.age}. Level: ${state.level}. STRICT RULE: English Only. No Bangla. No Goodbye. Keep asking questions.`;
-
+    async function callAPI(payload) {
         try {
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ message: input, email: 'guest', systemInstruction: sysPrompt })
-            });
+            const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
-            
-            // 3. Response Cleaning
             let reply = data.reply.replace(/[\u0980-\u09FF].*/g, '').trim(); 
-            if(reply.length < 2) reply = "Can you say that in English?";
-            
-            botSay(reply);
-            
+            addAiMsg(reply);
         } catch (e) { console.error(e); }
     }
 
-    // --- UTILS ---
-    function handleEnter(e) {
-        if(e.key === 'Enter') {
-            const txt = e.target.value;
-            if(txt) {
-                userSay(txt);
-                callAI(txt);
-                e.target.value = '';
-            }
-        }
+    function addAiMsg(text) {
+        const div = document.createElement('div'); div.className = 'bubble ai'; div.innerText = text;
+        document.getElementById('messages').appendChild(div); scrollToBottom(); speak(text);
     }
 
-    function showWarning() {
-        const w = document.getElementById('warning-toast');
-        w.style.display = 'block';
-        setTimeout(() => w.style.display = 'none', 3000);
+    function addUserMsg(text) {
+        const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text;
+        document.getElementById('messages').appendChild(div); scrollToBottom();
+        state.score += 10; document.getElementById('score').innerText = state.score;
+        document.getElementById('snd-msg').play().catch(e=>{});
     }
 
-    // --- VOICE OUTPUT (TTS) ---
+    function scrollToBottom() { const box = document.getElementById('messages'); box.scrollTop = box.scrollHeight; }
+
+    function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
+
     window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
-    
     function speak(text) {
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
-        
-        // Voice Selection Logic
         if(voices.length > 0) {
-            if(state.age <= 9) {
-                // Female/High pitch for kids
-                utter.voice = voices.find(v => v.name.includes("Female")) || voices[0];
-                utter.pitch = 1.2; 
-                utter.rate = 0.9;
-            } else {
-                // Male/Deep pitch for adults
-                utter.voice = voices.find(v => v.name.includes("Male")) || voices[0];
-                utter.pitch = 0.9;
-                utter.rate = 1.05;
-            }
+            let v = (state.age < 13) ? voices.find(v => v.name.includes("Female")) : voices.find(v => v.name.includes("Male"));
+            utter.voice = v || voices[0];
+            utter.rate = (state.age < 13) ? 0.9 : 1.0;
         }
         window.speechSynthesis.speak(utter);
     }
 
-    // --- VOICE INPUT (STT) ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    
+    const recognition = new SpeechRecognition(); recognition.lang = 'en-US';
     function toggleMic() {
-        if(!isMicOn) {
-            recognition.start();
-            document.querySelector('.controls').classList.add('listening');
-            isMicOn = true;
-        } else {
-            recognition.stop();
-            document.querySelector('.controls').classList.remove('listening');
-            isMicOn = false;
-        }
+        if(!isMicOn) { recognition.start(); document.getElementById('mic-btn').classList.add('listening'); isMicOn = true; }
+        else { recognition.stop(); document.getElementById('mic-btn').classList.remove('listening'); isMicOn = false; }
     }
-    recognition.onresult = (e) => {
-        const txt = e.results[0][0].transcript;
-        document.getElementById('userInput').value = txt;
-        userSay(txt);
-        callAI(txt);
-        toggleMic();
-    };
-
+    recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); toggleMic(); };
 </script>
 </body>
 </html>
