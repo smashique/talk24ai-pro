@@ -36,6 +36,7 @@
             text-align: center; transition: opacity 0.5s ease-out;
         }
         .welcome-logo { font-size: 42px; font-weight: 800; margin-bottom: 5px; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .welcome-logo span { color: #81c784; }
         .welcome-sub { font-size: 16px; margin-bottom: 50px; opacity: 0.95; font-weight: 500; }
         .start-btn {
             background: white; color: #1b5e20; border: none;
@@ -111,25 +112,4 @@
             position: absolute; right: 25px; bottom: 40px; 
             width: 40px; height: 40px; background: white; border-radius: 50%; 
             box-shadow: 0 3px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; color: #555; font-size: 18px;
-        }
-
-        .text-mode { 
-            display: none; width: 90%; background: white; padding: 5px; 
-            border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
-            align-items: center; margin-bottom: 20px;
-        }
-        #userInput { flex: 1; border: none; padding: 12px 20px; outline: none; font-size: 16px; border-radius: 30px; }
-        #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; animation: popUp 0.3s ease-out; }
-        .modal-btn { background: #1b5e20; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 15px; margin-top: 20px; cursor: pointer; font-weight: 600; }
-        
-        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
-
-        #install-btn { display: none; background: #ff9800; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; }
-    </style>
-</head>
-<body>
+            cursor: pointer; color: #555; font-size: 1
