@@ -11,6 +11,16 @@
     <style>
         /* Base Design */
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Warning Toast */
+        #bangla-warning {
+            position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+            background: #d32f2f; color: white; padding: 8px 20px; border-radius: 30px;
+            font-size: 13px; font-weight: bold; display: none; z-index: 4000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: slideDown 0.3s;
+        }
+        @keyframes slideDown { from {top: -50px;} to {top: 60px;} }
+
         #pc-warning { background: #fff3cd; color: #856404; padding: 12px; text-align: center; display: none; z-index: 5000; }
 
         /* Welcome Screen */
@@ -19,7 +29,7 @@
         .welcome-logo span { color: #81c784; }
         .start-btn { background: white; color: #1b5e20; border: none; padding: 16px 45px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
 
-        /* Header & Install Button */
+        /* Header */
         .header { background: white; color: #1b5e20; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; }
         .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: #4caf50; }
@@ -34,7 +44,7 @@
         .user { background: #1b5e20; align-self: flex-end; color: white; border-bottom-right-radius: 5px; }
         .system-notif { align-self: center; background: #e3f2fd; color: #0d47a1; font-size: 12px; padding: 8px 15px; border-radius: 12px; margin: 10px 0; font-weight: 600; }
 
-        /* Footer Controls */
+        /* Controls */
         .suggestions-box { position: fixed; bottom: 130px; left: 0; width: 100%; display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; z-index: 15; }
         .chip { background: white; border: 1px solid #4caf50; color: #1b5e20; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0; }
         
@@ -60,6 +70,8 @@
     🎧 Please use <b>Chrome or Safari</b> on mobile.
     <span onclick="this.parentElement.style.display='none'" style="cursor:pointer; margin-left:10px;">✖</span>
 </div>
+
+<div id="bangla-warning">⚠️ Brother, English Only!</div>
 
 <div id="welcome-screen">
     <div class="welcome-logo">TALK<span>24</span>AI</div>
@@ -99,7 +111,7 @@
 </div>
 
 <script>
-    // --- APP LOGIC ---
+    // --- PWA LOGIC ---
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
@@ -109,14 +121,13 @@
             const { outcome } = await deferredPrompt.userChoice;
             if(outcome === 'accepted') installBtn.innerText = "✅ INSTALLED";
             deferredPrompt = null;
-        } else { alert("Brother, check your browser menu to install."); }
+        } else { alert("Brother, check browser menu to install."); }
     });
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
     // --- PERSONA: DR ZAKIR NAIK ---
     const welcomeMsg = "As-salamu Alaykum. I am your English Ustad. Brother, today we shall master English with logic. What topic would you like to start with?";
     
-    // Initial Suggestions
     const suggestions = [
         "💼 Job Interview",
         "🗣️ Fluency Practice",
@@ -127,19 +138,27 @@
     let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
     let isGuest = true;
     let timerActive = false; 
-    let msgCount = 0; // Counts messages for 5-message rule
+    let msgCount = 0; 
     
-    // Voice Loading Fix
     let voices = [];
     window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
 
-    // Timer Function
+    // --- INPUT VALIDATION (STEVE'S FEEDBACK) ---
+    document.getElementById('userInput').addEventListener('input', function(e) {
+        // Check for Bangla Characters
+        if(/[\u0980-\u09FF]/.test(e.target.value)) {
+            document.getElementById('bangla-warning').style.display = 'block';
+            setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
+        }
+    });
+
+    // Timer Logic
     function checkLockStatus() {
         const lockTimestamp = localStorage.getItem('guestLockTime');
         if (lockTimestamp) {
             const now = new Date().getTime();
             if ((now - lockTimestamp) < 24 * 60 * 60 * 1000) {
-                document.getElementById('timer-lock-msg').innerText = "Brother, please come back tomorrow.";
+                document.getElementById('timer-lock-msg').innerText = "Brother, come back tomorrow.";
                 showLoginModal();
                 document.querySelector('.voice-controls').style.display = 'none';
                 return true;
@@ -222,9 +241,17 @@
         recognition.onresult = (event) => sendToAI(event.results[0][0].transcript);
     }
 
-    // --- AI COMMUNICATION WITH FILTERS ---
+    // --- AI COMMUNICATION (COUNCIL APPROVED PROMPT) ---
     async function sendToAI(text) {
         if(!text) return;
+        
+        // Client-side Bangla Check (Save API Cost)
+        if(/[\u0980-\u09FF]/.test(text)) {
+             document.getElementById('bangla-warning').style.display = 'block';
+             setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
+             return; // Stop function, don't send to backend
+        }
+
         msgCount++;
         timerActive = true; 
         document.getElementById('suggestion-area').style.display = 'none';
@@ -232,12 +259,13 @@
         box.innerHTML += `<div class="msg user">${text}</div>`;
         box.scrollTop = box.scrollHeight;
 
-        // Custom Prompt Logic for Engagement
-        let systemPrompt = "You are Dr. Zakir Naik acting as an English Tutor. SPEAK ONLY ENGLISH. Voice tone: Authoritative, Logical. ";
+        // Dynamic System Prompt
+        let systemPrompt = "IDENTITY: You are Dr. Zakir Naik acting as an English Tutor. \nRULES:\n1. SPEAK ONLY ENGLISH.\n2. VOICE: Authoritative, Logical.\n3. LOGIC: Explain the REASON behind every correction.\n4. FLOW: Do NOT say goodbye.";
+        
         if(msgCount % 5 === 0) {
-            systemPrompt += " We have covered this topic. Suggest a NEW topic to the user now.";
+            systemPrompt += " We have logically concluded this topic. Say 'Brother, we have covered this.' and IMMEDIATELY suggest a NEW topic.";
         } else {
-            systemPrompt += " Do NOT say goodbye. Ask a follow-up question to test the user's understanding.";
+            systemPrompt += " Keep user engaged with a follow-up question.";
         }
 
         try {
@@ -253,11 +281,8 @@
             });
             const data = await res.json();
             
-            // --- CRITICAL FIX: REMOVE BANGLA TEXT ---
-            // এই লাইনটি ব্যাকএন্ড থেকে আসা যেকোনো বাংলা অক্ষর মুছে ফেলবে
+            // Double Filter (Safety Net)
             let cleanReply = data.reply.replace(/[\u0980-\u09FF]/g, '').trim(); 
-            
-            // যদি ভুল করে শুধু বাংলা আসতো, তবে খালি মেসেজ যেন না দেখায়
             if(cleanReply.length === 0) cleanReply = "Brother, please repeat your question in English.";
 
             box.innerHTML += `<div class="msg ai">${cleanReply}</div>`;
@@ -290,14 +315,12 @@
             const utter = new SpeechSynthesisUtterance(sentence);
             if(voices.length === 0) voices = synth.getVoices();
 
-            // Force Male Voice (UK or India preferred for Zakir Naik style)
             let ustadVoice = voices.find(v => (v.name.includes("Male") && v.lang.includes("en"))) || 
                              voices.find(v => v.lang.includes("en-GB")) || 
                              voices.find(v => v.lang.includes("en-IN"));
 
             if(ustadVoice) {
                 utter.voice = ustadVoice;
-                // Pitch কমিয়ে ভয়েস ভারী করা হলো
                 utter.pitch = 0.8; 
                 utter.rate = 1.1; 
             }
