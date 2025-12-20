@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk24Ai | English Ustad</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Base Styles --- */
+        body { font-family: 'Poppins', 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        #pc-warning {
+            background: #fff3cd; color: #856404; padding: 12px;
+            text-align: center; font-size: 14px; font-weight: 600;
+            border-bottom: 1px solid #ffeeba; display: none;
+            animation: slideDown 0.5s ease-out; z-index: 5000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        @keyframes slideDown { from {transform: translateY(-100%);} to {transform: translateY(0);} }
+
+        /* --- WELCOME SCREEN --- */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1b5e20, #4caf50);
+            z-index: 3000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white;
+            text-align: center; transition: opacity 0.5s ease-out;
+        }
+        .welcome-logo { font-size: 42px; font-weight: 800; margin-bottom: 5px; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .welcome-sub { font-size: 16px; margin-bottom: 50px; opacity: 0.95; font-weight: 500; }
+        .start-btn {
+            background: white; color: #1b5e20; border: none;
+            padding: 16px 45px; border-radius: 50px; font-size: 18px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 10px;
+        }
+        .start-btn:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+
+        .header { background: white; color: #1b5e20; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 800; color: #1b5e20; }
+        .logo span { color: #4caf50; }
+        
+        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; border-bottom: 1px solid #ffe0b2; transition: 0.3s; }
+        .shake-anim { animation: shake 0.5s; background: #ffccbc !important; color: #d32f2f !important; }
+
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 200px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
+        .ai { background: white; align-self: flex-start; color: #333; border-bottom-left-radius: 5px; border: 1px solid #eee; }
+        .user { background: #1b5e20; align-self: flex-end; color: white; border-bottom-right-radius: 5px; }
+        
+        .system-notif { align-self: center; background: #e3f2fd; color: #0d47a1; font-size: 12px; padding: 8px 15px; border-radius: 12px; margin: 10px 0; font-weight: 600; text-align: center; border: 1px solid #bbdefb; }
+
+        .suggestions-box {
+            position: fixed; bottom: 130px; left: 0; width: 100%;
+            display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px;
+            white-space: nowrap; scrollbar-width: none; z-index: 15;
+            -ms-overflow-style: none; 
+        }
+        .suggestions-box::-webkit-scrollbar { display: none; }
+
+        .chip {
+            background: white; border: 1px solid #4caf50; color: #1b5e20;
+            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        .chip:hover { background: #e8f5e9; transform: translateY(-2px); }
+
+        .voice-controls { 
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: linear-gradient(to top, #f0f2f5 85%, rgba(240,242,245,0)); 
+            padding: 10px 0 30px 0; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 20;
+        }
+
+        .mic-wrapper { position: relative; width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; }
+        
+        #mic-btn { 
+            width: 65px; height: 65px; border-radius: 50%; border: none; 
+            background: #1b5e20; color: white; font-size: 28px; 
+            cursor: pointer; box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3); 
+            transition: 0.3s; z-index: 2; display: flex; align-items: center; justify-content: center;
+        }
+
+        .ripple {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            background: rgba(76, 175, 80, 0.4); z-index: 1; opacity: 0;
+        }
+        .listening .ripple { animation: ripple-anim 1.5s infinite; }
+        .listening #mic-btn { background: #e53935; }
+
+        @keyframes ripple-anim { 
+            0% { transform: scale(1); opacity: 0.6; } 
+            100% { transform: scale(2.2); opacity: 0; } 
+        }
+
+        .hint-text { font-size: 12px; color: #666; font-weight: 500; }
+
+        .toggle-kb { 
+            position: absolute; right: 25px; bottom: 40px; 
+            width: 40px; height: 40px; background: white; border-radius: 50%; 
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; color: #555; font-size: 18px;
+        }
+
+        .text-mode { 
+            display: none; width: 90%; background: white; padding: 5px; 
+            border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+            align-items: center; margin-bottom: 20px;
+        }
+        #userInput { flex: 1; border: none; padding: 12px 20px; outline: none; font-size: 16px; border-radius: 30px; }
+        #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; animation: popUp 0.3s ease-out; }
+        .modal-btn { background: #1b5e20; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 15px; margin-top: 20px; cursor: pointer; font-weight: 600; }
+        
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+
+        #install-btn { display: none; background: #ff9800; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="pc-warning">
+    🎧 ভালো সাউন্ডের জন্য এটি <b>মোবাইল ব্রাউজার (Chrome/Safari)</b> দিয়ে ওপেন করুন।
+    <span onclick="this.parentElement.style.display='none'" style="cursor:pointer; margin-left:10px;">✖</span>
+</div>
+
+<div id="welcome-screen">
+    <div class="welcome-logo">TALK<span>24</span>AI</div>
+    <div class="welcome-sub">👔 English Ustad - Your AI Mentor</div>
+    <button class="start-btn" onclick="enterClassroom()">
+        <span>▶</span> Start Class
+    </button>
+</div>
+
+<div id="login-modal">
+    <div class="modal-content">
+        <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ সময় শেষ!</h2>
+        <p style="color:#555; font-size:14px; line-height:1.5;">ওস্তাদের সাথে আনলিমিটেড কথা বলতে এবং প্রোগ্রেস সেভ করতে লগইন করুন।</p>
+        <button class="modal-btn" onclick="googleLogin()">G Continue with Google</button>
+        <p id="timer-lock-msg" style="font-size: 11px; color: #d32f2f; margin-top: 15px;"></p>
+    </div>
+</div>
+
+<div class="header">
+    <div class="logo">TALK<span>24</span>AI</div>
+    <button id="install-btn">📲 INSTALL</button>
+</div>
+
+<div id="guest-timer">ফ্রি ট্রায়াল: ২:০০ মিনিট বাকি</div>
+
+<div id="chat-box"></div>
+
+<div id="suggestion-area" class="suggestions-box" style="display: none;"></div>
+
+<div class="voice-controls">
+    <div class="text-mode" id="text-area">
+        <input type="text" id="userInput" placeholder="Type here...">
+        <button onclick="sendText()" id="send-btn">➤</button>
+        <button onclick="toggleInput()" style="background:none; border:none; color:#666; margin-right:10px; cursor:pointer;">✖</button>
+    </div>
+
+    <div id="mic-container" style="display: flex; flex-direction: column; align-items: center;">
+        <div class="mic-wrapper" id="mic-wrapper">
+            <div class="ripple"></div>
+            <button id="mic-btn">🎤</button>
+        </div>
+        <div class="hint-text" id="hint-text">Tap to Speak</div>
+    </div>
+
+    <div class="toggle-kb" id="kb-btn" onclick="toggleInput()">⌨️</div>
+</div>
+
+<script>
+    const welcomeMsg = "Assalamu Alaikum! আমি English Ustad. বলো, আজ কী নিয়ে প্র্যাকটিস করতে চাও?";
+    let voicesLoaded = false;
+    let hasWarnedPC = false;
+
+    const suggestions = [
+        "💼 Job Interview Practice",
+        "🗣️ Daily English Sentences",
+        "📝 Check my Grammar",
+        "✈️ Travel Conversation",
+        "🩺 Talk to a Doctor",
+        "🛒 Shopping Conversation"
+    ];
+
+    // --- SMART TIMER & LOCK LOGIC ---
+    let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
+    let isGuest = true;
+    let timerActive = false; // চ্যাট বা ভয়েস দিলে True হবে
+    const timerDisplay = document.getElementById('guest-timer');
+
+    function checkLockStatus() {
+        const lockTimestamp = localStorage.getItem('guestLockTime');
+        if (lockTimestamp) {
+            const now = new Date().getTime();
+            const hoursPassed = (now - lockTimestamp) / (1000 * 60 * 60);
+            if (hoursPassed < 24) {
+                const hoursLeft = Math.ceil(24 - hoursPassed);
+                document.getElementById('timer-lock-msg').innerText = `আবার গেস্ট হিসেবে কথা বলতে ${hoursLeft} ঘণ্টা অপেক্ষা করুন।`;
+                showLoginModal();
+                document.querySelector('.voice-controls').style.display = 'none';
+                return true;
+            } else {
+                localStorage.removeItem('guestLockTime');
+                localStorage.setItem('guestTimeLeft', 120);
+                timeLeft = 120;
+            }
+        }
+        return false;
+    }
+
+    window.onload = () => {
+        if(!checkLockStatus()){
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (!isMobile) document.getElementById('pc-warning').style.display = 'block';
+        }
+    };
+
+    function updateTimerDisplay() {
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        timerDisplay.innerText = `ফ্রি ট্রায়াল: ${m}:${s < 10 ? '0'+s : s} মিনিট`;
+        if (timeLeft < 30) timerDisplay.classList.add('shake-anim');
+    }
+    updateTimerDisplay();
+
+    const timerInterval = setInterval(() => {
+        if(isGuest && timerActive && timeLeft > 0) {
+            timeLeft--;
+            localStorage.setItem('guestTimeLeft', timeLeft);
+            updateTimerDisplay();
+            
+            if(timeLeft === 60) showSystemNotification("Talk24Ai Official", "আপনার ১ মিনিট সময় বাকি আছে। English Ustad এর সাথে কন্টিনিউ করতে লগইন করুন।");
+            
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                localStorage.setItem('guestLockTime', new Date().getTime());
+                showLoginModal();
+                document.querySelector('.voice-controls').style.display = 'none';
+                document.querySelector('.suggestions-box').style.display = 'none';
+            }
+        }
+    }, 1000);
+
+    // --- CORE FUNCTIONS ---
+    function enterClassroom() {
+        if(checkLockStatus()) return;
+        window.speechSynthesis.resume();
+        const screen = document.getElementById('welcome-screen');
+        screen.style.opacity = '0';
+        setTimeout(() => { 
+            screen.style.display = 'none'; 
+            const box = document.getElementById('chat-box');
+            box.innerHTML += `<div class="msg ai">${welcomeMsg}</div>`;
+            speak(welcomeMsg);
+            renderSuggestions();
+            setTimeout(() => showSystemNotification("Talk24Ai Official", "English Ustad আপনার গাইড। আপনার ভুলগুলো সে কড়াভাবে ধরিয়ে দেবে।"), 3000);
+        }, 500);
+    }
+
+    function renderSuggestions() {
+        const area = document.getElementById('suggestion-area');
+        area.style.display = 'flex';
+        area.innerHTML = ''; 
+        suggestions.forEach(topic => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.innerText = topic;
+            chip.onclick = () => {
+                sendToAI(topic);
+                area.style.display = 'none';
+            };
+            area.appendChild(chip);
+        });
+    }
+
+    const micBtn = document.getElementById('mic-btn');
+    const micWrapper = document.getElementById('mic-wrapper');
+    const hintText = document.getElementById('hint-text');
+    let isListening = false;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        micBtn.onclick = () => { isListening ? recognition.stop() : recognition.start(); };
+        recognition.onstart = () => { 
+            isListening = true; micWrapper.classList.add('listening'); 
+            micBtn.innerText = '⬛'; hintText.innerText = "Listening..."; 
+            timerActive = true; // কথা বলা শুরু করলে টাইমার চলবে
+        };
+        recognition.onend = () => { isListening = false; micWrapper.classList.remove('listening'); micBtn.innerText = '🎤'; hintText.innerText = "Tap to Speak"; };
+        recognition.onresult = (event) => sendToAI(event.results[0][0].transcript);
+    }
+
+    async function sendToAI(text) {
+        if(!text) return;
+        timerActive = true; // মেসেজ পাঠালেও টাইমার চলবে
+        document.getElementById('suggestion-area').style.display = 'none';
+        const box = document.getElementById('chat-box');
+        box.innerHTML += `<div class="msg user">${text}</div>`;
+        box.scrollTop = box.scrollHeight;
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ message: text, isGuest: isGuest, email: 'guest@talk24ai.xyz' })
+            });
+            const data = await res.json();
+            box.innerHTML += `<div class="msg ai">${data.reply}</div>`;
+            box.scrollTop = box.scrollHeight;
+            speak(data.reply);
+            timerActive = false; // AI রিপ্লাই দেওয়ার পর টাইমার পজ
+        } catch (e) { console.error(e); timerActive = false; }
+    }
+
+    function sendText() { const t = document.getElementById('userInput').value; if(t){ sendToAI(t); document.getElementById('userInput').value = ""; toggleInput(); }}
+    function toggleInput() {
+        const t = document.getElementById('text-area'), m = document.getElementById('mic-container'), k = document.getElementById('kb-btn');
+        if(t.style.display==='flex'){t.style.display='none';m.style.display='flex';k.style.display='flex';}
+        else{t.style.display='flex';m.style.display='none';k.style.display='none';document.getElementById('userInput').focus();}
+    }
+
+    function showSystemNotification(sender, msg) { 
+        document.getElementById('chat-box').innerHTML += `<div class="system-notif"><b>${sender}:</b> ${msg}</div>`; 
+        document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight; 
+    }
+
+    function speak(text) {
+        const synth = window.speechSynthesis;
+        if(synth.speaking) synth.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        let voices = synth.getVoices();
+        let ustadVoice = voices.find(v => v.lang.includes('bn'));
+        if(ustadVoice) {
+            utter.voice = ustadVoice;
+            utter.pitch = ustadVoice.name.includes('Female') ? 0.6 : 0.8;
+        } else {
+            utter.pitch = 0.7; 
+        }
+        utter.rate = 1.0;
+        synth.speak(utter);
+    }
+
+    function showLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
+    function googleLogin() { alert("Google Login API setup coming soon!"); }
+</script>
+</body>
+</html>
