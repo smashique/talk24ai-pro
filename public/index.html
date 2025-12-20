@@ -12,14 +12,40 @@
         /* Base Design */
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Warning Toast */
+        /* Stats Bar (Gamification) */
+        #stats-bar {
+            background: white; padding: 5px 15px 10px 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 9;
+        }
+        .level-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1b5e20; margin-bottom: 5px; }
+        .progress-container { width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4caf50, #81c784); width: 0%; transition: width 0.5s ease-out; }
+        
+        /* Level Up Animation */
+        #levelup-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 5000; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; text-align: center; animation: popIn 0.5s;
+        }
+        .levelup-icon { font-size: 60px; margin-bottom: 10px; animation: bounce 1s infinite; }
+        .levelup-text { font-size: 24px; font-weight: 800; color: #ffeb3b; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        @keyframes popIn { from {transform: scale(0.5); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+
+        /* Goal Banner */
+        #goal-banner {
+            background: #e8f5e9; color: #1b5e20; padding: 8px;
+            font-size: 12px; font-weight: 600; text-align: center;
+            border-bottom: 1px solid #c8e6c9; display: none;
+        }
+        #goal-banner span { color: #d32f2f; font-weight: bold; }
+
         #bangla-warning {
-            position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: 120px; left: 50%; transform: translateX(-50%);
             background: #d32f2f; color: white; padding: 8px 20px; border-radius: 30px;
             font-size: 13px; font-weight: bold; display: none; z-index: 4000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: slideDown 0.3s;
         }
-        @keyframes slideDown { from {top: -50px;} to {top: 60px;} }
 
         #pc-warning { background: #fff3cd; color: #856404; padding: 12px; text-align: center; display: none; z-index: 5000; }
 
@@ -30,12 +56,12 @@
         .start-btn { background: white; color: #1b5e20; border: none; padding: 16px 45px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
 
         /* Header */
-        .header { background: white; color: #1b5e20; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; }
+        .header { background: white; color: #1b5e20; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; }
         .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: #4caf50; }
-        #install-btn { display: flex; align-items: center; gap: 5px; background: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        #install-btn { display: flex; align-items: center; gap: 5px; background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
-        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; }
+        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 12px; font-weight: 600; }
         
         /* Chat Box */
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 200px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
@@ -71,6 +97,13 @@
     <span onclick="this.parentElement.style.display='none'" style="cursor:pointer; margin-left:10px;">✖</span>
 </div>
 
+<div id="levelup-modal" onclick="this.style.display='none'">
+    <div class="levelup-icon">🏆</div>
+    <div class="levelup-text">LEVEL UP!</div>
+    <div style="font-size: 16px; margin-top: 5px;">MashAllah! You reached Level <span id="new-lvl-disp">2</span></div>
+    <div style="font-size: 12px; margin-top: 20px; color: #ddd;">(Tap to continue)</div>
+</div>
+
 <div id="bangla-warning">⚠️ Brother, English Only!</div>
 
 <div id="welcome-screen">
@@ -82,7 +115,7 @@
 <div id="login-modal">
     <div class="modal-content">
         <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ Time's Up!</h2>
-        <p style="color:#555; font-size:14px;">Brother, to continue learning, please login.</p>
+        <p style="color:#555; font-size:14px;">Brother, to save your Level & XP, please login.</p>
         <button class="modal-btn" onclick="googleLogin()">G Continue with Google</button>
         <p id="timer-lock-msg" style="font-size: 11px; color: #d32f2f; margin-top: 15px;"></p>
     </div>
@@ -92,6 +125,18 @@
     <div class="logo">TALK<span>24</span>AI</div>
     <button id="install-btn">📲 INSTALL APP</button>
 </div>
+
+<div id="stats-bar">
+    <div class="level-info">
+        <span>🏆 Level <span id="user-lvl">1</span></span>
+        <span>XP: <span id="user-xp">0</span>/100</span>
+    </div>
+    <div class="progress-container">
+        <div class="progress-bar" id="xp-bar"></div>
+    </div>
+</div>
+
+<div id="goal-banner">🎯 Target: <span>Select a Topic</span></div>
 
 <div id="guest-timer">Free Trial: 2:00 Minutes Left</div>
 <div id="chat-box"></div>
@@ -125,27 +170,60 @@
     });
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
-    // --- PERSONA: DR ZAKIR NAIK ---
-    const welcomeMsg = "As-salamu Alaykum. I am your English Ustad. Brother, today we shall master English with logic. What topic would you like to start with?";
-    
-    const suggestions = [
-        "💼 Job Interview",
-        "🗣️ Fluency Practice",
-        "📝 Grammar Logic",
-        "❓ Ask a Question"
-    ];
+    // --- GAME DATA & LOGIC ---
+    let xp = parseInt(localStorage.getItem('userXP')) || 0;
+    let level = parseInt(localStorage.getItem('userLevel')) || 1;
+    updateStatsUI();
+
+    function updateXP(amount) {
+        xp += amount;
+        // Level Up Logic (Every 100 XP)
+        let nextLevelXP = level * 100;
+        if (xp >= nextLevelXP) {
+            level++;
+            xp = xp - nextLevelXP; // Carry over XP
+            showLevelUpModal(level);
+        }
+        localStorage.setItem('userXP', xp);
+        localStorage.setItem('userLevel', level);
+        updateStatsUI();
+    }
+
+    function updateStatsUI() {
+        document.getElementById('user-lvl').innerText = level;
+        document.getElementById('user-xp').innerText = xp;
+        let percentage = (xp / (level * 100)) * 100; // Dynamic threshold based on level
+        // Simplified: Fixed 100 XP per level for demo
+        percentage = (xp / 100) * 100; 
+        document.getElementById('xp-bar').style.width = percentage + "%";
+    }
+
+    function showLevelUpModal(lvl) {
+        document.getElementById('new-lvl-disp').innerText = lvl;
+        document.getElementById('levelup-modal').style.display = 'flex';
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); // Simple success sound
+        audio.play().catch(e => console.log("Audio blocked"));
+    }
+
+    // --- APP DATA ---
+    const welcomeMsg = "As-salamu Alaykum. I am your English Ustad. Brother, select a target competency to begin earning XP.";
+    const competencies = {
+        "💼 Job Interview": "Mastering the 'Tell me about yourself' answer.",
+        "🗣️ Fluency Practice": "Speaking for 1 minute without hesitation.",
+        "📝 Grammar Logic": "Understanding Subject-Verb Agreement logically.",
+        "❓ Logical Debate": "Constructing an argument with premises."
+    };
+    let currentGoal = "";
 
     let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
     let isGuest = true;
     let timerActive = false; 
     let msgCount = 0; 
-    
     let voices = [];
     window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
 
-    // --- INPUT VALIDATION (STEVE'S FEEDBACK) ---
+    // --- INPUT VALIDATION ---
     document.getElementById('userInput').addEventListener('input', function(e) {
-        // Check for Bangla Characters
         if(/[\u0980-\u09FF]/.test(e.target.value)) {
             document.getElementById('bangla-warning').style.display = 'block';
             setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
@@ -208,16 +286,23 @@
         const area = document.getElementById('suggestion-area');
         area.style.display = 'flex';
         area.innerHTML = ''; 
-        suggestions.forEach(topic => {
+        for (const [topic, goal] of Object.entries(competencies)) {
             const chip = document.createElement('div');
             chip.className = 'chip';
             chip.innerText = topic;
-            chip.onclick = () => { sendToAI(topic); area.style.display = 'none'; };
+            chip.onclick = () => { setCompetency(topic, goal); area.style.display = 'none'; };
             area.appendChild(chip);
-        });
+        }
     }
 
-    // --- SPEECH RECOGNITION ---
+    function setCompetency(topic, goal) {
+        currentGoal = goal;
+        const banner = document.getElementById('goal-banner');
+        banner.innerHTML = `🎯 Target: <span>${goal}</span>`;
+        banner.style.display = 'block';
+        sendToAI(`I want to start: ${topic}`, true);
+    }
+
     const micBtn = document.getElementById('mic-btn');
     const micWrapper = document.getElementById('mic-wrapper');
     let isListening = false;
@@ -241,49 +326,51 @@
         recognition.onresult = (event) => sendToAI(event.results[0][0].transcript);
     }
 
-    // --- AI COMMUNICATION (COUNCIL APPROVED PROMPT) ---
-    async function sendToAI(text) {
+    async function sendToAI(text, isStart = false) {
         if(!text) return;
-        
-        // Client-side Bangla Check (Save API Cost)
         if(/[\u0980-\u09FF]/.test(text)) {
              document.getElementById('bangla-warning').style.display = 'block';
              setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
-             return; // Stop function, don't send to backend
+             return;
         }
 
         msgCount++;
         timerActive = true; 
+        // User Activity Reward
+        updateXP(5); // +5 XP for effort
+
         document.getElementById('suggestion-area').style.display = 'none';
         const box = document.getElementById('chat-box');
-        box.innerHTML += `<div class="msg user">${text}</div>`;
+        if(!isStart) box.innerHTML += `<div class="msg user">${text}</div>`;
         box.scrollTop = box.scrollHeight;
 
-        // Dynamic System Prompt
-        let systemPrompt = "IDENTITY: You are Dr. Zakir Naik acting as an English Tutor. \nRULES:\n1. SPEAK ONLY ENGLISH.\n2. VOICE: Authoritative, Logical.\n3. LOGIC: Explain the REASON behind every correction.\n4. FLOW: Do NOT say goodbye.";
+        let systemPrompt = `IDENTITY: Dr. Zakir Naik (English Tutor). 
+        GOAL: The user MUST achieve: "${currentGoal}".
+        METHODOLOGY:
+        1. START: Explicitly state: "Brother, by the end of this session, InshaAllah you will be able to [${currentGoal}]."
+        2. MIDDLE: Teach with logic. Correct mistakes immediately. If user is correct, say "MashAllah" or "Correct".
+        3. END: When user demonstrates mastery, say: "MashAllah, you have achieved this competency." and Suggest a new topic.
+        4. RULE: Speak ONLY English. No Bangla. No Goodbye.`;
         
-        if(msgCount % 5 === 0) {
-            systemPrompt += " We have logically concluded this topic. Say 'Brother, we have covered this.' and IMMEDIATELY suggest a NEW topic.";
-        } else {
-            systemPrompt += " Keep user engaged with a follow-up question.";
-        }
-
         try {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    message: text, 
-                    isGuest: isGuest, 
-                    email: 'guest@talk24ai.xyz',
-                    systemInstruction: systemPrompt
-                })
+                body: JSON.stringify({ message: text, isGuest: isGuest, email: 'guest@talk24ai.xyz', systemInstruction: systemPrompt })
             });
             const data = await res.json();
-            
-            // Double Filter (Safety Net)
             let cleanReply = data.reply.replace(/[\u0980-\u09FF]/g, '').trim(); 
-            if(cleanReply.length === 0) cleanReply = "Brother, please repeat your question in English.";
+            if(cleanReply.length === 0) cleanReply = "Brother, please repeat logically in English.";
+
+            // --- SMART SCORING ---
+            // AI যদি প্রশংসা করে তাহলে বোনাস পয়েন্ট
+            if(cleanReply.includes("MashAllah") || cleanReply.includes("Correct") || cleanReply.includes("Excellent")) {
+                updateXP(15); // +15 Bonus
+            }
+            // Competency Achieved হলে বড় বোনাস
+            if(cleanReply.includes("achieved this competency")) {
+                updateXP(50); // +50 Big Bonus
+            }
 
             box.innerHTML += `<div class="msg ai">${cleanReply}</div>`;
             box.scrollTop = box.scrollHeight;
@@ -304,26 +391,15 @@
         document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight; 
     }
 
-    // --- VOICE TUNING (FORCE MALE) ---
     function speak(text) {
         const synth = window.speechSynthesis;
         if(synth.speaking) synth.cancel();
-        
         const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
-        
         sentences.forEach((sentence) => {
             const utter = new SpeechSynthesisUtterance(sentence);
             if(voices.length === 0) voices = synth.getVoices();
-
-            let ustadVoice = voices.find(v => (v.name.includes("Male") && v.lang.includes("en"))) || 
-                             voices.find(v => v.lang.includes("en-GB")) || 
-                             voices.find(v => v.lang.includes("en-IN"));
-
-            if(ustadVoice) {
-                utter.voice = ustadVoice;
-                utter.pitch = 0.8; 
-                utter.rate = 1.1; 
-            }
+            let ustadVoice = voices.find(v => (v.name.includes("Male") && v.lang.includes("en"))) || voices.find(v => v.lang.includes("en-GB")) || voices.find(v => v.lang.includes("en-IN"));
+            if(ustadVoice) { utter.voice = ustadVoice; utter.pitch = 0.8; utter.rate = 1.1; }
             synth.speak(utter);
         });
     }
