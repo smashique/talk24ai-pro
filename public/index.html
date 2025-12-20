@@ -8,37 +8,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #58cc02; --primary-dark: #46a302; --blue: #1cb0f6; --bg: #ffffff; --font: 'Nunito', sans-serif; }
-        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #333; }
+        /* --- MODERN UI THEME --- */
+        :root {
+            --primary: #58cc02; --primary-dark: #46a302;
+            --blue: #1cb0f6; --bg: #ffffff;
+            --font-main: 'Nunito', sans-serif;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
 
-        /* Screens */
-        #home-screen, #scenario-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        #scenario-screen { display: none; overflow-y: auto; justify-content: start; }
+        body { font-family: var(--font-main); margin: 0; background: var(--bg); color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Typography */
-        .brand { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--primary); margin-bottom: 5px; }
-        .tagline { background: #fff9c4; color: #f57f17; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-bottom: 30px; border: 1px dashed #fbc02d; line-height: 1.4; max-width: 320px; }
-        
-        /* Interactive Elements */
-        .btn-main { width: 100%; max-width: 300px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; }
-        .sc-grid { width: 100%; max-width: 400px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .role-card { border: 2px solid #f0f0f0; border-radius: 20px; padding: 20px; cursor: pointer; text-align: center; background: white; transition: 0.2s; box-shadow: 0 4px 0 #f0f0f0; }
-        .role-card:active { transform: translateY(4px); box-shadow: none; border-color: var(--blue); }
+        /* --- HOME SCREEN --- */
+        #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--primary); margin-bottom: 10px; }
+        .tagline-box { background: #fff9c4; color: #f57f17; padding: 15px 25px; border-radius: 15px; font-weight: 800; font-size: 15px; border: 1px dashed #fbc02d; margin-bottom: 35px; line-height: 1.4; max-width: 350px; }
+        .input-card { background: #f7f7f7; padding: 25px; border-radius: 25px; width: 100%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .btn-start { width: 100%; padding: 16px; background: var(--primary); border: none; border-bottom: 5px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; margin-top: 15px; transition: 0.1s; }
+        .btn-start:active { transform: translateY(4px); border-bottom-width: 0; }
 
-        /* Chat UI */
-        #chat-screen { display: none; flex-direction: column; height: 100%; }
-        .top-nav { padding: 12px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; background: #fff; }
-        .bubble { max-width: 85%; padding: 14px 18px; border-radius: 22px; font-size: 16px; line-height: 1.5; font-weight: 600; animation: msgSlide 0.3s ease-out; }
-        .ai { background: #f0f0f0; color: #333; border-bottom-left-radius: 4px; }
+        /* --- SCENARIO SELECTION --- */
+        #scenario-screen { display: none; position: fixed; inset: 0; background: white; z-index: 4000; overflow-y: auto; flex-direction: column; }
+        .sc-header { padding: 30px 20px; text-align: center; background: white; border-bottom: 1px solid #eee; }
+        .sc-grid { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 600px; margin: 0 auto; }
+        .role-card { background: white; border: 2px solid #f0f0f0; border-bottom: 5px solid #f0f0f0; border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .role-card:active { transform: translateY(4px); border-bottom-width: 2px; border-color: var(--blue); }
+
+        /* --- CHAT INTERFACE --- */
+        #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
+        .nav-bar { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; background: var(--glass); backdrop-filter: blur(10px); z-index: 100; }
+        .score-pill { background: #fff4db; color: #d68f00; padding: 6px 15px; border-radius: 25px; font-weight: 800; font-size: 14px; border: 1px solid #ffe0b2; }
+
+        #messages { flex: 1; overflow-y: auto; padding: 25px 20px; display: flex; flex-direction: column; gap: 20px; background: #fff; scroll-behavior: smooth; }
+        .bubble { max-width: 80%; padding: 14px 20px; border-radius: 22px; font-size: 16px; font-weight: 600; line-height: 1.5; animation: fadeInUp 0.3s ease-out; position: relative; }
+        .ai { background: #f0f0f0; color: #333; border-bottom-left-radius: 4px; border: 1px solid #e5e5e5; }
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; border-bottom: 4px solid #1899d6; }
-        
-        .typing { font-size: 12px; color: #aaa; margin: 0 0 10px 25px; font-weight: bold; display: none; }
-        .input-area { padding: 15px 20px 30px 20px; background: white; border-top: 1px solid #eee; display: flex; gap: 12px; align-items: center; }
-        #userInput { flex: 1; background: #f7f7f7; border: 1px solid #eee; padding: 15px 20px; border-radius: 30px; outline: none; font-size: 16px; font-weight: 600; font-family: inherit; }
-        #mic-btn { width: 55px; height: 55px; border-radius: 50%; background: var(--primary); border: none; color: white; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        @keyframes msgSlide { from {opacity: 0; transform: translateY(15px);} to {opacity: 1; transform: translateY(0);} }
+        .typing { font-size: 12px; color: #afafaf; font-weight: 800; margin: 0 25px 10px; display: none; }
+
+        .input-bar { padding: 15px 20px 30px 20px; border-top: 1px solid #eee; display: flex; gap: 12px; align-items: center; background: white; }
+        #userInput { flex: 1; background: #f7f7f7; border: 1px solid #eee; padding: 15px 20px; border-radius: 30px; outline: none; font-size: 16px; font-weight: 600; font-family: inherit; }
+        #mic-btn { width: 55px; height: 55px; border-radius: 50%; background: var(--primary); border: none; color: white; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(88, 204, 2, 0.3); }
+        .listening { background: #ff4b4b !important; animation: pulse 1s infinite; box-shadow: 0 4px 20px rgba(255, 75, 75, 0.4) !important; }
+
+        @keyframes fadeInUp { from {opacity: 0; transform: translateY(15px);} to {opacity: 1; transform: translateY(0);} }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
@@ -46,57 +59,69 @@
 <audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
 
 <div id="home-screen">
-    <div class="brand">Talk24AI</div>
-    <div class="tagline">No Partner to Practice? <br> Meet Talk24AI: Your 24/7 Spoken English Mate.</div>
-    <div style="width: 100%; max-width: 300px; display: flex; gap: 10px; margin-bottom: 20px;">
-        <input type="number" id="age" value="18" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; text-align:center; font-weight:900;">
-        <select id="gender" style="width:50%; padding:15px; border-radius:15px; border:2px solid #eee; font-weight:900;">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
+    <div class="logo">Talk24AI</div>
+    <div class="tagline-box">
+        No Partner to Practice? <br>
+        Meet Talk24AI: Your 24/7 Spoken English Mate.
     </div>
-    <button class="btn-main" onclick="showScenarios()">Find My Mate</button>
+    <div class="input-card">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="number" id="age" value="18" style="width:50%; padding:15px; border-radius:15px; border:2px solid #ddd; text-align:center; font-weight:900;">
+            <select id="gender" style="width:50%; padding:15px; border-radius:15px; border:2px solid #ddd; font-weight:900;">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        <button class="btn-start" onclick="showScenarios()">Get Started</button>
+    </div>
 </div>
 
 <div id="scenario-screen">
-    <div style="font-size: 22px; font-weight: 900; margin-bottom: 20px;">Choose Your Roleplay</div>
+    <div class="sc-header">
+        <div style="font-size: 24px; font-weight: 900; color: #333;">Choose a Mate</div>
+        <div style="font-size: 14px; color: #999; font-weight: 700; margin-top: 5px;">Who would you like to speak with?</div>
+    </div>
     <div class="sc-grid" id="role-grid"></div>
 </div>
 
 <div id="chat-screen">
-    <div class="top-nav">
+    <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:12px;">
-            <div id="p-icon" style="font-size: 28px;">🤖</div>
-            <div style="font-weight: 800; font-size: 17px;" id="p-name">AI Mate</div>
+            <div id="p-icon" style="font-size: 30px;">🤖</div>
+            <div style="font-weight: 900; font-size: 18px;" id="p-name">Mate</div>
         </div>
-        <div style="background: #fff4db; color: #d68f00; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px;">⭐ <span id="score">0</span></div>
+        <div class="score-pill">⭐ <span id="score">0</span></div>
     </div>
+
     <div id="messages"></div>
-    <div id="typing-box" class="typing">Mate is thinking...</div>
-    <div class="input-area">
-        <input type="text" id="userInput" placeholder="Speak to your mate..." onkeypress="handleEnter(event)">
+    <div id="typing-box" class="typing">Mate is listening...</div>
+
+    <div class="input-bar">
+        <input type="text" id="userInput" placeholder="Say something in English..." onkeypress="handleEnter(event)">
         <button id="mic-btn" onclick="toggleMic()">🎤</button>
     </div>
 </div>
 
 <script>
+    // --- APP DATA ---
     const scenarios = {
         junior: [
-            { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell inspiring stories of Islamic Heroes like Khalid bin Walid or Ali (RA). End with a question for the kid." },
-            { name: "English Teacher", icon: "👩‍🏫", prompt: "Be a kind teacher. Ask about school. Correct very gently in brackets." },
-            { name: "Best Friend", icon: "🏸", prompt: "Talk about cricket or toys. Use very simple friendly English." }
+            { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell simple inspiring stories of Islamic Heroes. Use easy words. End with a simple question." },
+            { name: "English Teacher", icon: "👩‍🏫", prompt: "Be a kind teacher. Ask about school. Correct gently in brackets." },
+            { name: "Best Friend", icon: "🏸", prompt: "Talk about cricket/toys. Be very friendly." }
         ],
         senior: [
-            { name: "History Explorer", icon: "📜", prompt: "Discuss Islamic Golden Age inventions or History of Mecca. Be intellectual." },
-            { name: "Job Interviewer", icon: "💼", prompt: "Start the interview immediately. Ask: 'Tell me about yourself'. No intro." },
-            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Conduct a formal IELTS Speaking test Part 1. Focus on fluency." },
-            { name: "Foreign Friend", icon: "🌏", prompt: "You are a traveler in Dhaka. Ask about local food and culture." }
+            { name: "History Explorer", icon: "📜", prompt: "Discuss Islamic Golden Age inventions. Be intellectual and polite." },
+            { name: "Job Interviewer", icon: "💼", prompt: "Start the interview now. Ask: 'Tell me about yourself'. No preamble." },
+            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Formal IELTS Speaking test Part 1. Focus on fluency." },
+            { name: "Foreign Friend", icon: "🌏", prompt: "Traveler in Dhaka. Ask about local culture/food." }
         ]
     };
 
     let state = { age: 18, gender: 'Male', currentRole: null, score: 0 };
     let isMicOn = false;
 
+    // --- LOGIC ---
     function showScenarios() {
         state.age = document.getElementById('age').value;
         const list = (state.age < 13) ? scenarios.junior : scenarios.senior;
@@ -105,7 +130,7 @@
         list.forEach(role => {
             const div = document.createElement('div');
             div.className = 'role-card';
-            div.innerHTML = `<div style="font-size:40px; margin-bottom:10px;">${role.icon}</div><div style="font-weight:900;">${role.name}</div>`;
+            div.innerHTML = `<div style="font-size:45px; margin-bottom:10px;">${role.icon}</div><div style="font-weight:900; font-size:15px;">${role.name}</div>`;
             div.onclick = () => startChat(role);
             grid.appendChild(div);
         });
@@ -119,16 +144,18 @@
         document.getElementById('p-name').innerText = role.name;
         document.getElementById('scenario-screen').style.display = 'none';
         document.getElementById('chat-screen').style.display = 'flex';
+        
         triggerAIStart();
     }
 
     async function triggerAIStart() {
         toggleTyping(true);
-        const sysPrompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: START THE ROLEPLAY IMMEDIATELY. NO PREAMBLE. ENGLISH ONLY.`;
-        callAPI({ message: "START_ROLEPLAY", systemInstruction: sysPrompt });
+        const prompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: START ROLEPLAY IMMEDIATELY. NO PREAMBLE. ENGLISH ONLY.`;
+        callAPI({ message: "START_ROLEPLAY", systemInstruction: prompt });
     }
 
     async function sendToAI(text) {
+        if(!text.trim()) return;
         addUserMsg(text);
         document.getElementById('userInput').value = '';
         toggleTyping(true);
@@ -136,12 +163,12 @@
         const expertPrompt = `
             ACT AS: ${state.currentRole.name}.
             STRICT RULES:
-            1. BANGLADESHI CONTEXT: You are a mate from Bangladesh. No conflicting with Islam/Iman.
-            2. NO PREAMBLE: Never say "As-salamu alaykum" if not relevant. Never say "To start...".
-            3. NO LECTURES: Do not explain grammar rules.
-            4. CORRECTION: Only if major error, put 1-2 words in brackets e.g. (Correct: I went).
-            5. ENGAGEMENT: Always end with a short, curiosity-inducing question.
-            6. COMPLETENESS: Ensure every sentence is complete and logical. Never cut off.
+            1. BANGLADESHI CONTEXT: Bangladeshi AI mate. Respectful. No Islamic/Iman conflicts.
+            2. NO PREAMBLE: Start directly.
+            3. NO LECTURES: Do not explain grammar.
+            4. CORRECTION: Only if major error, put in brackets e.g. (Correct: I went).
+            5. ENGAGEMENT: Always end with a specific question.
+            6. NO TRUNCATION: Complete every sentence.
         `;
 
         callAPI({ message: text, systemInstruction: expertPrompt });
@@ -153,9 +180,9 @@
             const data = await res.json();
             toggleTyping(false);
             
-            // Cleanup and Fallback for Blank Messages
             let reply = data.reply.replace(/[\u0980-\u09FF].*/g, '').trim(); 
-            if(reply.length < 5) reply = "That's interesting! Could you tell me more about that?"; // Fallback
+            // Fallback for blank bubbles
+            if(reply.length < 5) reply = "I understand. Can you tell me more about that?"; 
 
             addAiMsg(reply);
         } catch (e) { toggleTyping(false); }
