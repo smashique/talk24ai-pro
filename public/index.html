@@ -8,112 +8,113 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- DUOLINGO STYLE VARIABLES --- */
+        /* --- THEME VARIABLES --- */
         :root {
-            --primary: #58cc02; /* Duo Green */
+            --primary: #58cc02;
             --primary-shadow: #46a302;
-            --secondary: #1cb0f6; /* Duo Blue */
+            --secondary: #1cb0f6;
             --bg: #fff;
             --font: 'Nunito', sans-serif;
-            --radius: 16px;
         }
 
-        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: 0.3s; }
+        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* HEADER & STATS */
-        .header-bar { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e5e5; }
-        .stat-pill { display: flex; align-items: center; gap: 5px; font-weight: 800; font-size: 15px; color: #afafaf; }
-        .stat-pill.active { color: #ff9600; } /* Fire color */
-        
-        /* DAILY QUEST BAR */
-        #quest-bar { background: #fff; padding: 10px 20px; border-bottom: 2px solid #e5e5e5; display: flex; align-items: center; gap: 10px; }
-        .quest-icon { font-size: 24px; }
-        .quest-info { flex: 1; }
-        .quest-title { font-size: 12px; font-weight: 800; color: #777; text-transform: uppercase; }
-        .quest-desc { font-size: 14px; font-weight: 700; color: #4b4b4b; }
-        .quest-progress-bg { height: 10px; background: #e5e5e5; border-radius: 10px; margin-top: 5px; overflow: hidden; }
-        .quest-progress-fill { height: 100%; background: #ff9600; width: 0%; transition: 0.5s; }
+        /* HEADER */
+        .header-bar { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; background: white; z-index: 10; }
+        .stat-pill { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 16px; color: #e5e5e5; }
+        .stat-pill.active { color: #ff9600; } 
+        .stat-pill.gems { color: #1cb0f6; }
 
-        /* CHAT BOX */
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
+        /* QUEST BAR */
+        #quest-bar { background: #fff; padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #f0f0f0; }
+        .quest-icon { font-size: 28px; }
+        .quest-info { flex: 1; }
+        .quest-title { font-size: 11px; font-weight: 800; color: #afafaf; text-transform: uppercase; letter-spacing: 0.5px; }
+        .quest-desc { font-size: 15px; font-weight: 700; color: #4b4b4b; }
+        .quest-progress-bg { height: 12px; background: #e5e5e5; border-radius: 10px; margin-top: 6px; overflow: hidden; }
+        .quest-progress-fill { height: 100%; background: #ff9600; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* CHAT AREA */
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; background: #fff; scroll-behavior: smooth; }
         
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 18px; line-height: 1.5; font-size: 16px; font-weight: 600; position: relative; border: 2px solid transparent; }
-        .ai { background: #e5e5e5; color: #4b4b4b; border-bottom-left-radius: 4px; }
+        .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.5; font-size: 16px; font-weight: 600; position: relative; animation: popIn 0.3s; }
+        .ai { background: #f7f7f7; color: #4b4b4b; border: 2px solid #e5e5e5; border-bottom-left-radius: 4px; }
         .user { background: var(--secondary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; border-bottom: 4px solid #1899d6; }
         
-        /* QUIZ OPTIONS (CHIPS) */
-        .quiz-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; }
-        .quiz-chip { 
+        /* QUIZ UI */
+        .quiz-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .quiz-option { 
             background: white; border: 2px solid #e5e5e5; border-bottom: 4px solid #e5e5e5;
-            padding: 10px 20px; border-radius: 15px; font-weight: 700; color: #4b4b4b;
-            cursor: pointer; transition: 0.1s; flex: 1; text-align: center; min-width: 100px;
+            padding: 12px 20px; border-radius: 16px; font-weight: 700; color: #4b4b4b;
+            cursor: pointer; transition: 0.1s; text-align: center;
         }
-        .quiz-chip:active { transform: translateY(2px); border-bottom-width: 2px; }
-        .quiz-chip.correct { background: #d7ffb8; border-color: #58cc02; color: #58cc02; }
-        .quiz-chip.wrong { background: #ffdfe0; border-color: #ff4b4b; color: #ff4b4b; }
+        .quiz-option:active { transform: translateY(4px); border-bottom-width: 0; }
+        .quiz-option.correct { background: #d7ffb8; border-color: #58cc02; color: #58cc02; }
+        .quiz-option.wrong { background: #ffdfe0; border-color: #ff4b4b; color: #ff4b4b; }
 
-        /* CONTROLS */
-        .voice-controls { border-top: 2px solid #e5e5e5; padding: 15px; background: white; display: flex; gap: 10px; align-items: center; }
-        
-        #userInput { flex: 1; background: #f7f7f7; border: 2px solid #e5e5e5; padding: 12px 15px; border-radius: 15px; font-family: inherit; font-weight: 600; outline: none; font-size: 16px; }
-        #userInput:focus { border-color: #e5e5e5; background: white; }
-        
-        #mic-btn { width: 50px; height: 50px; border-radius: 15px; border: none; background: var(--primary); border-bottom: 4px solid var(--primary-shadow); color: white; font-size: 24px; cursor: pointer; transition: 0.1s; display: flex; align-items: center; justify-content: center; }
-        #mic-btn:active { transform: translateY(2px); border-bottom-width: 0; }
-        .listening #mic-btn { background: #ff4b4b; border-color: #ea2b2b; }
+        /* INPUT AREA */
+        .voice-controls { border-top: 2px solid #f0f0f0; padding: 15px 20px; background: white; display: flex; gap: 10px; align-items: center; }
+        #userInput { flex: 1; background: #f7f7f7; border: 2px solid #e5e5e5; padding: 14px 20px; border-radius: 16px; font-family: inherit; font-weight: 600; outline: none; font-size: 16px; transition: 0.2s; }
+        #userInput:focus { border-color: #afafaf; background: white; }
+        #mic-btn { width: 54px; height: 54px; border-radius: 18px; border: none; background: var(--primary); border-bottom: 4px solid var(--primary-shadow); color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+        #mic-btn:active { transform: translateY(4px); border-bottom-width: 0; }
+        .listening #mic-btn { background: #ff4b4b; border-color: #d32f2f; animation: pulse 1s infinite; }
 
         /* WELCOME SCREEN */
-        #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .app-mascot { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
-        .setup-title { font-size: 24px; font-weight: 800; color: #3c3c3c; margin-bottom: 30px; }
+        #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow-y: auto; }
+        .mascot { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
+        .setup-title { font-size: 26px; font-weight: 800; color: #3c3c3c; margin-bottom: 30px; }
         
-        .input-group { width: 100%; margin-bottom: 15px; text-align: left; }
-        .input-label { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .setup-input { width: 100%; padding: 15px; border: 2px solid #e5e5e5; border-radius: 15px; font-size: 16px; font-weight: 700; outline: none; box-sizing: border-box; }
-        .setup-input:focus { border-color: var(--secondary); }
+        .input-box { width: 100%; margin-bottom: 20px; text-align: left; max-width: 320px; }
+        .label { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
+        .field { width: 100%; padding: 15px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; outline: none; box-sizing: border-box; font-family: inherit; }
+        .field:focus { border-color: var(--secondary); }
 
-        .big-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-shadow); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: 0.1s; }
-        .big-btn:active { transform: translateY(4px); border-bottom-width: 0; }
+        .start-btn { width: 100%; max-width: 320px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-shadow); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: 0.1s; }
+        .start-btn:active { transform: translateY(4px); border-bottom-width: 0; }
 
-        /* MODALS & ALERTS */
-        #bangla-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; z-index: 4000; display: none; box-shadow: 0 5px 0 #ea2b2b; }
+        /* WARNINGS */
+        #bangla-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 12px 24px; border-radius: 25px; font-weight: 800; z-index: 4000; display: none; box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4); animation: shake 0.4s; }
         
+        @keyframes popIn { from {opacity: 0; transform: scale(0.9);} to {opacity: 1; transform: scale(1);} }
         @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+        @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4);} 70% {box-shadow: 0 0 0 15px rgba(255, 75, 75, 0);} 100% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0);} }
+        @keyframes shake { 0%, 100% {transform: translateX(-50%);} 25% {transform: translateX(-55%);} 75% {transform: translateX(-45%);} }
     </style>
 </head>
 <body>
 
 <audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
 <audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2002/2002-preview.mp3"></audio>
+<audio id="snd-level" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
 <div id="bangla-warning">🚫 English Only Please!</div>
 
 <div id="welcome-screen">
-    <div class="app-mascot">🦉</div>
-    <div class="setup-title">Setup Your Profile</div>
+    <div class="mascot">🦉</div>
+    <div class="setup-title">Let's Get Started!</div>
     
-    <div class="input-group">
-        <label class="input-label">How old are you?</label>
-        <input type="number" id="userAge" class="setup-input" placeholder="e.g. 10">
+    <div class="input-box">
+        <label class="label">Your Age</label>
+        <input type="number" id="userAge" class="field" value="12">
     </div>
     
-    <div class="input-group">
-        <label class="input-label">I am a...</label>
-        <select id="userGender" class="setup-input">
+    <div class="input-box">
+        <label class="label">Gender</label>
+        <select id="userGender" class="field">
             <option value="Boy">Boy</option>
             <option value="Girl">Girl</option>
         </select>
     </div>
 
-    <button class="big-btn" onclick="startPlacementTest()">CHECK MY LEVEL</button>
-    <p style="font-size: 12px; color:#afafaf; margin-top: 15px;">We will test your English first!</p>
+    <button class="start-btn" onclick="startPlacement()">CHECK MY LEVEL</button>
 </div>
 
 <div class="header-bar">
-    <div style="font-weight: 900; color: var(--primary); font-size: 20px;">Talk24</div>
+    <div style="font-weight: 900; color: var(--primary); font-size: 22px; letter-spacing: -1px;">Talk24</div>
     <div style="display: flex; gap: 15px;">
         <div class="stat-pill active">🔥 <span id="streak-count">0</span></div>
-        <div class="stat-pill">💎 <span id="xp-count">0</span></div>
+        <div class="stat-pill gems">💎 <span id="xp-count">0</span></div>
     </div>
 </div>
 
@@ -121,7 +122,7 @@
     <div class="quest-icon">🎯</div>
     <div class="quest-info">
         <div class="quest-title">Daily Quest</div>
-        <div class="quest-desc" id="daily-quest-text">Speak 3 sentences correctly</div>
+        <div class="quest-desc" id="quest-text">Complete the placement test</div>
         <div class="quest-progress-bg">
             <div class="quest-progress-fill" id="quest-fill"></div>
         </div>
@@ -131,60 +132,62 @@
 <div id="chat-box"></div>
 
 <div class="voice-controls">
-    <input type="text" id="userInput" placeholder="Type or say something...">
+    <input type="text" id="userInput" placeholder="Type or say something..." onkeypress="handleEnter(event)">
     <button id="mic-btn" onclick="toggleMic()">🎤</button>
 </div>
 
 <script>
-    // --- VARIABLES ---
-    let userAge = 10;
+    // --- STATE VARIABLES ---
+    let userAge = 12;
     let userGender = 'Boy';
-    let userLevel = 'Placement'; // Starts here
+    let userLevel = 'Placement';
     let xp = 0;
-    let streak = 1;
     let questProgress = 0;
-    let questTarget = 3; // e.g. 3 correct interactions
+    let questTarget = 1;
     let voices = [];
     let isMicOn = false;
 
-    // --- SETUP & PLACEMENT TEST ---
-    function startPlacementTest() {
+    // --- SETUP LOGIC ---
+    function startPlacement() {
         userAge = document.getElementById('userAge').value;
         userGender = document.getElementById('userGender').value;
-        
-        applyTheme(userAge); // Set UI Theme
+        applyTheme(userAge);
 
         document.getElementById('welcome-screen').style.display = 'none';
         
-        // Start Placement Logic
-        addAIMessage(`Hi! I am your AI Buddy. Let's find your level. Choose the correct word:`);
+        // Initial Message
+        let personaName = userAge <= 10 ? "Smart Bunny" : "English Ustad";
+        addAIMessage(`Hi! I am ${personaName}. Let's find your level quickly.`);
         
-        // Simulating a Quiz Question
+        // Trigger Placement Quiz (Simulated)
         setTimeout(() => {
-            renderQuiz("The cat is _____ on the mat.", ["Sleep", "Sleeping", "Sleeps"], "Sleeping");
+            renderQuiz("Complete the sentence: The cat is _____ on the mat.", ["Sleep", "Sleeping", "Sleeps"], "Sleeping");
         }, 1000);
     }
 
-    // --- THEME LOGIC (AGE ADAPTIVE) ---
+    // --- THEME ENGINE ---
     function applyTheme(age) {
         const root = document.documentElement;
-        if(age <= 9) { // Junior
-            root.style.setProperty('--primary', '#ffc800'); // Yellow
+        if(age <= 10) { 
+            // Junior Theme
+            root.style.setProperty('--primary', '#ffc800'); 
             root.style.setProperty('--primary-shadow', '#e5b400');
-            root.style.setProperty('--secondary', '#ff9600'); // Orange
+            root.style.setProperty('--secondary', '#ff9600');
             root.style.setProperty('--font', "'Fredoka', sans-serif");
-        } else if(age <= 14) { // Cadet
-            root.style.setProperty('--primary', '#1cb0f6'); // Blue
+        } else if(age <= 15) { 
+            // Teen Theme
+            root.style.setProperty('--primary', '#1cb0f6'); 
             root.style.setProperty('--primary-shadow', '#1899d6');
             root.style.setProperty('--secondary', '#2b70c9');
-        } else { // Scholar
-            root.style.setProperty('--primary', '#58cc02'); // Green
+        } else { 
+            // Pro Theme
+            root.style.setProperty('--primary', '#58cc02'); 
             root.style.setProperty('--primary-shadow', '#46a302');
             root.style.setProperty('--secondary', '#204b28');
         }
     }
 
-    // --- CHAT & QUIZ UI ---
+    // --- CHAT UI HELPERS ---
     function addAIMessage(text) {
         const chat = document.getElementById('chat-box');
         chat.innerHTML += `<div class="msg ai">${text}</div>`;
@@ -198,17 +201,17 @@
         chat.scrollTop = chat.scrollHeight;
     }
 
-    // --- INTERACTIVE QUIZ RENDERER ---
+    // --- INTERACTIVE QUIZ ---
     function renderQuiz(question, options, correctAnswer) {
         const chat = document.getElementById('chat-box');
         const qId = Date.now();
         
         let html = `<div class="msg ai" id="q-${qId}">
-            <div>${question}</div>
-            <div class="quiz-options">`;
+            <div style="margin-bottom:10px;">${question}</div>
+            <div class="quiz-container">`;
         
         options.forEach(opt => {
-            html += `<div class="quiz-chip" onclick="checkAnswer(this, '${opt}', '${correctAnswer}', '${qId}')">${opt}</div>`;
+            html += `<div class="quiz-option" onclick="checkAnswer(this, '${opt}', '${correctAnswer}', '${qId}')">${opt}</div>`;
         });
         
         html += `</div></div>`;
@@ -218,7 +221,6 @@
     }
 
     function checkAnswer(el, selected, correct, qId) {
-        // Prevent multiple clicks
         const parent = document.getElementById(`q-${qId}`);
         if(parent.classList.contains('answered')) return;
         parent.classList.add('answered');
@@ -226,43 +228,49 @@
         if(selected === correct) {
             el.classList.add('correct');
             document.getElementById('snd-correct').play();
-            updateProgress();
+            updateProgress(true);
+            setTimeout(() => addAIMessage("Correct! 🎉 Let's continue."), 1000);
             
-            // Logic after placement test
+            // Auto Transition out of Placement
             if(userLevel === 'Placement') {
-                userLevel = 'A1'; // Simplified logic for demo
-                setTimeout(() => addAIMessage("Great! You are Level A1. Let's start learning!"), 1000);
-            } else {
-                setTimeout(() => sendToAI("Correct answer given. Next task."), 1000);
+                userLevel = 'A1';
+                setTimeout(() => {
+                    addAIMessage("You are now Level A1. Introduce yourself!");
+                    questTarget = 5; // Update quest for A1
+                    questProgress = 0;
+                    document.getElementById('quest-text').innerText = "Speak 5 sentences";
+                    document.getElementById('quest-fill').style.width = '0%';
+                }, 2000);
             }
 
         } else {
             el.classList.add('wrong');
             document.getElementById('snd-wrong').play();
-            setTimeout(() => addAIMessage(`Oops! The correct answer was: ${correct}`), 1000);
+            setTimeout(() => addAIMessage(`Oops! The answer is: ${correct}`), 1000);
         }
     }
 
-    // --- PROGRESS & QUESTS ---
-    function updateProgress() {
-        questProgress++;
-        const fill = (questProgress / questTarget) * 100;
-        document.getElementById('quest-fill').style.width = fill + '%';
-        
-        // XP & Streak
-        xp += 10;
-        document.getElementById('xp-count').innerText = xp;
-
-        if(questProgress === questTarget) {
-            addAIMessage("🎉 Daily Quest Complete! +50 Bonus XP!");
-            xp += 50;
-            document.getElementById('quest-fill').style.backgroundColor = '#ffd700'; // Gold
+    function updateProgress(isSuccess) {
+        if(isSuccess) {
+            questProgress++;
+            const fill = (questProgress / questTarget) * 100;
+            document.getElementById('quest-fill').style.width = fill + '%';
+            
+            xp += 10;
+            document.getElementById('xp-count').innerText = xp;
+            
+            if(questProgress >= questTarget) {
+                document.getElementById('snd-level').play();
+                // Reset/Level Up Logic here
+            }
         }
     }
 
-    // --- AI COMMUNICATION (SIMULATED) ---
+    // --- AI LOGIC (WITH BANGLA CLEANER) ---
     async function sendToAI(text) {
-        // Bangla Filter
+        if(!text) return;
+        
+        // 1. Frontend Bangla Check
         if(/[\u0980-\u09FF]/.test(text)) {
              document.getElementById('bangla-warning').style.display = 'block';
              setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
@@ -270,16 +278,32 @@
         }
 
         addUserMessage(text);
+        document.getElementById('userInput').value = '';
 
-        // Persona Config
-        let persona = "Friendly Tutor";
-        if(userAge <= 9) persona = "Playful Buddy (Simple words)";
-        else if(userAge >= 15) persona = "Strict Academic Mentor";
+        // 2. Persona Selection
+        let personaPrompt = "";
+        let tonePrompt = "";
+        
+        if(userAge <= 10) {
+            personaPrompt = "You are 'Smart Bunny', a playful friend.";
+            tonePrompt = "Use emojis, be super kind, short sentences.";
+        } else if(userAge <= 15) {
+            personaPrompt = "You are 'Captain Spark', a gaming coach.";
+            tonePrompt = "Use cool words, be energetic.";
+        } else {
+            personaPrompt = "You are a Professional English Mentor.";
+            tonePrompt = "Be logical, polite, and corrective.";
+        }
 
-        const systemPrompt = `ACT AS: ${persona}. USER AGE: ${userAge}. LEVEL: ${userLevel}.
-        GOAL: Teach English via Tasks.
-        RULE: If user makes mistake, give a Quiz Option next time.
-        NO BANGLA.`;
+        const systemPrompt = `
+        IDENTITY: ${personaPrompt}
+        USER INFO: Age ${userAge}. Level ${userLevel}.
+        TONE: ${tonePrompt}
+        RULES:
+        1. ENGLISH ONLY.
+        2. Do NOT be too strict. If user says 'I am Sadik', say 'Nice to meet you Sadik!'. DO NOT correct valid sentences.
+        3. Do NOT say goodbye. Ask a question back.
+        `;
 
         try {
             const res = await fetch('/api/chat', {
@@ -289,38 +313,32 @@
             });
             const data = await res.json();
             
-            // Check if AI wants to send a Quiz (Backend logic required, simulated here)
-            // For now, just show text response
-            addAIMessage(data.reply);
+            // 3. Backend Bangla Cleaner (The Ghostbuster)
+            // This removes any accidental Bangla text appended by backend defaults
+            let cleanReply = data.reply.replace(/[\u0980-\u09FF].*/g, '').replace(/ভালো করে.*/g, '').trim();
+            
+            if(cleanReply.length < 2) cleanReply = "Can you say that again?";
+
+            addAIMessage(cleanReply);
             
         } catch (e) { console.error(e); }
     }
 
-    // --- INPUT HANDLERS ---
-    const inputField = document.getElementById('userInput');
-    inputField.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendToAI(inputField.value);
-            inputField.value = '';
-        }
-    });
+    // --- INPUT & VOICE ---
+    function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
 
-    // --- VOICE LOGIC ---
     window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
-    
     function speak(text) {
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         if(voices.length > 0) {
-            // Pick voice based on Age Group
-            if(userAge <= 9) utter.voice = voices.find(v => v.name.includes("Female")) || voices[0];
-            else utter.voice = voices.find(v => v.name.includes("Male"));
+            if(userAge <= 10) utter.voice = voices.find(v => v.name.includes("Female")) || voices[0];
+            else utter.voice = voices.find(v => v.name.includes("Male")) || voices[0];
         }
-        utter.rate = userAge <= 9 ? 0.9 : 1.1;
+        utter.rate = userAge <= 10 ? 0.9 : 1.05;
         window.speechSynthesis.speak(utter);
     }
 
-    // Mic Logic (Standard)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
@@ -338,9 +356,9 @@
     }
     recognition.onresult = (e) => {
         const txt = e.results[0][0].transcript;
-        inputField.value = txt;
+        document.getElementById('userInput').value = txt;
         sendToAI(txt);
-        toggleMic(); // Auto stop
+        toggleMic();
     };
 
 </script>
