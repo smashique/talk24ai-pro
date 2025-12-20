@@ -2,140 +2,76 @@
 <html lang="en">
 <head>
     <meta name="google-site-verification" content="_wCm5qdAT_xwGZoRq8YREotTv3OprJm3Pn_RpYAtIkQ" />
-    
-    <meta name="description" content="Talk24Ai - Your Personal English Ustad. Learn English with logic and reason.">
-    <meta name="keywords" content="English Learning AI, Talk24Ai, Dr Zakir Naik Style AI, English Tutor">
-    <meta name="author" content="Talk24Ai">
-    
+    <meta name="description" content="Talk24Ai - Learn English with Logic and Reason.">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Talk24Ai | English Ustad</title>
-    
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- Base Styles --- */
-        body { font-family: 'Poppins', 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        #pc-warning {
-            background: #fff3cd; color: #856404; padding: 12px;
-            text-align: center; font-size: 14px; font-weight: 600;
-            border-bottom: 1px solid #ffeeba; display: none;
-            z-index: 5000;
-        }
+        #pc-warning { background: #fff3cd; color: #856404; padding: 12px; text-align: center; display: none; z-index: 5000; }
 
-        /* --- WELCOME SCREEN --- */
-        #welcome-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1b5e20, #2e7d32);
-            z-index: 3000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; color: white;
-            text-align: center; transition: opacity 0.5s ease-out;
-        }
+        /* WELCOME SCREEN */
+        #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1b5e20, #2e7d32); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; transition: opacity 0.5s; }
         .welcome-logo { font-size: 42px; font-weight: 800; margin-bottom: 5px; }
         .welcome-logo span { color: #81c784; }
-        .start-btn {
-            background: white; color: #1b5e20; border: none;
-            padding: 16px 45px; border-radius: 50px; font-size: 18px; font-weight: bold;
-            cursor: pointer; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
+        .start-btn { background: white; color: #1b5e20; border: none; padding: 16px 45px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
 
-        /* --- HEADER & INSTALL BUTTON --- */
-        .header { 
-            background: white; color: #1b5e20; padding: 10px 15px; 
-            text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-            z-index: 10; display: flex; justify-content: space-between; align-items: center; 
-        }
-        .logo { font-size: 20px; font-weight: 800; color: #1b5e20; }
+        /* HEADER */
+        .header { background: white; color: #1b5e20; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; }
+        .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: #4caf50; }
+        #install-btn { display: flex; align-items: center; gap: 5px; background: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; }
+
+        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; }
         
-        /* Install Button (Always Visible) */
-        #install-btn { 
-            display: flex; 
-            align-items: center; gap: 5px;
-            background: #ff9800; color: white; border: none; 
-            padding: 8px 15px; border-radius: 20px; 
-            cursor: pointer; font-size: 12px; font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-        #install-btn:active { transform: scale(0.95); }
-
-        #guest-timer { background: #fff8e1; color: #f57c00; text-align: center; padding: 5px; font-size: 13px; font-weight: 600; border-bottom: 1px solid #ffe0b2; }
-        .shake-anim { animation: shake 0.5s; background: #ffccbc !important; color: #d32f2f !important; }
-
+        /* CHAT BOX */
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 200px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        
-        .msg { max-width: 85%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; word-wrap: break-word; }
-        .ai { background: white; align-self: flex-start; color: #333; border-bottom-left-radius: 5px; border: 1px solid #eee; }
+        .msg { max-width: 85%; padding: 12px 18px; border-radius: 20px; line-height: 1.6; font-size: 15px; }
+        .ai { background: white; align-self: flex-start; color: #333; border: 1px solid #eee; border-bottom-left-radius: 5px; }
         .user { background: #1b5e20; align-self: flex-end; color: white; border-bottom-right-radius: 5px; }
+        .system-notif { align-self: center; background: #e3f2fd; color: #0d47a1; font-size: 12px; padding: 8px 15px; border-radius: 12px; margin: 10px 0; font-weight: 600; }
+
+        /* CONTROLS */
+        .suggestions-box { position: fixed; bottom: 130px; left: 0; width: 100%; display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; z-index: 15; }
+        .chip { background: white; border: 1px solid #4caf50; color: #1b5e20; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; flex-shrink: 0; }
         
-        .system-notif { align-self: center; background: #e3f2fd; color: #0d47a1; font-size: 12px; padding: 8px 15px; border-radius: 12px; margin: 10px 0; font-weight: 600; text-align: center; }
-
-        /* --- SUGGESTIONS & CONTROLS --- */
-        .suggestions-box {
-            position: fixed; bottom: 130px; left: 0; width: 100%;
-            display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px;
-            white-space: nowrap; scrollbar-width: none; z-index: 15;
-        }
-        .chip {
-            background: white; border: 1px solid #4caf50; color: #1b5e20;
-            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
-            cursor: pointer; flex-shrink: 0;
-        }
-
-        .voice-controls { 
-            position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: linear-gradient(to top, #f0f2f5 85%, rgba(240,242,245,0)); 
-            padding: 10px 0 30px 0; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            z-index: 20;
-        }
-
+        .voice-controls { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, #f0f2f5 85%, rgba(240,242,245,0)); padding: 10px 0 30px 0; display: flex; flex-direction: column; align-items: center; z-index: 20; }
         .mic-wrapper { position: relative; width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; }
-        #mic-btn { 
-            width: 65px; height: 65px; border-radius: 50%; border: none; 
-            background: #1b5e20; color: white; font-size: 28px; 
-            cursor: pointer; box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3); 
-            z-index: 2; display: flex; align-items: center; justify-content: center;
-        }
+        #mic-btn { width: 65px; height: 65px; border-radius: 50%; border: none; background: #1b5e20; color: white; font-size: 28px; cursor: pointer; box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3); z-index: 2; }
         .listening #mic-btn { background: #e53935; }
         .hint-text { font-size: 12px; color: #666; font-weight: 500; }
-
-        .toggle-kb { position: absolute; right: 25px; bottom: 40px; width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 3px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
         
-        .text-mode { display: none; width: 90%; background: white; padding: 5px; border-radius: 30px; align-items: center; margin-bottom: 20px; }
+        .text-mode { display: none; width: 90%; background: white; padding: 5px; border-radius: 30px; margin-bottom: 20px; }
         #userInput { flex: 1; border: none; padding: 12px 20px; outline: none; font-size: 16px; border-radius: 30px; }
-        #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #send-btn { background: #1b5e20; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        .toggle-kb { position: absolute; right: 25px; bottom: 40px; width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
 
         #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-btn { background: #1b5e20; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 15px; margin-top: 20px; cursor: pointer; font-weight: 600; }
-        
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+        .modal-btn { background: #1b5e20; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div id="pc-warning">
-    🎧 For the best experience, please use <b>Chrome or Safari</b> on mobile.
+    🎧 Please use <b>Chrome or Safari</b> on mobile for the best voice experience.
     <span onclick="this.parentElement.style.display='none'" style="cursor:pointer; margin-left:10px;">✖</span>
 </div>
 
 <div id="welcome-screen">
     <div class="welcome-logo">TALK<span>24</span>AI</div>
     <div style="font-size: 16px; color: white; margin-bottom: 50px;">👔 English Ustad - Logic & Reason</div>
-    <button class="start-btn" onclick="enterClassroom()">
-        <span>▶</span> Start Session
-    </button>
+    <button class="start-btn" onclick="enterClassroom()"><span>▶</span> Start Session</button>
 </div>
 
 <div id="login-modal">
     <div class="modal-content">
         <h2 style="color:#1b5e20; margin:0 0 10px 0;">⏰ Time's Up!</h2>
-        <p style="color:#555; font-size:14px;">Brother, to continue the session, please login.</p>
+        <p style="color:#555; font-size:14px;">Brother, to continue learning, please login.</p>
         <button class="modal-btn" onclick="googleLogin()">G Continue with Google</button>
         <p id="timer-lock-msg" style="font-size: 11px; color: #d32f2f; margin-top: 15px;"></p>
     </div>
@@ -152,51 +88,41 @@
 
 <div class="voice-controls">
     <div class="text-mode" id="text-area">
-        <input type="text" id="userInput" placeholder="Ask your question...">
+        <input type="text" id="userInput" placeholder="Type here...">
         <button onclick="sendText()" id="send-btn">➤</button>
         <button onclick="toggleInput()" style="background:none; border:none; color:#666; margin-right:10px; cursor:pointer;">✖</button>
     </div>
-
-    <div id="mic-container" style="display: flex; flex-direction: column; align-items: center;">
-        <div class="mic-wrapper" id="mic-wrapper">
-            <button id="mic-btn">🎤</button>
-        </div>
+    <div id="mic-container">
+        <div class="mic-wrapper" id="mic-wrapper"><button id="mic-btn">🎤</button></div>
         <div class="hint-text" id="hint-text">Tap to Speak</div>
     </div>
     <div class="toggle-kb" id="kb-btn" onclick="toggleInput()">⌨️</div>
 </div>
 
 <script>
-    // --- PWA LOGIC ---
+    // --- PWA & UI LOGIC ---
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-    });
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
     installBtn.addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             if(outcome === 'accepted') installBtn.innerText = "✅ INSTALLED";
             deferredPrompt = null;
-        } else {
-            alert("Brother, you can install this app manually from your browser menu.");
-        }
+        } else { alert("Brother, you can install this app manually from your browser menu."); }
     });
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then(() => console.log("SW Registered"));
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
-    // --- PERSONA: DR ZAKIR NAIK (English Only) ---
-    const welcomeMsg = "Assalamu Alaikum wa Rahmatullahi wa Barakatuh. I am your English Ustad. Brother, ask your question regarding the English language, and InshaAllah, I shall answer it with logic and reason.";
+    // --- PERSONA: DR ZAKIR NAIK (STRICT ENGLISH) ---
+    // সালামের সঠিক উচ্চারণ নিশ্চিত করার জন্য স্পেলিং একটু ট্রিক করা হয়েছে।
+    const welcomeMsg = "As-salamu Alaykum wa Rahmatullahi wa Barakatuh. Brother, I am your English Ustad. Tell me, what specific topic shall we master today?";
     
     const suggestions = [
-        "📖 Correct my Grammar",
-        "🗣️ Practice Pronunciation",
-        "❓ Ask a Question",
-        "👔 Interview Preparation",
-        "🧠 Logical Debate"
+        "💼 Job Interview",
+        "🗣️ Fluency Practice",
+        "📝 Grammar Logic",
+        "❓ Ask a Question"
     ];
 
     let timeLeft = parseInt(localStorage.getItem('guestTimeLeft')) || 120;
@@ -204,6 +130,7 @@
     let timerActive = false; 
     const timerDisplay = document.getElementById('guest-timer');
 
+    // Timer Logic
     function checkLockStatus() {
         const lockTimestamp = localStorage.getItem('guestLockTime');
         if (lockTimestamp) {
@@ -211,48 +138,38 @@
             const hoursPassed = (now - lockTimestamp) / (1000 * 60 * 60);
             if (hoursPassed < 24) {
                 const hoursLeft = Math.ceil(24 - hoursPassed);
-                document.getElementById('timer-lock-msg').innerText = `Brother, please wait ${hoursLeft} hours to use guest mode again.`;
+                document.getElementById('timer-lock-msg').innerText = `Brother, wait ${hoursLeft} hours to use guest mode again.`;
                 showLoginModal();
                 document.querySelector('.voice-controls').style.display = 'none';
                 return true;
-            } else {
-                localStorage.removeItem('guestLockTime');
-                localStorage.setItem('guestTimeLeft', 120);
-                timeLeft = 120;
-            }
+            } else { localStorage.removeItem('guestLockTime'); localStorage.setItem('guestTimeLeft', 120); timeLeft = 120; }
         }
         return false;
     }
 
     window.onload = () => {
         if(!checkLockStatus()){
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
             if (!isMobile) document.getElementById('pc-warning').style.display = 'block';
         }
+        // Load voices early
+        window.speechSynthesis.getVoices();
     };
-
-    function updateTimerDisplay() {
-        let m = Math.floor(timeLeft / 60);
-        let s = timeLeft % 60;
-        timerDisplay.innerText = `Free Trial: ${m}:${s < 10 ? '0'+s : s} Minutes`;
-        if (timeLeft < 30) timerDisplay.classList.add('shake-anim');
-    }
-    updateTimerDisplay();
 
     const timerInterval = setInterval(() => {
         if(isGuest && timerActive && timeLeft > 0) {
             timeLeft--;
             localStorage.setItem('guestTimeLeft', timeLeft);
-            updateTimerDisplay();
+            let m = Math.floor(timeLeft / 60);
+            let s = timeLeft % 60;
+            timerDisplay.innerText = `Free Trial: ${m}:${s < 10 ? '0'+s : s} Minutes`;
             
-            if(timeLeft === 60) showSystemNotification("Talk24Ai Official", "Brother, you have 1 minute remaining. Please login to continue.");
-            
+            if(timeLeft === 60) showSystemNotification("System", "Brother, 1 minute remaining. Please be ready to login.");
             if(timeLeft <= 0) {
                 clearInterval(timerInterval);
                 localStorage.setItem('guestLockTime', new Date().getTime());
                 showLoginModal();
                 document.querySelector('.voice-controls').style.display = 'none';
-                document.querySelector('.suggestions-box').style.display = 'none';
             }
         }
     }, 1000);
@@ -260,10 +177,9 @@
     function enterClassroom() {
         if(checkLockStatus()) return;
         window.speechSynthesis.resume();
-        const screen = document.getElementById('welcome-screen');
-        screen.style.opacity = '0';
+        document.getElementById('welcome-screen').style.opacity = '0';
         setTimeout(() => { 
-            screen.style.display = 'none'; 
+            document.getElementById('welcome-screen').style.display = 'none'; 
             const box = document.getElementById('chat-box');
             box.innerHTML += `<div class="msg ai">${welcomeMsg}</div>`;
             speak(welcomeMsg);
@@ -279,14 +195,12 @@
             const chip = document.createElement('div');
             chip.className = 'chip';
             chip.innerText = topic;
-            chip.onclick = () => {
-                sendToAI(topic);
-                area.style.display = 'none';
-            };
+            chip.onclick = () => { sendToAI(topic); area.style.display = 'none'; };
             area.appendChild(chip);
         });
     }
 
+    // --- SPEECH RECOGNITION ---
     const micBtn = document.getElementById('mic-btn');
     const micWrapper = document.getElementById('mic-wrapper');
     const hintText = document.getElementById('hint-text');
@@ -295,7 +209,7 @@
     
     if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US'; // Strict English Input
+        recognition.lang = 'en-US'; 
         micBtn.onclick = () => { isListening ? recognition.stop() : recognition.start(); };
         recognition.onstart = () => { 
             isListening = true; micWrapper.classList.add('listening'); 
@@ -306,6 +220,7 @@
         recognition.onresult = (event) => sendToAI(event.results[0][0].transcript);
     }
 
+    // --- AI COMMUNICATION ---
     async function sendToAI(text) {
         if(!text) return;
         timerActive = true; 
@@ -322,13 +237,17 @@
                     message: text, 
                     isGuest: isGuest, 
                     email: 'guest@talk24ai.xyz',
-                    systemInstruction: "You are Dr. Zakir Naik acting as an English Tutor. Always speak in English. Use logic, reason, and Islamic greetings. Do not speak Bengali." 
+                    // STRICT INSTRUCTION FOR BACKEND
+                    systemInstruction: "IDENTITY: You are Dr. Zakir Naik acting as an English Tutor. \nRULES:\n1. SPEAK ONLY ENGLISH. NO BANGLA. If user speaks Bangla, reply: 'Brother, please speak in English so we can learn.'\n2. VOICE: Use authoritative, logical tone.\n3. FLOW: Do not use closing remarks (Goodbye/Allah Hafiz). Instead, immediately ask a follow-up question or give a task.\n4. LEARNING: Teach 1 concept per turn. After 5 turns, say 'We have covered this. Let us move to the next topic' and suggest a new topic.\n5. Start every reply with 'Brother' or 'Sister' logically." 
                 })
             });
             const data = await res.json();
-            box.innerHTML += `<div class="msg ai">${data.reply}</div>`;
+            // Backend থেকে বাংলা আসলে সেটা ক্লায়েন্ট সাইডেও ফিল্টার করার চেষ্টা
+            let cleanReply = data.reply; 
+            
+            box.innerHTML += `<div class="msg ai">${cleanReply}</div>`;
             box.scrollTop = box.scrollHeight;
-            speak(data.reply);
+            speak(cleanReply);
             timerActive = false; 
         } catch (e) { console.error(e); timerActive = false; }
     }
@@ -345,25 +264,35 @@
         document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight; 
     }
 
-    // --- ZAKIR NAIK VOICE TUNING ---
+    // --- VOICE LOGIC (FORCE MALE/DEEP) ---
     function speak(text) {
         const synth = window.speechSynthesis;
         if(synth.speaking) synth.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        let voices = synth.getVoices();
         
-        // Priority 1: Indian English (His natural accent)
-        // Priority 2: British English (Close to his formal style)
-        let ustadVoice = voices.find(v => v.lang.includes('en-IN')) || 
-                         voices.find(v => v.lang.includes('en-GB')) || 
-                         voices.find(v => v.lang.includes('en'));
-                         
-        if(ustadVoice) {
-            utter.voice = ustadVoice;
-            utter.pitch = 1.1; // Slightly sharp/authoritative tone
-            utter.rate = 1.15; // Energetic and slightly fast
-        }
-        synth.speak(utter);
+        // Split text to avoid timeout on long speech
+        const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+        
+        sentences.forEach((sentence, index) => {
+            const utter = new SpeechSynthesisUtterance(sentence);
+            let voices = synth.getVoices();
+            
+            // 1. Try to find a voice with "Male" in the name
+            // 2. Fallback to "English India" (often authoritative)
+            // 3. Fallback to "English UK"
+            let ustadVoice = voices.find(v => v.name.includes('Male') && v.lang.includes('en')) || 
+                             voices.find(v => v.lang.includes('en-IN')) || 
+                             voices.find(v => v.lang.includes('en-GB'));
+
+            if(ustadVoice) {
+                utter.voice = ustadVoice;
+                // Pitch < 1 makes it deeper (Male-like) if the voice is neutral
+                utter.pitch = 0.8; 
+                utter.rate = 1.1; // Fast & Logical
+            }
+            
+            // Queue utterances
+            synth.speak(utter);
+        });
     }
 
     function showLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
