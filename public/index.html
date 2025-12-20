@@ -2,81 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talk24Ai | English Ustad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Talk24AI | Speak Like a Pro</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- THEME VARIABLES --- */
+        /* --- DESIGN SYSTEM (Duolingo Inspired) --- */
         :root {
-            --primary: #58cc02;
-            --primary-shadow: #46a302;
-            --secondary: #1cb0f6;
+            --green: #58cc02; --green-shade: #46a302;
+            --blue: #1cb0f6; --blue-shade: #1899d6;
+            --yellow: #ffc800; --yellow-shade: #e5b400;
+            --red: #ff4b4b; --red-shade: #d32f2f;
+            --gray: #e5e5e5; --text: #4b4b4b;
             --bg: #fff;
-            --font: 'Nunito', sans-serif;
+            --font-main: 'Nunito', sans-serif;
+            --radius: 16px;
         }
 
-        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        /* HEADER */
-        .header-bar { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; background: white; z-index: 10; }
-        .stat-pill { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 16px; color: #e5e5e5; }
-        .stat-pill.active { color: #ff9600; } 
-        .stat-pill.gems { color: #1cb0f6; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-main); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--text); }
 
-        /* QUEST BAR */
-        #quest-bar { background: #fff; padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #f0f0f0; }
-        .quest-icon { font-size: 28px; }
-        .quest-info { flex: 1; }
-        .quest-title { font-size: 11px; font-weight: 800; color: #afafaf; text-transform: uppercase; letter-spacing: 0.5px; }
-        .quest-desc { font-size: 15px; font-weight: 700; color: #4b4b4b; }
-        .quest-progress-bg { height: 12px; background: #e5e5e5; border-radius: 10px; margin-top: 6px; overflow: hidden; }
-        .quest-progress-fill { height: 100%; background: #ff9600; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        /* CHAT AREA */
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; background: #fff; scroll-behavior: smooth; }
+        /* --- UI COMPONENTS --- */
         
-        .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.5; font-size: 16px; font-weight: 600; position: relative; animation: popIn 0.3s; }
-        .ai { background: #f7f7f7; color: #4b4b4b; border: 2px solid #e5e5e5; border-bottom-left-radius: 4px; }
-        .user { background: var(--secondary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; border-bottom: 4px solid #1899d6; }
-        
-        /* QUIZ UI */
-        .quiz-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .quiz-option { 
-            background: white; border: 2px solid #e5e5e5; border-bottom: 4px solid #e5e5e5;
-            padding: 12px 20px; border-radius: 16px; font-weight: 700; color: #4b4b4b;
-            cursor: pointer; transition: 0.1s; text-align: center;
-        }
-        .quiz-option:active { transform: translateY(4px); border-bottom-width: 0; }
-        .quiz-option.correct { background: #d7ffb8; border-color: #58cc02; color: #58cc02; }
-        .quiz-option.wrong { background: #ffdfe0; border-color: #ff4b4b; color: #ff4b4b; }
+        /* 1. HEADER (Stats) */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray); }
+        .brand { font-family: 'Fredoka', sans-serif; font-size: 24px; color: var(--green); letter-spacing: -0.5px; }
+        .stats-row { display: flex; gap: 15px; }
+        .stat-pill { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 15px; color: #afafaf; }
+        .stat-pill.fire { color: #ff9600; }
+        .stat-pill.gem { color: var(--blue); }
 
-        /* INPUT AREA */
-        .voice-controls { border-top: 2px solid #f0f0f0; padding: 15px 20px; background: white; display: flex; gap: 10px; align-items: center; }
-        #userInput { flex: 1; background: #f7f7f7; border: 2px solid #e5e5e5; padding: 14px 20px; border-radius: 16px; font-family: inherit; font-weight: 600; outline: none; font-size: 16px; transition: 0.2s; }
-        #userInput:focus { border-color: #afafaf; background: white; }
-        #mic-btn { width: 54px; height: 54px; border-radius: 18px; border: none; background: var(--primary); border-bottom: 4px solid var(--primary-shadow); color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+        /* 2. PROGRESS BAR (Quest) */
+        .quest-container { padding: 15px 20px; border-bottom: 1px solid var(--gray); display: flex; align-items: center; gap: 15px; }
+        .quest-icon { font-size: 24px; animation: bounce 2s infinite; }
+        .quest-details { flex: 1; }
+        .quest-label { font-size: 11px; font-weight: 800; color: #afafaf; text-transform: uppercase; letter-spacing: 0.5px; }
+        .quest-target { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+        .progress-track { height: 12px; background: var(--gray); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--yellow); width: 0%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        /* 3. CHAT AREA */
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        
+        .bubble { max-width: 85%; padding: 12px 18px; border-radius: 18px; font-size: 16px; font-weight: 600; line-height: 1.5; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .ai { background: #f7f7f7; color: var(--text); border: 2px solid var(--gray); border-bottom-width: 4px; border-bottom-left-radius: 4px; }
+        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom: 4px solid var(--blue-shade); border-bottom-right-radius: 4px; }
+
+        /* 4. QUIZ CHIPS */
+        .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .chip { background: white; border: 2px solid var(--gray); border-bottom-width: 4px; padding: 10px 16px; border-radius: 14px; font-weight: 700; color: var(--text); cursor: pointer; transition: 0.1s; flex: 1; text-align: center; min-width: 45%; }
+        .chip:active { transform: translateY(4px); border-bottom-width: 0px; }
+        .chip.correct { background: #d7ffb8; border-color: var(--green); color: var(--green); }
+        .chip.wrong { background: #ffdfe0; border-color: var(--red); color: var(--red); }
+
+        /* 5. FOOTER CONTROLS */
+        .controls { padding: 15px; border-top: 2px solid var(--gray); background: white; display: flex; gap: 10px; align-items: center; }
+        #userInput { flex: 1; background: #f7f7f7; border: 2px solid var(--gray); padding: 14px; border-radius: 16px; font-family: inherit; font-weight: 600; font-size: 16px; outline: none; }
+        #userInput:focus { background: white; border-color: #afafaf; }
+        
+        #mic-btn { width: 56px; height: 56px; border-radius: 18px; background: var(--green); border: none; border-bottom: 4px solid var(--green-shade); color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
         #mic-btn:active { transform: translateY(4px); border-bottom-width: 0; }
-        .listening #mic-btn { background: #ff4b4b; border-color: #d32f2f; animation: pulse 1s infinite; }
+        .listening #mic-btn { background: var(--red); border-color: var(--red-shade); animation: pulse 1.5s infinite; }
 
-        /* WELCOME SCREEN */
-        #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow-y: auto; }
-        .mascot { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
-        .setup-title { font-size: 26px; font-weight: 800; color: #3c3c3c; margin-bottom: 30px; }
+        /* 6. ONBOARDING SCREEN */
+        #setup-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .mascot-lg { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
+        .title-lg { font-size: 28px; font-weight: 800; color: #3c3c3c; margin-bottom: 30px; }
         
-        .input-box { width: 100%; margin-bottom: 20px; text-align: left; max-width: 320px; }
-        .label { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
-        .field { width: 100%; padding: 15px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; outline: none; box-sizing: border-box; font-family: inherit; }
-        .field:focus { border-color: var(--secondary); }
+        .form-group { width: 100%; margin-bottom: 20px; text-align: left; max-width: 350px; }
+        .label { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .input-lg { width: 100%; padding: 16px; border: 2px solid var(--gray); border-radius: 16px; font-size: 18px; font-weight: 700; outline: none; text-align: center; font-family: inherit; }
+        .input-lg:focus { border-color: var(--blue); }
 
-        .start-btn { width: 100%; max-width: 320px; padding: 16px; background: var(--primary); border: none; border-bottom: 4px solid var(--primary-shadow); color: white; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: 0.1s; }
-        .start-btn:active { transform: translateY(4px); border-bottom-width: 0; }
+        .btn-lg { width: 100%; max-width: 350px; padding: 16px; background: var(--green); border: none; border-bottom: 4px solid var(--green-shade); color: white; font-size: 16px; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.1s; }
+        .btn-lg:active { transform: translateY(4px); border-bottom-width: 0; }
 
-        /* WARNINGS */
-        #bangla-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 12px 24px; border-radius: 25px; font-weight: 800; z-index: 4000; display: none; box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4); animation: shake 0.4s; }
-        
-        @keyframes popIn { from {opacity: 0; transform: scale(0.9);} to {opacity: 1; transform: scale(1);} }
+        /* ALERTS */
+        #warning-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--red); color: white; padding: 12px 24px; border-radius: 50px; font-weight: 800; font-size: 14px; z-index: 6000; display: none; box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4); animation: shake 0.4s; }
+
+        @keyframes popIn { from {opacity: 0; transform: scale(0.8);} to {opacity: 1; transform: scale(1);} }
         @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
         @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4);} 70% {box-shadow: 0 0 0 15px rgba(255, 75, 75, 0);} 100% {box-shadow: 0 0 0 0 rgba(255, 75, 75, 0);} }
         @keyframes shake { 0%, 100% {transform: translateX(-50%);} 25% {transform: translateX(-55%);} 75% {transform: translateX(-45%);} }
@@ -84,134 +89,137 @@
 </head>
 <body>
 
-<audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
-<audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2002/2002-preview.mp3"></audio>
-<audio id="snd-level" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="sfx-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+<audio id="sfx-wrong" src="https://assets.mixkit.co/active_storage/sfx/2002/2002-preview.mp3"></audio>
+<audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
-<div id="bangla-warning">🚫 English Only Please!</div>
+<div id="warning-toast">🚫 Speak in English Please!</div>
 
-<div id="welcome-screen">
-    <div class="mascot">🦉</div>
-    <div class="setup-title">Let's Get Started!</div>
+<div id="setup-screen">
+    <div class="mascot-lg">🦉</div>
+    <div class="title-lg">Talk24AI Setup</div>
     
-    <div class="input-box">
+    <div class="form-group">
         <label class="label">Your Age</label>
-        <input type="number" id="userAge" class="field" value="12">
+        <input type="number" id="userAge" class="input-lg" value="12" inputmode="numeric">
     </div>
     
-    <div class="input-box">
+    <div class="form-group">
         <label class="label">Gender</label>
-        <select id="userGender" class="field">
+        <select id="userGender" class="input-lg">
             <option value="Boy">Boy</option>
             <option value="Girl">Girl</option>
         </select>
     </div>
 
-    <button class="start-btn" onclick="startPlacement()">CHECK MY LEVEL</button>
+    <button class="btn-lg" onclick="initApp()">START PLACEMENT TEST</button>
 </div>
 
-<div class="header-bar">
-    <div style="font-weight: 900; color: var(--primary); font-size: 22px; letter-spacing: -1px;">Talk24</div>
-    <div style="display: flex; gap: 15px;">
-        <div class="stat-pill active">🔥 <span id="streak-count">0</span></div>
-        <div class="stat-pill gems">💎 <span id="xp-count">0</span></div>
+<div class="header">
+    <div class="brand">talk24</div>
+    <div class="stats-row">
+        <div class="stat-pill fire">🔥 <span id="streak">0</span></div>
+        <div class="stat-pill gem">💎 <span id="gems">0</span></div>
     </div>
 </div>
 
-<div id="quest-bar">
+<div class="quest-container">
     <div class="quest-icon">🎯</div>
-    <div class="quest-info">
-        <div class="quest-title">Daily Quest</div>
-        <div class="quest-desc" id="quest-text">Complete the placement test</div>
-        <div class="quest-progress-bg">
-            <div class="quest-progress-fill" id="quest-fill"></div>
+    <div class="quest-details">
+        <div class="quest-label">DAILY GOAL</div>
+        <div class="quest-target" id="quest-text">Complete Placement Test</div>
+        <div class="progress-track">
+            <div class="progress-fill" id="quest-fill"></div>
         </div>
     </div>
 </div>
 
 <div id="chat-box"></div>
 
-<div class="voice-controls">
-    <input type="text" id="userInput" placeholder="Type or say something..." onkeypress="handleEnter(event)">
+<div class="controls">
+    <input type="text" id="userInput" placeholder="Type here..." onkeypress="handleEnter(event)">
     <button id="mic-btn" onclick="toggleMic()">🎤</button>
 </div>
 
 <script>
-    // --- STATE VARIABLES ---
-    let userAge = 12;
-    let userGender = 'Boy';
-    let userLevel = 'Placement';
-    let xp = 0;
-    let questProgress = 0;
-    let questTarget = 1;
+    // --- APP STATE (Neuromarketing Core) ---
+    let state = {
+        age: 12,
+        gender: 'Boy',
+        level: 'Placement', // Placement -> A1 -> A2...
+        xp: 0,
+        streak: 1,
+        quest: { current: 0, target: 1 },
+        persona: 'Default'
+    };
+    
     let voices = [];
     let isMicOn = false;
 
-    // --- SETUP LOGIC ---
-    function startPlacement() {
-        userAge = document.getElementById('userAge').value;
-        userGender = document.getElementById('userGender').value;
-        applyTheme(userAge);
-
-        document.getElementById('welcome-screen').style.display = 'none';
+    // --- INITIALIZATION ---
+    function initApp() {
+        state.age = document.getElementById('userAge').value;
+        state.gender = document.getElementById('userGender').value;
         
-        // Initial Message
-        let personaName = userAge <= 10 ? "Smart Bunny" : "English Ustad";
-        addAIMessage(`Hi! I am ${personaName}. Let's find your level quickly.`);
+        // UI Transition
+        document.getElementById('setup-screen').style.display = 'none';
         
-        // Trigger Placement Quiz (Simulated)
+        // Determine Initial Persona based on Age
+        configurePersona();
+        
+        // Start Placement
         setTimeout(() => {
-            renderQuiz("Complete the sentence: The cat is _____ on the mat.", ["Sleep", "Sleeping", "Sleeps"], "Sleeping");
-        }, 1000);
+            botSay(`Hi! I'm your AI Buddy. Let's find your English level.`);
+            setTimeout(() => {
+                renderQuiz("Fill in the blank: The bird is _____ in the sky.", ["Flying", "Flys", "Fly"], "Flying");
+            }, 1000);
+        }, 500);
     }
 
-    // --- THEME ENGINE ---
-    function applyTheme(age) {
+    // --- LOGIC: PERSONA ENGINE ---
+    function configurePersona() {
         const root = document.documentElement;
-        if(age <= 10) { 
-            // Junior Theme
-            root.style.setProperty('--primary', '#ffc800'); 
-            root.style.setProperty('--primary-shadow', '#e5b400');
-            root.style.setProperty('--secondary', '#ff9600');
-            root.style.setProperty('--font', "'Fredoka', sans-serif");
-        } else if(age <= 15) { 
-            // Teen Theme
-            root.style.setProperty('--primary', '#1cb0f6'); 
-            root.style.setProperty('--primary-shadow', '#1899d6');
-            root.style.setProperty('--secondary', '#2b70c9');
-        } else { 
-            // Pro Theme
-            root.style.setProperty('--primary', '#58cc02'); 
-            root.style.setProperty('--primary-shadow', '#46a302');
-            root.style.setProperty('--secondary', '#204b28');
+        if(state.age <= 9) {
+            state.persona = "Junior Buddy"; // Fun, Simple, High Pitch
+            root.style.setProperty('--green', '#ffc800'); // Yellow Theme
+            root.style.setProperty('--green-shade', '#e5b400');
+        } else if(state.age <= 14) {
+            state.persona = "Gaming Coach"; // Cool, Energetic
+            root.style.setProperty('--green', '#1cb0f6'); // Blue Theme
+            root.style.setProperty('--green-shade', '#1899d6');
+        } else {
+            state.persona = "Pro Mentor"; // Professional, Deep Voice
+            root.style.setProperty('--green', '#58cc02'); // Classic Green
         }
     }
 
-    // --- CHAT UI HELPERS ---
-    function addAIMessage(text) {
+    // --- UI: CHAT BUBBLES ---
+    function botSay(text) {
         const chat = document.getElementById('chat-box');
-        chat.innerHTML += `<div class="msg ai">${text}</div>`;
+        chat.innerHTML += `<div class="bubble ai">${text}</div>`;
         chat.scrollTop = chat.scrollHeight;
         speak(text);
     }
 
-    function addUserMessage(text) {
+    function userSay(text) {
         const chat = document.getElementById('chat-box');
-        chat.innerHTML += `<div class="msg user">${text}</div>`;
+        chat.innerHTML += `<div class="bubble user">${text}</div>`;
         chat.scrollTop = chat.scrollHeight;
     }
 
-    // --- INTERACTIVE QUIZ ---
-    function renderQuiz(question, options, correctAnswer) {
+    // --- UI: INTERACTIVE QUIZ (Duolingo Style) ---
+    function renderQuiz(question, options, answer) {
         const chat = document.getElementById('chat-box');
-        const qId = Date.now();
+        const id = Date.now();
         
-        let html = `<div class="msg ai" id="q-${qId}">
-            <div style="margin-bottom:10px;">${question}</div>
-            <div class="quiz-container">`;
+        let html = `
+        <div class="bubble ai" id="q-${id}">
+            <div style="margin-bottom:8px">${question}</div>
+            <div class="chips-container">
+        `;
         
         options.forEach(opt => {
-            html += `<div class="quiz-option" onclick="checkAnswer(this, '${opt}', '${correctAnswer}', '${qId}')">${opt}</div>`;
+            html += `<div class="chip" onclick="handleQuizClick(this, '${opt}', '${answer}', '${id}')">${opt}</div>`;
         });
         
         html += `</div></div>`;
@@ -220,125 +228,141 @@
         speak(question);
     }
 
-    function checkAnswer(el, selected, correct, qId) {
-        const parent = document.getElementById(`q-${qId}`);
-        if(parent.classList.contains('answered')) return;
-        parent.classList.add('answered');
+    function handleQuizClick(el, selected, correct, id) {
+        const parent = document.getElementById(`q-${id}`);
+        if(parent.classList.contains('done')) return; // Prevent double click
+        parent.classList.add('done');
 
         if(selected === correct) {
             el.classList.add('correct');
-            document.getElementById('snd-correct').play();
+            document.getElementById('sfx-correct').play();
             updateProgress(true);
-            setTimeout(() => addAIMessage("Correct! 🎉 Let's continue."), 1000);
             
-            // Auto Transition out of Placement
-            if(userLevel === 'Placement') {
-                userLevel = 'A1';
+            // Logic: End Placement
+            if(state.level === 'Placement') {
+                state.level = 'A1';
                 setTimeout(() => {
-                    addAIMessage("You are now Level A1. Introduce yourself!");
-                    questTarget = 5; // Update quest for A1
-                    questProgress = 0;
-                    document.getElementById('quest-text').innerText = "Speak 5 sentences";
-                    document.getElementById('quest-fill').style.width = '0%';
-                }, 2000);
+                    botSay("Awesome! You are Level A1. Introduce yourself!");
+                    updateQuestUI("Introduce yourself", 0, 1);
+                }, 1500);
+            } else {
+                // Continue Conversation
+                callAI(`User answered correctly: ${selected}. Continue topic.`);
             }
-
         } else {
             el.classList.add('wrong');
-            document.getElementById('snd-wrong').play();
-            setTimeout(() => addAIMessage(`Oops! The answer is: ${correct}`), 1000);
+            document.getElementById('sfx-wrong').play();
+            setTimeout(() => botSay(`Oops! The correct answer was: ${correct}`), 1000);
         }
     }
 
-    function updateProgress(isSuccess) {
-        if(isSuccess) {
-            questProgress++;
-            const fill = (questProgress / questTarget) * 100;
-            document.getElementById('quest-fill').style.width = fill + '%';
+    // --- LOGIC: PROGRESS & REWARDS ---
+    function updateProgress(success) {
+        if(success) {
+            state.quest.current++;
+            const pct = (state.quest.current / state.quest.target) * 100;
+            document.getElementById('quest-fill').style.width = pct + '%';
             
-            xp += 10;
-            document.getElementById('xp-count').innerText = xp;
+            state.xp += 10;
+            document.getElementById('gems').innerText = state.xp;
             
-            if(questProgress >= questTarget) {
-                document.getElementById('snd-level').play();
-                // Reset/Level Up Logic here
+            if(state.quest.current >= state.quest.target) {
+                document.getElementById('sfx-win').play();
+                // Reset Quest Loop
+                setTimeout(() => {
+                    updateQuestUI("Speak 5 Sentences", 0, 5);
+                }, 2000);
             }
         }
     }
 
-    // --- AI LOGIC (WITH BANGLA CLEANER) ---
-    async function sendToAI(text) {
-        if(!text) return;
-        
-        // 1. Frontend Bangla Check
-        if(/[\u0980-\u09FF]/.test(text)) {
-             document.getElementById('bangla-warning').style.display = 'block';
-             setTimeout(() => document.getElementById('bangla-warning').style.display = 'none', 3000);
-             return;
+    function updateQuestUI(text, cur, tar) {
+        state.quest.current = cur;
+        state.quest.target = tar;
+        document.getElementById('quest-text').innerText = text;
+        document.getElementById('quest-fill').style.width = '0%';
+    }
+
+    // --- LOGIC: AI BRAIN (Hybrid) ---
+    async function callAI(input) {
+        // 1. Guardrail: Bangla Filter
+        if(/[\u0980-\u09FF]/.test(input)) {
+            showWarning();
+            return;
         }
 
-        addUserMessage(text);
-        document.getElementById('userInput').value = '';
-
-        // 2. Persona Selection
-        let personaPrompt = "";
-        let tonePrompt = "";
-        
-        if(userAge <= 10) {
-            personaPrompt = "You are 'Smart Bunny', a playful friend.";
-            tonePrompt = "Use emojis, be super kind, short sentences.";
-        } else if(userAge <= 15) {
-            personaPrompt = "You are 'Captain Spark', a gaming coach.";
-            tonePrompt = "Use cool words, be energetic.";
+        // 2. Persona Prompting
+        let sysPrompt = "";
+        if(state.persona === "Junior Buddy") {
+            sysPrompt = "Role: Friendly Cartoon Character. Tone: Super happy, simple words. Rule: Use emojis.";
+        } else if(state.persona === "Gaming Coach") {
+            sysPrompt = "Role: Esports Coach. Tone: Cool, energetic. Rule: Use gaming slang (XP, Level up).";
         } else {
-            personaPrompt = "You are a Professional English Mentor.";
-            tonePrompt = "Be logical, polite, and corrective.";
+            sysPrompt = "Role: Professional Tutor. Tone: Logical, Polite. Rule: Correct grammar subtly.";
         }
-
-        const systemPrompt = `
-        IDENTITY: ${personaPrompt}
-        USER INFO: Age ${userAge}. Level ${userLevel}.
-        TONE: ${tonePrompt}
-        RULES:
-        1. ENGLISH ONLY.
-        2. Do NOT be too strict. If user says 'I am Sadik', say 'Nice to meet you Sadik!'. DO NOT correct valid sentences.
-        3. Do NOT say goodbye. Ask a question back.
-        `;
+        
+        sysPrompt += ` User Age: ${state.age}. Level: ${state.level}. STRICT RULE: English Only. No Bangla. No Goodbye. Keep asking questions.`;
 
         try {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ message: text, email: 'guest', systemInstruction: systemPrompt })
+                body: JSON.stringify({ message: input, email: 'guest', systemInstruction: sysPrompt })
             });
             const data = await res.json();
             
-            // 3. Backend Bangla Cleaner (The Ghostbuster)
-            // This removes any accidental Bangla text appended by backend defaults
-            let cleanReply = data.reply.replace(/[\u0980-\u09FF].*/g, '').replace(/ভালো করে.*/g, '').trim();
+            // 3. Response Cleaning
+            let reply = data.reply.replace(/[\u0980-\u09FF].*/g, '').trim(); 
+            if(reply.length < 2) reply = "Can you say that in English?";
             
-            if(cleanReply.length < 2) cleanReply = "Can you say that again?";
-
-            addAIMessage(cleanReply);
+            botSay(reply);
             
         } catch (e) { console.error(e); }
     }
 
-    // --- INPUT & VOICE ---
-    function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
+    // --- UTILS ---
+    function handleEnter(e) {
+        if(e.key === 'Enter') {
+            const txt = e.target.value;
+            if(txt) {
+                userSay(txt);
+                callAI(txt);
+                e.target.value = '';
+            }
+        }
+    }
 
+    function showWarning() {
+        const w = document.getElementById('warning-toast');
+        w.style.display = 'block';
+        setTimeout(() => w.style.display = 'none', 3000);
+    }
+
+    // --- VOICE OUTPUT (TTS) ---
     window.speechSynthesis.onvoiceschanged = () => { voices = window.speechSynthesis.getVoices(); };
+    
     function speak(text) {
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
+        
+        // Voice Selection Logic
         if(voices.length > 0) {
-            if(userAge <= 10) utter.voice = voices.find(v => v.name.includes("Female")) || voices[0];
-            else utter.voice = voices.find(v => v.name.includes("Male")) || voices[0];
+            if(state.age <= 9) {
+                // Female/High pitch for kids
+                utter.voice = voices.find(v => v.name.includes("Female")) || voices[0];
+                utter.pitch = 1.2; 
+                utter.rate = 0.9;
+            } else {
+                // Male/Deep pitch for adults
+                utter.voice = voices.find(v => v.name.includes("Male")) || voices[0];
+                utter.pitch = 0.9;
+                utter.rate = 1.05;
+            }
         }
-        utter.rate = userAge <= 10 ? 0.9 : 1.05;
         window.speechSynthesis.speak(utter);
     }
 
+    // --- VOICE INPUT (STT) ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
@@ -346,18 +370,19 @@
     function toggleMic() {
         if(!isMicOn) {
             recognition.start();
-            document.querySelector('.voice-controls').classList.add('listening');
+            document.querySelector('.controls').classList.add('listening');
             isMicOn = true;
         } else {
             recognition.stop();
-            document.querySelector('.voice-controls').classList.remove('listening');
+            document.querySelector('.controls').classList.remove('listening');
             isMicOn = false;
         }
     }
     recognition.onresult = (e) => {
         const txt = e.results[0][0].transcript;
         document.getElementById('userInput').value = txt;
-        sendToAI(txt);
+        userSay(txt);
+        callAI(txt);
         toggleMic();
     };
 
