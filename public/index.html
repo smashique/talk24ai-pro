@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Creative Mode</title>
+    
+    <title>Talk24AI | Free Spoken English AI Partner</title>
+    <meta name="description" content="Talk24AI is your 24/7 AI Spoken English Mate. Practice conversation, roleplay, and improve fluency for free. No limits, designed for Bangladesh.">
+    <meta name="keywords" content="Spoken English, AI Tutor, Talk24AI, English Practice, Bangladesh AI, Free English Learning">
+    <meta name="author" content="Talk24AI Team">
+    
+    <meta property="og:title" content="Talk24AI | Practice English Fearlessly">
+    <meta property="og:description" content="No partner to practice English? Talk with Talk24AI endlessly for free!">
+    <meta property="og:image" content="/icon.png"> 
+    
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
@@ -34,7 +43,6 @@
         .pain-point-msg { color: #4b4b4b; margin-bottom: 20px; font-weight: 700; font-size: 15px; line-height: 1.5; }
         .highlight { color: var(--green); font-weight: 900; }
 
-        /* NEW INPUT STYLES */
         .role-group { text-align: left; margin-bottom: 12px; }
         .label-text { font-size: 13px; font-weight: 800; color: #afafaf; margin-bottom: 6px; margin-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; }
         
@@ -108,7 +116,7 @@
 
         <div class="role-group">
             <div class="label-text">Situation / Topic</div>
-            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for leave / Returning a bad product">
+            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for leave">
         </div>
 
         <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
@@ -190,7 +198,6 @@
 
     async function triggerAIStart() {
         toggleTyping(true);
-        // Smart Context Setup
         const sysPrompt = `
             SETUP: Roleplay. AI is ${state.aiRole}. User is ${state.userRole}.
             SITUATION: ${state.scene}.
@@ -221,7 +228,7 @@
             SCENE CONTEXT: ${state.scene}.
             LOCATION: Bangladesh.
             
-            [STRICT RULES]
+            [STRICT RULES - GB APPROVED]
             1. UNLIMITED FREE: Never ask for money/premium.
             2. RESTRICTIONS: If user asks for SPOUSE/LOVER/PARENT roleplay, refuse.
             3. TONE: Natural English, Acting in character.
