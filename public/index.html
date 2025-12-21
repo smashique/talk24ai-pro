@@ -9,79 +9,122 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* CORE STYLES */
-        :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
+        /* CORE VARIABLES & RESET */
+        :root { 
+            --green: #58cc02; --green-dark: #46a302; 
+            --red: #ff4b4b; --red-dark: #d43b3b;
+            --blue: #1cb0f6; --blue-dark: #1899d6; 
+            --yellow: #ffc800; 
+            --bg: #ffffff; --font: 'Nunito', sans-serif; 
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
 
-        /* ANIMATED BG */
+        /* ANIMATED BACKGROUND */
         .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 20s infinite linear; }
         .shape1 { width: 100px; height: 100px; background: var(--green); top: 10%; left: 10%; animation-duration: 25s; }
         .shape2 { width: 150px; height: 150px; background: var(--blue); bottom: 20%; right: 10%; animation-duration: 30s; }
         .shape3 { width: 80px; height: 80px; background: var(--yellow); top: 40%; left: 50%; animation-duration: 20s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
-        /* SCREENS */
-        #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
-        .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
+        /* HOME SCREEN - NO SCROLL LAYOUT */
+        #home-screen { 
+            position: fixed; inset: 0; z-index: 5000; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            padding: 10px; 
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); 
+        }
         
-        /* USER ID BADGE */
+        .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
+        
         .user-id-badge {
-            background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; 
-            font-size: 13px; font-weight: 800; margin-bottom: 10px; font-family: monospace;
-            border: 2px solid #ddd; display: flex; gap: 10px; align-items: center;
+            background: #eee; color: #555; padding: 4px 10px; border-radius: 12px; 
+            font-size: 11px; font-weight: 800; margin-bottom: 10px; font-family: monospace;
+            border: 2px solid #ddd; display: flex; gap: 6px; align-items: center;
         }
-        .live-dot { height: 8px; width: 8px; background: #25d366; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        .live-dot { height: 6px; width: 6px; background: #25d366; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
 
-        .hero-card { width: 100%; max-width: 800px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px; }
-        @media (max-width: 700px) { .input-grid { grid-template-columns: 1fr; } .hero-card { padding: 20px; } .logo { font-size: 38px; } }
-
-        .pain-point-msg { color: #555; margin-bottom: 20px; font-weight: 700; font-size: 16px; line-height: 1.5; background: #f8fcfd; padding: 15px; border-radius: 15px; border: 2px dashed #bcebfd; }
-        .highlight { color: var(--green); font-weight: 900; }
-
-        /* HOW TO USE BUTTON */
-        .tutorial-btn {
-            background: #FF9800; color: white; border: none; padding: 8px 20px; 
-            border-radius: 25px; font-weight: 800; font-size: 14px; cursor: pointer;
-            margin-bottom: 15px; box-shadow: 0 4px 10px rgba(255, 152, 0, 0.4);
-            display: flex; align-items: center; gap: 8px; transition: 0.2s;
-            animation: pulse-orange 2s infinite;
+        /* GAMIFIED CARD */
+        .hero-card { 
+            width: 100%; max-width: 600px; 
+            background: #fff; border: 3px solid #e5e5e5; 
+            border-radius: 25px; padding: 20px; 
+            text-align: center; box-shadow: 0 8px 0 #e5e5e5; 
+            display: flex; flex-direction: column; gap: 15px;
         }
-        .tutorial-btn:active { transform: scale(0.95); }
 
-        .role-group { text-align: left; margin-bottom: 10px; }
-        .label-text { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 8px; letter-spacing: 0.5px; }
-        .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-        .input-duo:focus { border-color: var(--blue); background: #fff; transform: scale(1.01); }
+        /* NEUROMARKETING HOOK */
+        .pain-point-msg { 
+            color: #d32f2f; margin-bottom: 5px; font-weight: 800; font-size: 15px; 
+            line-height: 1.4; background: #ffebee; padding: 12px; 
+            border-radius: 15px; border: 2px dashed #ffcdd2; 
+        }
+        .highlight { color: #d32f2f; font-weight: 900; text-decoration: underline; }
 
-        .chip-container { display: flex; gap: 8px; overflow-x: auto; padding: 8px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .chip { background: #fff; border: 2px solid #e5e5e5; color: #666; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.1s; box-shadow: 0 3px 0 #e5e5e5; }
-        .chip:active { background: var(--blue); color: white; border-color: var(--blue-shade); box-shadow: 0 0 0; transform: translateY(3px); }
+        /* INPUTS */
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .role-group { text-align: left; }
+        .label-text { font-size: 11px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 8px; margin-bottom: 4px; }
+        .input-duo { width: 100%; padding: 10px; border: 2px solid #e5e5e5; border-radius: 12px; font-size: 14px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .input-duo:focus { border-color: var(--blue); background: #fff; }
 
-        .action-row { display: flex; gap: 15px; margin-top: 25px; }
-        .btn-magic { flex: 1; padding: 15px; background: white; color: var(--yellow-shade); font-size: 28px; border: 2px solid #e5e5e5; border-radius: 20px; box-shadow: 0 5px 0 #e5e5e5; cursor: pointer; transition: 0.1s; }
-        .btn-magic:active { transform: translateY(5px); box-shadow: 0 0 0; border-color: var(--yellow); }
-        .btn-main { flex: 4; padding: 16px; background: var(--green); color: white; font-size: 18px; font-weight: 900; border: none; border-radius: 20px; box-shadow: 0 5px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.1s; }
-        .btn-main:active { transform: translateY(5px); box-shadow: 0 0 0; }
+        /* CHIPS */
+        .chip-container { display: flex; gap: 5px; overflow-x: auto; padding: 6px 2px; scrollbar-width: none; }
+        .chip { background: #fff; border: 2px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 15px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; box-shadow: 0 2px 0 #e5e5e5; }
+        .chip:active { background: var(--blue); color: white; border-color: var(--blue-dark); box-shadow: 0 0 0; transform: translateY(2px); }
 
-        #chat-screen { display: none; flex-direction: column; height: 100%; z-index: 100; max-width: 900px; margin: 0 auto; width: 100%; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-        .top-nav { padding: 10px 25px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
-        #messages { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 160px; scroll-behavior: smooth; }
+        /* 3D GAME BUTTONS ROW */
+        .action-row { display: flex; gap: 10px; margin-top: 10px; align-items: stretch; }
+        
+        .btn-3d {
+            border: none; border-radius: 16px; color: white; cursor: pointer;
+            font-weight: 800; text-transform: uppercase; transition: 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            position: relative; top: 0;
+        }
+        .btn-3d:active { top: 4px; box-shadow: 0 0 0 !important; }
+
+        .btn-green {
+            background: var(--green); box-shadow: 0 4px 0 var(--green-dark);
+            flex: 1; font-size: 13px; padding: 12px 5px;
+        }
+        
+        .btn-red {
+            background: var(--red); box-shadow: 0 4px 0 var(--red-dark);
+            flex: 2; font-size: 16px; letter-spacing: 0.5px;
+        }
+
+        /* ATTRACTIVE INSTALL BUTTON */
+        #install-btn { 
+            background: linear-gradient(90deg, #2196F3, #00BCD4); 
+            color: white; border: none; padding: 12px; border-radius: 20px; 
+            font-weight: 800; font-size: 13px; cursor: pointer; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3); 
+            text-transform: uppercase; margin-top: 5px;
+            animation: pulse-blue 2s infinite;
+        }
+        #install-btn:active { transform: scale(0.98); }
+
+        /* CHAT SCREEN */
+        #chat-screen { display: none; flex-direction: column; height: 100%; z-index: 100; max-width: 900px; margin: 0 auto; width: 100%; background: white; }
+        .top-nav { padding: 10px 15px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
+        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 160px; scroll-behavior: smooth; }
         
         .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .bubble { padding: 15px 20px; border-radius: 22px; font-size: 17px; line-height: 1.6; font-weight: 600; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .bubble { padding: 12px 18px; border-radius: 18px; font-size: 16px; line-height: 1.5; font-weight: 600; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .ai { background: #f5f5f5; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #eeeeee; }
-        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 0 var(--blue-shade); margin-bottom: 5px; }
+        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 3px 0 var(--blue-dark); margin-bottom: 5px; }
         
-        .mentor-note { margin-top: 10px; background: #fffde7; color: #5d4037; padding: 12px 16px; border-radius: 18px; font-size: 15px; font-weight: 600; border: 2px dashed #fbc02d; width: 100%; line-height: 1.6; position: relative; animation: slideUp 0.5s ease; }
+        .mentor-note { margin-top: 8px; background: #fffde7; color: #5d4037; padding: 10px 14px; border-radius: 15px; font-size: 14px; font-weight: 600; border: 2px dashed #fbc02d; width: 100%; line-height: 1.5; animation: slideUp 0.5s ease; }
         .mentor-note::before { content: '💡'; margin-right: 5px; }
         .mentor-note strong { color: #e65100; font-weight: 800; }
 
-        .replay-btn { margin-top: 6px; margin-left: 5px; font-size: 12px; color: #888; cursor: pointer; font-weight: 700; background: #fff; border: 2px solid #f0f0f0; padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; transition: 0.1s; }
+        .replay-btn { margin-top: 4px; margin-left: 5px; font-size: 11px; color: #888; cursor: pointer; font-weight: 700; background: #fff; border: 1px solid #ddd; padding: 4px 10px; border-radius: 15px; display: inline-flex; align-items: center; gap: 4px; }
         .replay-btn:active { transform: scale(0.95); background: #eee; }
         
-        .typing { font-size: 13px; color: #bbb; margin-left: 25px; font-weight: 800; display: none; }
+        .typing { font-size: 12px; color: #bbb; margin-left: 20px; font-weight: 700; display: none; margin-bottom: 10px; }
         
         .voice-loader { display: none; align-items: center; gap: 5px; margin-left: 10px; margin-top: 5px; background: #e1f5fe; padding: 5px 10px; border-radius: 15px; width: fit-content; }
         .voice-bar { width: 4px; height: 10px; background: var(--blue); border-radius: 2px; animation: wave 1s infinite ease-in-out; }
@@ -89,76 +132,53 @@
         @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 20px; } }
         
         .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: transparent; padding: 0; display: flex; justify-content: center; pointer-events: none; }
-        .input-wrapper { width: 100%; max-width: 900px; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; pointer-events: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
-        .input-row { width: 100%; display: flex; gap: 10px; max-width: 800px; position: relative; }
+        .input-wrapper { width: 100%; max-width: 900px; background: white; padding: 10px 15px 20px 15px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
+        .input-row { width: 100%; display: flex; gap: 8px; max-width: 800px; position: relative; }
         
-        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--green); border: 5px solid #fff; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 6px 15px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.1s; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); }
-        #mic-btn:active { transform: translateX(-50%) scale(0.9); }
-        .listening { background: #ff4b4b !important; animation: pulse 1s infinite; }
-        .processing { background: #ffc800 !important; animation: spin 1s infinite; font-size: 0 !important; }
-        .processing::after { content: "⏳"; font-size: 28px; }
+        #mic-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--green); border: 4px solid #fff; color: white; font-size: 28px; cursor: pointer; box-shadow: 0 4px 0 var(--green-dark); display: flex; align-items: center; justify-content: center; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); transition: 0.1s; }
+        #mic-btn:active { transform: translateX(-50%) translateY(4px); box-shadow: 0 0 0; }
+        .listening { background: var(--red) !important; box-shadow: 0 4px 0 var(--red-dark) !important; animation: pulse 1s infinite; }
+        .processing { background: var(--yellow) !important; font-size: 0 !important; } .processing::after { content: "⏳"; font-size: 24px; }
 
-        .note-btn { background: #fff3e0; color: #e65100; border: 2px solid #ffe0b2; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
-        .note-btn:active { transform: scale(0.95); }
-        
-        /* ATTRACTIVE INSTALL BUTTON */
-        #install-btn { 
-            margin-top: 20px; 
-            background: linear-gradient(45deg, #2196F3, #21CBF3); 
-            color: white; 
-            border: none; 
-            padding: 14px 25px; 
-            border-radius: 25px; 
-            font-weight: 900; 
-            font-size: 15px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 10px; 
-            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4); 
-            transition: 0.2s; 
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        #install-btn:active { transform: translateY(3px); box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3); }
-        
-        .stats-box { margin-left: auto; font-size: 11px; color: #888; font-weight: 700; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-        .stat-row { display: flex; gap: 10px; align-items: center; }
-        .stat-item { background: #f5f5f5; padding: 4px 8px; border-radius: 10px; border: 1px solid #e5e5e5; }
+        .stats-box { margin-left: auto; font-size: 10px; color: #888; font-weight: 700; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .stat-item { background: #f5f5f5; padding: 3px 6px; border-radius: 8px; border: 1px solid #ddd; }
         .lifetime-badge { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
-        
-        /* MODALS (OFFER & TUTORIAL) */
-        #offer-modal, #tutorial-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); animation: fadeIn 0.3s; }
-        .offer-card, .tutorial-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 30px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.95); animation: popUp 0.3s forwards; }
-        
-        .offer-badge { background: #FFD700; color: #5c4d00; font-weight: 900; padding: 5px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-size: 12px; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
-        .offer-title { font-size: 24px; font-weight: 900; color: #333; margin-bottom: 10px; line-height: 1.3; }
-        .offer-desc { font-size: 15px; color: #666; margin-bottom: 25px; line-height: 1.6; }
-        .offer-btn { width: 100%; background: linear-gradient(45deg, #1cb0f6, #25d366); color: white; padding: 15px; border: none; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
-        .offer-btn:active { transform: scale(0.95); }
-        
-        /* TUTORIAL SPECIFIC */
-        .tutorial-card { text-align: left; }
-        .tutorial-card h3 { text-align: center; color: #FF9800; margin-top: 0; font-size: 22px; font-weight: 900; }
-        .tutorial-list { list-style: none; padding: 0; margin: 20px 0; }
-        .tutorial-list li { margin-bottom: 15px; font-size: 15px; color: #555; line-height: 1.5; display: flex; gap: 10px; }
-        .tutorial-list li span { font-size: 18px; }
-        .tutorial-close-btn { background: #333; color: white; width: 100%; padding: 12px; border-radius: 15px; border: none; font-weight: 800; font-size: 16px; cursor: pointer; }
-        .tutorial-close-btn:active { transform: scale(0.98); }
+        .note-btn { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 3px 8px; border-radius: 12px; cursor: pointer; font-weight: 700; }
 
-        .close-offer { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; }
+        /* MODALS */
+        #offer-modal, #tutorial-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); animation: fadeIn 0.3s; }
+        .offer-card, .tutorial-card { background: white; width: 100%; max-width: 350px; padding: 25px; border-radius: 25px; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0.9); animation: popUp 0.3s forwards; }
+        
+        .offer-badge { background: #FFD700; color: #5c4d00; font-weight: 900; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-size: 11px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); }
+        .offer-title { font-size: 20px; font-weight: 900; color: #333; margin-bottom: 8px; }
+        .offer-desc { font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+        .offer-btn { width: 100%; background: linear-gradient(45deg, #1cb0f6, #25d366); color: white; padding: 12px; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
+        .close-offer { position: absolute; top: 15px; right: 20px; font-size: 22px; color: #aaa; cursor: pointer; }
+
+        /* TUTORIAL */
+        .tutorial-card h3 { color: var(--green); margin-top: 0; font-weight: 900; }
+        .tutorial-list { list-style: none; padding: 0; margin: 15px 0; text-align: left; }
+        .tutorial-list li { margin-bottom: 10px; font-size: 13px; color: #555; display: flex; gap: 10px; align-items: center; }
+        .tutorial-close-btn { background: #333; color: white; width: 100%; padding: 10px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes popUp { to { transform: scale(1); } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.7); } 70% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 0 15px rgba(255, 75, 75, 0); } 100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); } }
-        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); } }
-        @keyframes spin { 0% {transform: translateX(-50%) rotate(0deg);} 100% {transform: translateX(-50%) rotate(360deg);} }
+        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.7); } 70% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 0 10px rgba(255, 75, 75, 0); } 100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); } }
+        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(33, 150, 243, 0); } 100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); } }
         @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* RESPONSIVE SCALING FOR SMALL MOBILE */
+        @media (max-height: 700px) {
+            .logo { font-size: 32px; margin-bottom: 2px; }
+            .hero-card { padding: 15px; gap: 10px; }
+            .pain-point-msg { font-size: 13px; padding: 8px; }
+            .input-duo { padding: 8px; font-size: 13px; }
+            .label-text { font-size: 10px; }
+            .btn-3d { padding: 10px 5px; }
+        }
     </style>
 </head>
 <body>
@@ -172,12 +192,12 @@
     <div class="offer-card">
         <div class="close-offer" onclick="closeOffer()">×</div>
         <div class="offer-badge">🔥 LEVEL UP!</div>
-        <div class="offer-title">You are doing Great! <br> Ready for Pro?</div>
+        <div class="offer-title">Great Progress!</div>
         <div class="offer-desc">
-            মাশাআল্লাহ! আপনি গত ২০ মিনিট ধরে খুব মনোযোগ দিয়ে প্র্যাকটিস করছেন। <br><br>
-            আপনার সিরিয়াসনেস দেখে মনে হচ্ছে আপনি স্পোকেন ইংলিশে মাস্টার হতে চান। আমাদের <b>Premium Mentor</b> সাপোর্ট নিতে চান?
+            মাশাআল্লাহ! ২০ মিনিট ধরে প্র্যাকটিস করছেন। <br>
+            আপনি কি সিরিয়াসলি স্পোকেন ইংলিশে মাস্টার হতে চান? আমাদের <b>Premium Mentor</b> সাপোর্ট নিন।
         </div>
-        <button class="offer-btn" onclick="buyPremium()">Get Premium Access 💎</button>
+        <button class="offer-btn" onclick="buyPremium()">Get Premium 💎</button>
     </div>
 </div>
 
@@ -185,212 +205,135 @@
     <div class="tutorial-card">
         <h3>🚀 How to Use</h3>
         <ul class="tutorial-list">
-            <li><span>🎭</span> <b>Set Role:</b> আপনি কে এবং আপনার পার্টনার কে হবে তা সিলেক্ট করুন।</li>
-            <li><span>💬</span> <b>Start Chat:</b> 'START MAGIC' বাটন চাপুন এবং চ্যাট শুরু করুন।</li>
-            <li><span>🤖</span> <b>Roleplay AI:</b> সে আপনার সাথে ইংরেজিতে কথা বলবে (Practice Partner)।</li>
-            <li><span>💡</span> <b>Mentor:</b> সে আপনার ভুল ধরবে এবং বাংলায় শিখিয়ে দেবে।</li>
-            <li><span>📝</span> <b>Save Note:</b> চ্যাট শেষে 'Save Note' বাটন চেপে ক্লাস নোট ডাউনলোড করুন।</li>
+            <li><span>🎭</span> <b>Set Role:</b> আপনি কে এবং আপনার পার্টনার কে।</li>
+            <li><span>💬</span> <b>Start:</b> লাল বাটন চাপুন।</li>
+            <li><span>🤖</span> <b>AI:</b> ইংরেজিতে কথা বলবে।</li>
+            <li><span>💡</span> <b>Mentor:</b> বাংলায় ভুল শুধরে দেবে।</li>
+            <li><span>📝</span> <b>Note:</b> নোট সেভ করতে পারবেন।</li>
         </ul>
-        <button class="tutorial-close-btn" onclick="closeTutorial()">OK, I Understand 👍</button>
+        <button class="tutorial-close-btn" onclick="closeTutorial()">Got it! 👍</button>
     </div>
 </div>
 
-<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI..." target="_blank" style="position:fixed; bottom:100px; right:20px; background:#25d366; color:white; padding:8px 16px; border-radius:30px; display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:700; font-size:13px; box-shadow:0 4px 10px rgba(37,211,102,0.3); z-index:500; border:2px solid white;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg> Help
+<a href="https://wa.me/8801303680618?text=Help..." target="_blank" style="position:fixed; bottom:80px; right:15px; background:#25d366; color:white; padding:6px 12px; border-radius:20px; display:flex; align-items:center; gap:5px; text-decoration:none; font-weight:700; font-size:12px; box-shadow:0 3px 8px rgba(37,211,102,0.3); z-index:500; border:2px solid white;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg> Help
 </a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
     <div id="user-badge" class="user-id-badge"><span class="live-dot"></span> ID: Generating...</div>
     
-    <button class="tutorial-btn" onclick="openTutorial()">❓ How to use?</button>
-
-    <div style="background:#e5f6fd; color:#1cb0f6; padding:6px 15px; border-radius:20px; font-weight:900; font-size:12px; margin-bottom:15px; border:2px solid #bcebfd;">⚡ Unlimited Free ⚡</div>
-    
     <div class="hero-card">
         <div class="pain-point-msg">
-            Spoken English প্র্যাকটিস করার পার্টনার পাচ্ছেন না? 😔 <br>
-            লজ্জা ভেঙে <span class="highlight">Talk24AI</span>-এর সাথে কথা বলুন!
-            <span style="display:block; margin-top:5px; font-size:12px; color:#1cb0f6;">👉 রোল সেট করুন অথবা 🎲 বাটন চাপুন!</span>
+            ইংলিশে কথা বলতে ভয়? 😨 এই ভয়ই আপনার ক্যারিয়ার ধ্বংস করছে! 🛑 <br>
+            আজই <span class="highlight">Talk24AI</span>-এর সাথে ১০ মিনিট কথা বলুন, জড়তা কাটান ১০০% গ্যারান্টি! 🔥
         </div>
 
         <div class="input-grid">
             <div class="role-group">
                 <div class="label-text">I am...</div>
                 <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
-                <div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Customer')">Customer</div></div>
+                <div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Job Seeker')">Job Seeker</div></div>
             </div>
             <div class="role-group">
                 <div class="label-text">My AI talking partner...</div>
                 <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
-                <div class="chip-container"><div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div><div class="chip" onclick="selectChip('ai-role', 'Shopkeeper')">Shopkeeper</div></div>
+                <div class="chip-container"><div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div><div class="chip" onclick="selectChip('ai-role', 'Interviewer')">Interviewer</div></div>
             </div>
         </div>
+        
         <div class="input-grid">
-            <div class="role-group"><div class="label-text">Mood</div><input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun"><div class="chip-container"><div class="chip" onclick="selectChip('chat-mood', 'Fun 🤣')">Fun 🤣</div><div class="chip" onclick="selectChip('chat-mood', 'Serious 🧐')">Serious 🧐</div></div></div>
-            <div class="role-group"><div class="label-text">Situation</div><input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for help"><div class="chip-container"><div class="chip" onclick="selectChip('scene-context', 'Bargaining')">Bargaining</div><div class="chip" onclick="selectChip('scene-context', 'Interview')">Interview</div></div></div>
+            <div class="role-group"><div class="label-text">Mood</div><input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Friendly"><div class="chip-container"><div class="chip" onclick="selectChip('chat-mood', 'Friendly')">Friendly</div><div class="chip" onclick="selectChip('chat-mood', 'Professional')">Professional</div></div></div>
+            <div class="role-group"><div class="label-text">Topic</div><input type="text" id="scene-context" class="input-duo" placeholder="e.g. Interview"><div class="chip-container"><div class="chip" onclick="selectChip('scene-context', 'Job Interview')">Interview</div><div class="chip" onclick="selectChip('scene-context', 'Travel')">Travel</div></div></div>
         </div>
 
         <div class="action-row">
-            <button class="btn-magic" onclick="randomize()">🎲</button>
-            <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
+            <button class="btn-3d btn-green" onclick="openTutorial()">❓ How to</button>
+            <button class="btn-3d btn-green" onclick="randomize()">🎲 Dice</button>
+            <button class="btn-3d btn-red" onclick="startCustomChat()">🚀 START MAGIC</button>
         </div>
         
-        <button id="install-btn" onclick="installApp()">📲 Download App for Best Experience</button>
+        <button id="install-btn" onclick="installApp()">📲 Install App</button>
     </div>
 </div>
 
 <div id="chat-screen">
     <div class="top-nav">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div id="p-icon" style="font-size: 32px;">🎭</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div id="p-icon" style="font-size: 28px;">🎭</div>
             <div>
-                <div style="font-weight: 800; font-size: 16px;" id="p-name">AI Mate</div>
-                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
+                <div style="font-weight: 800; font-size: 14px;" id="p-name">AI Mate</div>
+                <div style="font-size: 10px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
         <div class="stats-box">
              <div class="stat-row">
-                 <div class="stat-item">Active: <span id="time-display">0m</span></div>
-                 <button class="note-btn" onclick="downloadNotes()">📝 Save</button>
+                 <div class="stat-item">Time: <span id="time-display">0m</span></div>
+                 <button class="note-btn" onclick="downloadNotes()">💾 Save</button>
              </div>
-             <div class="stat-item lifetime-badge">⏱️ Lifetime: <span id="lifetime-display">Loading...</span></div>
+             <div class="stat-item lifetime-badge">Total: <span id="lifetime-display">...</span></div>
         </div>
     </div>
     
     <div id="messages"></div>
-    <div id="voice-loader" class="voice-loader" style="margin: 0 auto 20px auto;"><span style="font-size:12px; font-weight:700; color:#1cb0f6;">Speaking</span><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div></div>
+    <div id="voice-loader" class="voice-loader" style="margin: 0 auto 10px auto;"><span style="font-size:11px; font-weight:700; color:#1cb0f6;">Speaking</span><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div></div>
     <div id="typing-box" class="typing">Mate is typing...</div>
     <div class="bottom-area"><div class="input-wrapper"><button id="mic-btn" onclick="toggleMic()">🎤</button><div class="input-row"><input type="text" id="userInput" class="input-duo" placeholder="Type a message..." onkeypress="handleEnter(event)"></div></div></div>
 </div>
 
 <script>
-    // ✅ CRASH-PROOF SERVER URL
     const SERVER_URL = "https://talk24ai.onrender.com"; 
     
-    // ✅ SAFE SOUND SYSTEM
     function playSound(type) { try { const a = document.getElementById(type === 'pop' ? 'snd-pop' : 'snd-offer'); if(a) { a.currentTime=0; a.play().catch(e=>{}); } } catch(e){} }
     
     let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal' }; 
     let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
 
-    // --- TUTORIAL LOGIC ---
-    function openTutorial() {
-        playSound('pop');
-        document.getElementById('tutorial-modal').style.display = 'flex';
-    }
-    function closeTutorial() {
-        document.getElementById('tutorial-modal').style.display = 'none';
-    }
+    function openTutorial() { playSound('pop'); document.getElementById('tutorial-modal').style.display = 'flex'; }
+    function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; }
 
-    // --- 🧠 ADDICTION TIMER & LIFETIME WATCH ---
-    let sessionSeconds = 0; 
-    let lifetimeSeconds = 0; 
-    const THRESHOLD = 1200; 
+    let sessionSeconds = 0; let lifetimeSeconds = 0; const THRESHOLD = 1200; 
     let offerShown = localStorage.getItem('talk24_offer_shown') === "true";
 
-    // Initialize ID
     let USER_ID = localStorage.getItem('talk24_uid');
-    if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
+    if (!USER_ID) { USER_ID = 'ID-' + Math.floor(10000 + Math.random() * 90000); localStorage.setItem('talk24_uid', USER_ID); }
     document.getElementById('user-badge').innerHTML = `<span class="live-dot"></span> ID: ${USER_ID}`;
 
-    // Load Lifetime Stats on Startup
-    fetch(`${SERVER_URL}/api/stats`, {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ userId: USER_ID })
-    })
-    .then(res => res.json())
-    .then(data => {
-        lifetimeSeconds = data.lifetime_seconds || 0;
-        updateLifetimeDisplay();
-    })
-    .catch(e => console.log("Stats load error"));
+    fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID }) })
+    .then(res => res.json()).then(data => { lifetimeSeconds = data.lifetime_seconds || 0; updateLifetimeDisplay(); }).catch(e => {});
 
-    // Timer Logic: Runs every 1 second
     setInterval(() => {
-        // Only count if chat screen is open and tab is active
         if (!document.hidden && document.getElementById('chat-screen').style.display === 'flex') {
             sessionSeconds++;
-            
-            // Sync with Server every 60 seconds (1 Minute)
-            if (sessionSeconds % 60 === 0) {
-                syncTimeWithServer(60);
-            }
-            
+            if (sessionSeconds % 60 === 0) syncTimeWithServer(60);
             updateTimeDisplay();
-            checkAddiction();
+            if ((lifetimeSeconds + (sessionSeconds % 60)) >= THRESHOLD && !offerShown) { showOffer(); offerShown = true; localStorage.setItem('talk24_offer_shown', "true"); }
         }
     }, 1000);
 
-    function syncTimeWithServer(secondsToAdd) {
-        fetch(`${SERVER_URL}/api/update-time`, {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ userId: USER_ID, seconds: secondsToAdd })
-        })
-        .then(res => res.json())
-        .then(data => {
-            lifetimeSeconds = data.total_time; // Update local lifetime with accurate server time
-            updateLifetimeDisplay();
-        });
-    }
-
-    function updateTimeDisplay() {
-        const mins = Math.floor(sessionSeconds / 60);
-        document.getElementById('time-display').innerText = `${mins}m`;
-    }
-
-    function updateLifetimeDisplay() {
-        const hours = Math.floor(lifetimeSeconds / 3600);
-        const mins = Math.floor((lifetimeSeconds % 3600) / 60);
-        const display = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-        document.getElementById('lifetime-display').innerText = display;
-    }
-
-    function checkAddiction() {
-        const totalActiveTime = lifetimeSeconds + (sessionSeconds % 60); // Approx total
-        if (totalActiveTime >= THRESHOLD && !offerShown) {
-            showOffer();
-            offerShown = true;
-            localStorage.setItem('talk24_offer_shown', "true");
-        }
-    }
-
-    function showOffer() {
-        playSound('offer');
-        document.getElementById('offer-modal').style.display = 'flex';
-        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-    }
-
+    function syncTimeWithServer(sec) { fetch(`${SERVER_URL}/api/update-time`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID, seconds: sec }) }).then(r=>r.json()).then(d=>{ lifetimeSeconds = d.total_time; updateLifetimeDisplay(); }); }
+    function updateTimeDisplay() { document.getElementById('time-display').innerText = `${Math.floor(sessionSeconds/60)}m`; }
+    function updateLifetimeDisplay() { const h = Math.floor(lifetimeSeconds/3600), m = Math.floor((lifetimeSeconds%3600)/60); document.getElementById('lifetime-display').innerText = h>0 ? `${h}h ${m}m` : `${m}m`; }
+    function showOffer() { playSound('offer'); document.getElementById('offer-modal').style.display = 'flex'; confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } }); }
     function closeOffer() { document.getElementById('offer-modal').style.display = 'none'; }
-    function buyPremium() { window.open('https://wa.me/8801303680618?text=I%20want%20Premium%20Talk24AI', '_blank'); closeOffer(); }
+    function buyPremium() { window.open('https://wa.me/8801303680618?text=Premium%20Info', '_blank'); closeOffer(); }
+    function downloadNotes() { if(mentorNotes.length===0) return alert("Chat first!"); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["Notes:\n"+mentorNotes.join('\n')],{type:"text/plain"})); link.download="Notes.txt"; link.click(); }
 
-    // --- NOTES ---
-    function downloadNotes() {
-        if(mentorNotes.length === 0) return alert("Start chatting first!");
-        const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob(["Talk24AI Mentor Notes\nID: "+USER_ID+"\n\n" + mentorNotes.join('\n')], {type: "text/plain"})); link.download = `Talk24_Notes.txt`; link.click();
-    }
-
-    // --- PWA ---
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
     async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else alert("Check browser menu."); }
     function selectChip(id, value) { playSound('pop'); document.getElementById(id).value = value; }
-    function randomize() { playSound('pop'); const sets = [{ u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining', m: 'Fun 🤣' }, { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' }, { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' }]; const r = sets[Math.floor(Math.random() * sets.length)]; document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a; document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m; }
+    function randomize() { playSound('pop'); const s=[{u:'Buyer',a:'Seller',s:'Price',m:'Fun'},{u:'Student',a:'Teacher',s:'Late',m:'Sad'}]; const r=s[Math.floor(Math.random()*s.length)]; document.getElementById('user-role').value=r.u; document.getElementById('ai-role').value=r.a; document.getElementById('scene-context').value=r.s; document.getElementById('chat-mood').value=r.m; }
     
     function startCustomChat() { 
-        const u = document.getElementById('user-role').value; const a = document.getElementById('ai-role').value; 
-        if(!u || !a) return alert("Select roles!"); 
-        playSound('pop'); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); 
-        state.userRole = u; state.aiRole = a; state.scene = document.getElementById('scene-context').value || "Chat"; state.mood = document.getElementById('chat-mood').value || "Normal"; 
-        setTimeout(() => { document.getElementById('p-name').innerText = a; document.getElementById('home-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; triggerAIStart(); }, 1000); 
+        const u=document.getElementById('user-role').value, a=document.getElementById('ai-role').value; 
+        if(!u||!a) return alert("Select roles!"); 
+        playSound('pop'); confetti({particleCount:100,spread:70,origin:{y:0.6}}); 
+        state.userRole=u; state.aiRole=a; state.scene=document.getElementById('scene-context').value||"Chat"; state.mood=document.getElementById('chat-mood').value||"Normal"; 
+        setTimeout(()=>{ document.getElementById('p-name').innerText=a; document.getElementById('home-screen').style.display='none'; document.getElementById('chat-screen').style.display='flex'; triggerAIStart(); }, 800); 
     }
 
     async function triggerAIStart() { toggleTyping(true); callAPI({ message: "Action!", systemInstruction: `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}.`, mood: state.mood, userId: USER_ID }); }
-
-    async function sendToAI(text) { 
-        if(!text.trim()) return; playSound('pop'); addUserMsg(text); chatHistory.push(`User: ${text}`); 
-        document.getElementById('userInput').value = ''; toggleTyping(true); 
-        callAPI({ message: text, systemInstruction: `Identity: ${state.aiRole}. User: ${state.userRole}. Scene: ${state.scene}.`, mood: state.mood, userId: USER_ID }); 
-    }
+    async function sendToAI(text) { if(!text.trim())return; playSound('pop'); addUserMsg(text); chatHistory.push(`User: ${text}`); document.getElementById('userInput').value=''; toggleTyping(true); callAPI({ message: text, systemInstruction: `Identity: ${state.aiRole}. User: ${state.userRole}. Scene: ${state.scene}.`, mood: state.mood, userId: USER_ID }); }
     
     async function callAPI(payload) {
         try {
@@ -399,29 +342,32 @@
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false);
             chatHistory.push(`AI: ${data.reply}`); addAiMsg(data.reply, data.instruction);
-        } catch (e) { console.error(e); document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
+        } catch (e) { document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
     }
     
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
     function addAiMsg(text, instruction) {
-        const container = document.createElement('div'); container.className = 'bubble-container';
-        const bubble = document.createElement('div'); bubble.className = 'bubble ai'; bubble.innerText = text;
-        const replayBtn = document.createElement('div'); replayBtn.className = 'replay-btn'; replayBtn.innerHTML = '🔊 Replay'; replayBtn.onclick = () => speak(text);
-        container.appendChild(bubble); container.appendChild(replayBtn);
-        if (instruction) { const note = document.createElement('div'); note.className = 'mentor-note'; note.innerHTML = `<strong>Talk24AI Mentor:</strong><br>${instruction}`; container.appendChild(note); mentorNotes.push(`[${new Date().toLocaleTimeString()}] ${instruction}\n---`); }
-        document.getElementById('messages').appendChild(container); playSound('pop'); 
-        const loader = document.getElementById('voice-loader'); loader.style.display = 'flex'; speak(text, () => { loader.style.display = 'none'; }); setTimeout(() => { loader.style.display = 'none'; }, 3000); 
-        scrollToBottom();
+        const c=document.createElement('div'); c.className='bubble-container';
+        const b=document.createElement('div'); b.className='bubble ai'; b.innerText=text;
+        const r=document.createElement('div'); r.className='replay-btn'; r.innerHTML='🔊'; r.onclick=()=>speak(text);
+        c.appendChild(b); c.appendChild(r);
+        if(instruction) { const n=document.createElement('div'); n.className='mentor-note'; n.innerHTML=`<strong>Mentor:</strong> ${instruction}`; c.appendChild(n); mentorNotes.push(instruction); }
+        document.getElementById('messages').appendChild(c); playSound('pop'); 
+        const l=document.getElementById('voice-loader'); l.style.display='flex'; speak(text,()=>{l.style.display='none'}); setTimeout(()=>{l.style.display='none'},3000); 
+        document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
     }
     
-    function addUserMsg(text) { const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text; div.style.alignSelf = 'flex-end'; document.getElementById('messages').appendChild(div); scrollToBottom(); }
-    function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
-    function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
-    function speak(text, cb) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1.0; u.onend = cb; u.onerror = cb; window.speechSynthesis.speak(u); }
+    function addUserMsg(t) { const d=document.createElement('div'); d.className='bubble user'; d.innerText=t; document.getElementById('messages').appendChild(d); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight; }
+    function handleEnter(e) { if(e.key==='Enter') sendToAI(e.target.value); }
+    function speak(t,cb) { window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.rate=1.0; u.onend=cb; u.onerror=cb; window.speechSynthesis.speak(u); }
     
-    const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
-    if(recognition) { recognition.lang = 'en-US'; recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening'); recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening'); recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); }; }
-    function toggleMic() { playSound('pop'); if(!recognition) return alert("Mic error"); isMicOn ? recognition.stop() : recognition.start(); isMicOn = !isMicOn; }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = SpeechRecognition ? new SpeechRecognition() : null;
+    if(recognition) {
+        recognition.lang = 'en-US'; recognition.onstart=()=>document.getElementById('mic-btn').classList.add('listening'); recognition.onend=()=>{isMicOn=false; document.getElementById('mic-btn').classList.remove('listening');};
+        recognition.onresult=(e)=>{ const t=e.results[0][0].transcript; document.getElementById('userInput').value=t; sendToAI(t); };
+    }
+    function toggleMic() { playSound('pop'); if(!recognition) return alert("Use Chrome"); if(isMicOn) recognition.stop(); else { try{recognition.start(); isMicOn=true;}catch(e){} } }
 </script>
 </body>
 </html>
