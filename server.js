@@ -15,23 +15,22 @@ const DB_FILE = path.join(__dirname, 'user_db.json');
 const loadDB = () => { try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch { return {}; } };
 const saveDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-// 🔧 UTILS (Hardcore Safety Fix)
-// এই ফাংশনটি যে কোনো ডাটাকে সেফ স্ট্রিং-এ কনভার্ট করবে
+// 🔧 UTILS (Safety First)
 const safeString = (val) => {
     if (val === null || val === undefined) return "";
     if (typeof val === 'string') return val;
-    return String(val); // জোর করে স্ট্রিং বানাও
+    return String(val);
 };
 
 const cleanUnicode = (str) => {
-    const s = safeString(str); // আগে সেফ করো
+    const s = safeString(str);
     return s.replace(/\\u[\dA-F]{4}/gi, (match) => {
         return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
     });
 };
 
 const sanitizeInput = (text) => {
-    const s = safeString(text); // আগে সেফ করো
+    const s = safeString(text);
     return s.replace(/<[^>]*>?/gm, '').trim();
 };
 
@@ -57,11 +56,10 @@ app.post('/api/stats', (req, res) => {
     res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
 });
 
-// 💬 API: CHAT (CRASH PROOF LOGIC)
+// 💬 API: CHAT (SMART MENTOR LOGIC)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     
-    // Sanitize Inputs Immediately
     message = sanitizeInput(message);
     systemInstruction = sanitizeInput(systemInstruction);
     mood = sanitizeInput(mood) || 'Normal';
@@ -79,32 +77,39 @@ app.post('/api/chat', async (req, res) => {
     try {
         let finalPrompt = "";
 
-        // 🛡️ SAFE GUARDRAILS
+        // 🧠 SUPER PROMPT: MENTOR STRATEGY
         const guardRails = `
-        [SYSTEM PROTOCOL]: Dual-Agent AI.
+        [SYSTEM PROTOCOL]: Dual-Agent Language Learning System.
         
-        [DETECTION RULE]: Check for Romance/Flirting/Illegal topics.
-        
-        [IF INPUT IS NORMAL]:
-        - Agent A (Roleplay): Reply naturally in English.
-        - Agent B (Mentor): Teach English in Bangla.
+        [AGENT A - ROLEPLAY ACTOR (English Only)]:
+        - Act naturally based on the role (Teacher, Shopkeeper, etc.).
+        - Always end with a relevant question to keep the chat going.
+        - **SAFETY:** If user is Flirty/Abusive -> Pivot immediately to a boring topic (Weather/Study). Ignore the bad behavior.
 
-        [IF INPUT IS FLIRTY/UNPROFESSIONAL]:
-        - **Agent A:** IGNORE flirting. Pivot to boring topics (Weather, Study).
-        - **Agent B:** DO NOT correct grammar. Say in Bangla: "আসুন পড়াশোনা বা ক্যারিয়ার নিয়ে কথা বলি।"
+        [AGENT B - MENTOR (Bangla Only)]:
+        - **Language:** STRICTLY BENGALI SCRIPT.
+        - **Tone:** Supportive, Wise, Teacher-like.
+        - **MANDATORY CONTENT STRUCTURE:**
+          1. **Review (পর্যালোচনা):** Check the User's last message ("${message}"). Correct any grammar/vocab errors politely. If correct, praise them.
+          2. **New Lesson (নতুন শিক্ষা):** Teach ONE new word, idiom, or grammar rule relevant to the current conversation context.
+          3. **Next Instruction (পরবর্তী নির্দেশনা):** Give a HINT or STRATEGY on how to answer Agent A's current question.
+             - ❌ DO NOT write the answer for them.
+             - ✅ DO SAY: "এখন আপনি Present Perfect Tense ব্যবহার করে বলুন...", "ভদ্রভাবে অনুরোধ করতে 'Could you' দিয়ে বাক্য শুরু করুন..."
         `;
 
         if (isStart) {
             finalPrompt = `
             ${systemInstruction}
             ${guardRails}
-            [START]: Roleplay: Warm greeting. Mentor: "আসসালামু আলাইকুম! শুরু করা যাক।"
+            [START SCENARIO]:
+            - Roleplay: High energy greeting + Question.
+            - Mentor: "আসসালামু আলাইকুম! আমি তৈরি। বিসমিল্লাহ বলে শুরু করুন।"
             [REQUIRED JSON]: {"conversation":"...", "learning_note":"..."}`;
         } else {
             finalPrompt = `
             ${systemInstruction}
             ${guardRails}
-            [INPUT]: User said: "${message}"
+            [USER INPUT]: "${message}"
             [REQUIRED JSON]: {"conversation":"...", "learning_note":"..."}`;
         }
 
@@ -124,17 +129,15 @@ app.post('/api/chat', async (req, res) => {
                 else throw new Error("No JSON");
             } catch (e2) {
                 console.error("AI JSON Fail:", rawResponse);
-                // Fallback using Safe Strings
                 parsedData = { 
                     conversation: safeString(rawResponse).replace(/"/g, ''), 
-                    learning_note: "চালিয়ে যান।" 
+                    learning_note: "চালিয়ে যান। (নেটওয়ার্ক সমস্যার কারণে নোট লোড হয়নি)" 
                 }; 
             }
         }
 
-        // Safety Check for Null Values
-        if (!parsedData.conversation) parsedData.conversation = "Hello! I am ready.";
-        if (!parsedData.learning_note) parsedData.learning_note = "চালিয়ে যান।";
+        if (!parsedData.conversation) parsedData.conversation = "I am listening.";
+        if (!parsedData.learning_note) parsedData.learning_note = "চমৎকার! চালিয়ে যান।";
 
         res.json({ 
             reply: cleanUnicode(parsedData.conversation), 
@@ -143,9 +146,8 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("CRITICAL ERROR HANDLED:", err.message);
-        // Fallback response instead of crash
         res.json({ 
-            reply: "I am thinking... please say that again?", 
+            reply: "I need a moment to think. Please say that again?", 
             instruction: "একটু যান্ত্রিক গোলযোগ হয়েছে, দয়া করে আবার বলুন।" 
         });
     }
@@ -164,11 +166,11 @@ async function callGroq(messages, temp) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
         
-        // 🚀 FASTEST MODEL: Llama 3.1 8B Instant
+        // 🚀 FASTEST MODEL
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.1-8b-instant", 
-            max_tokens: 800,
+            max_tokens: 850,
             temperature: temp,
             response_format: { type: "json_object" }
         }, {
