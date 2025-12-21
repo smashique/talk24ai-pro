@@ -83,8 +83,24 @@
 
         .wa-btn { position: fixed; bottom: 100px; right: 20px; background: #25d366; color: white; padding: 8px 16px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 13px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); z-index: 500; transition: 0.2s; border: 2px solid white; }
         .wa-btn:active { transform: scale(0.95); }
-        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid #e5e5e5; padding: 12px 25px; border-radius: 18px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; transition: 0.1s; }
+        
+        /* PERMANENT INSTALL BUTTON STYLE */
+        #install-btn { 
+            margin-top: 20px; background: white; color: var(--blue); 
+            border: 2px solid #e5e5e5; padding: 12px 25px; border-radius: 18px; 
+            font-weight: 800; font-size: 14px; cursor: pointer; 
+            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; 
+            transition: 0.1s; 
+        }
         #install-btn:active { transform: translateY(4px); box-shadow: 0 0 0; }
+
+        /* NOTE BUTTON STYLE */
+        .note-btn {
+            background: #fff3e0; color: #e65100; border: 2px solid #ffe0b2;
+            padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 13px;
+            cursor: pointer; transition: 0.2s;
+        }
+        .note-btn:active { transform: scale(0.95); }
         
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
@@ -141,7 +157,8 @@
             <button class="btn-magic" onclick="randomize()">🎲</button>
             <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
         </div>
-        <button id="install-btn" onclick="installApp()">📲 Install App</button>
+        
+        <button id="install-btn" onclick="installApp()">📲 Install App / Add to Home</button>
     </div>
 </div>
 
@@ -154,7 +171,7 @@
                 <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
-        <div style="background: #fff4db; color: #d68f00; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; box-shadow: 0 2px 0 #ffe082;">💎 <span id="score">0</span></div>
+        <button class="note-btn" onclick="downloadNotes()">📝 Save Notes</button>
     </div>
     
     <div id="messages"></div>
@@ -179,8 +196,32 @@
     function playSound(type) { if (audioCtx.state === 'suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); osc.connect(gainNode); gainNode.connect(audioCtx.destination); if (type === 'pop') { osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } else if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.1); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); } else if (type === 'message') { osc.type = 'sine'; osc.frequency.setValueAtTime(500, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } }
     
     let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 }; let isMicOn = false; let chatHistory = []; let deferredPrompt; 
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block'; });
-    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }
+    
+    // --- NOTES SYSTEM ---
+    let mentorNotes = []; // Storage for notes
+
+    function downloadNotes() {
+        if(mentorNotes.length === 0) return alert("No notes to save yet! Start chatting first.");
+        const header = "Talk24AI Mentor Notes\nGenerated on: " + new Date().toLocaleString() + "\n========================\n\n";
+        const content = mentorNotes.join('\n');
+        const blob = new Blob([header + content], {type: "text/plain"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Talk24AI_Notes_${Date.now()}.txt`;
+        link.click();
+    }
+
+    // --- PWA INSTALL ---
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+    async function installApp() { 
+        if (deferredPrompt) { 
+            deferredPrompt.prompt(); 
+            const { outcome } = await deferredPrompt.userChoice; 
+            deferredPrompt = null; 
+        } else {
+            alert("To install: Tap 'Share' > 'Add to Home Screen' (iOS) or check your browser menu (Android).");
+        }
+    }
     
     function selectChip(id, value) { playSound('pop'); document.getElementById(id).value = value; }
     function randomize() { playSound('pop'); const sets = [{ u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining hard', m: 'Fun 🤣' }, { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' }, { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' }, { u: 'Student', a: 'Teacher', s: 'Late for class', m: 'Scared 😨' }, { u: 'Youth', a: 'Scholar', s: 'Value of Time & Purpose', m: 'Inspiring 🌟' }]; const r = sets[Math.floor(Math.random() * sets.length)]; document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a; document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m; }
@@ -206,7 +247,13 @@
         const bubble = document.createElement('div'); bubble.className = 'bubble ai'; bubble.innerText = text;
         const replayBtn = document.createElement('div'); replayBtn.className = 'replay-btn'; replayBtn.innerHTML = '🔊 Replay'; replayBtn.onclick = () => speak(text);
         container.appendChild(bubble); container.appendChild(replayBtn);
-        if (instruction) { const note = document.createElement('div'); note.className = 'mentor-note'; note.innerHTML = `<strong>Talk24AI Mentor:</strong><br>${instruction}`; container.appendChild(note); }
+        
+        if (instruction) { 
+            const note = document.createElement('div'); note.className = 'mentor-note'; note.innerHTML = `<strong>Talk24AI Mentor:</strong><br>${instruction}`; container.appendChild(note); 
+            // Save to notes array
+            mentorNotes.push(`[${new Date().toLocaleTimeString()}] Mentor Tip:\n${instruction}\n-------------------`);
+        }
+        
         document.getElementById('messages').appendChild(container); 
         playSound('message'); 
         document.getElementById('voice-loader').style.display = 'flex';
