@@ -9,10 +9,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * 🧠 MASTER SERVER LOGIC (ALIGNED WITH CREATIVE MODE)
- * - No Database Restrictions (True Unlimited)
- * - Dynamic System Prompting (Accepts 'systemInstruction' from Frontend)
- * - High-Speed Llama-3.3-70b Engine
+ * 🧠 TALK24AI SERVER (UPDATED FOR SCENE CONTEXT)
+ * - Unlimited Free Access (God Mode)
+ * - Handles Dynamic System Prompts with Situational Context
  */
 
 app.post('/api/chat', async (req, res) => {
@@ -20,11 +19,10 @@ app.post('/api/chat', async (req, res) => {
     const { message, systemInstruction } = req.body;
 
     try {
-        // 1. Construct the Intelligence Chain
         const messages = [
             { 
                 role: "system", 
-                // Use the Dynamic Prompt from Frontend OR Fallback to a default Master Prompt
+                // The frontend now sends a highly detailed prompt including the 'Situation'
                 content: systemInstruction || "You are Talk24AI, a helpful English conversation partner." 
             },
             { 
@@ -33,28 +31,25 @@ app.post('/api/chat', async (req, res) => {
             }
         ];
 
-        // 2. Call the AI Engine (Groq High-Speed)
         const reply = await callGroq(messages);
-
-        // 3. Return Response (No quota checks, purely functionality)
         res.json({ reply });
 
     } catch (err) {
         console.error("🔥 Server Error:", err.message);
-        res.status(500).json({ reply: "I am upgrading my brain cells! Please try again in a second." });
+        res.status(500).json({ reply: "My brain is updating! Please try again in a moment." });
     }
 });
 
-// --- AI ENGINE CONNECTION ---
+// --- AI ENGINE (High Speed Llama 3.3) ---
 async function callGroq(messages) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
         
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
-            model: "llama-3.3-70b-versatile", // Best balance of IQ and Speed
-            max_tokens: 300, // Sufficient for creative storytelling
-            temperature: 0.7 // Creative but stable
+            model: "llama-3.3-70b-versatile", 
+            max_tokens: 350, // Increased token limit for better storytelling
+            temperature: 0.7 
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
         });
@@ -66,4 +61,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Creative Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Server running on http://localhost:${PORT}`));
