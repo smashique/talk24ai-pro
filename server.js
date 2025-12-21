@@ -41,7 +41,7 @@ app.post('/api/stats', (req, res) => {
     res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
 });
 
-// 💬 API: CHAT (ERROR PROOF VERSION)
+// 💬 API: CHAT (MODEL FIXED: 8b-instant)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     message = sanitizeInput(message);
@@ -61,7 +61,7 @@ app.post('/api/chat', async (req, res) => {
     try {
         let finalPrompt = "";
 
-        // 🛡️ SAFE GUARDRAILS (No explicit bad words to avoid API Ban)
+        // 🛡️ SAFE GUARDRAILS
         const guardRails = `
         [SYSTEM PROTOCOL]:
         You are a Dual-Agent AI.
@@ -99,15 +99,13 @@ app.post('/api/chat', async (req, res) => {
         // Call AI
         const rawResponse = await callGroq(messages, dynamicTemp);
         
-        // 🛡️ ROBUST JSON PARSING (Prevents 500 Error)
+        // 🛡️ ROBUST JSON PARSING
         let parsedData;
         try { 
-            // Try standard parse
             parsedData = JSON.parse(rawResponse);
         } 
         catch (e1) { 
             try {
-                // Try to extract JSON if mixed with text
                 const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     parsedData = JSON.parse(jsonMatch[0]);
@@ -115,10 +113,9 @@ app.post('/api/chat', async (req, res) => {
                     throw new Error("No JSON");
                 }
             } catch (e2) {
-                // Fallback if AI fails completely
                 console.error("AI JSON Fail:", rawResponse);
                 parsedData = { 
-                    conversation: rawResponse.replace(/"/g, ''), // Use raw text as reply
+                    conversation: rawResponse.replace(/"/g, ''), 
                     learning_note: "যান্ত্রিক ত্রুটির কারণে নোট লোড হয়নি, তবে আপনি চালিয়ে যান।" 
                 }; 
             }
@@ -132,10 +129,10 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("CRITICAL ERROR:", err.message);
-        // Send a friendly error instead of crashing
+        // User friendly error message instead of crash
         res.json({ 
-            reply: "I'm having a little trouble connecting. Please say that again?", 
-            instruction: "নেটওয়ার্ক সমস্যা। দয়া করে আবার চেষ্টা করুন।" 
+            reply: "Server is busy due to high traffic. Please wait 10 seconds and try again.", 
+            instruction: "সার্ভার খুব ব্যস্ত। ১০ সেকেন্ড পর আবার চেষ্টা করুন।" 
         });
     }
 });
@@ -156,7 +153,8 @@ async function callGroq(messages, temp) {
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
-            model: "llama-3.3-70b-versatile",
+            // 🔥 UPDATED MODEL: Faster & Higher Rate Limits
+            model: "llama-3.1-8b-instant", 
             max_tokens: 850,
             temperature: temp,
             response_format: { type: "json_object" }
@@ -165,7 +163,8 @@ async function callGroq(messages, temp) {
         });
         return response.data.choices[0].message.content;
     } catch (err) {
-        console.error("Groq API Error:", err.response ? err.response.data : err.message);
+        // Log the detailed error from Groq
+        console.error("Groq API Error Details:", err.response ? err.response.data : err.message);
         throw new Error("AI Service Failed");
     }
 }
