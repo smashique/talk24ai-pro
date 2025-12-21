@@ -15,8 +15,7 @@ const DB_FILE = path.join(__dirname, 'user_db.json');
 const loadDB = () => { try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch { return {}; } };
 const saveDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-// 🛡️ CRASH PROOF UTILS (Ultimate Safety)
-// এই ফাংশনটি যেকোনো ডাটাকে স্ট্রিং বানাবে, তাই আর ক্র্যাশ হবে না
+// 🛡️ CRASH PROOF UTILS
 const safeString = (val) => {
     if (val === null || val === undefined) return "";
     if (typeof val === 'object') return JSON.stringify(val);
@@ -57,7 +56,7 @@ app.post('/api/stats', (req, res) => {
     res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
 });
 
-// 💬 API: CHAT (CRASH PROOF & MIXTRAL)
+// 💬 API: CHAT
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     
@@ -66,13 +65,11 @@ app.post('/api/chat', async (req, res) => {
     mood = sanitizeInput(mood) || 'Normal';
     userId = sanitizeInput(userId) || 'anonymous';
 
-    // Track
     const db = loadDB();
     if (!db[userId]) db[userId] = { total_msgs: 0, total_time: 0, first_seen: new Date().toISOString() };
     db[userId].total_msgs += 1;
     saveDB(db);
 
-    // 🔥 MIXTRAL TEMPERATURE (0.6 is good balance)
     let dynamicTemp = 0.6; 
 
     const isStart = message === "Action!";
@@ -80,7 +77,6 @@ app.post('/api/chat', async (req, res) => {
     try {
         let finalPrompt = "";
 
-        // 🧠 STRICT DUAL AGENT PROMPT
         const guardRails = `
         [SYSTEM PROTOCOL]
         
@@ -120,17 +116,14 @@ app.post('/api/chat', async (req, res) => {
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
-        // Call AI
         const rawResponse = await callGroq(messages, dynamicTemp);
         
-        // 🛡️ SAFEST PARSING LOGIC
         let parsedData;
         try { 
             const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 parsedData = JSON.parse(jsonMatch[0]);
             } else {
-                // If AI fails to give JSON, treat plain text as conversation
                 parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।" };
             }
         } 
@@ -142,7 +135,6 @@ app.post('/api/chat', async (req, res) => {
             }; 
         }
 
-        // Final Safety Check
         if (!parsedData.conversation || parsedData.conversation.length < 2) parsedData.conversation = "I am listening...";
         if (!parsedData.learning_note) parsedData.learning_note = "চালিয়ে যান।";
 
@@ -153,10 +145,9 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("HANDLED ERROR:", err.message);
-        // This will prevent "System is upgrading" loop
         res.json({ 
-            reply: "I am ready. Please say that again.", 
-            instruction: "নেটওয়ার্ক সমস্যা ছিল, এখন ঠিক আছে। আবার বলুন।" 
+            reply: "Server connected. Please say that again.", 
+            instruction: "নেটওয়ার্ক কানেকশন ঠিক হয়েছে। আবার বলুন।" 
         });
     }
 });
@@ -174,11 +165,10 @@ async function callGroq(messages, temp) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
         
-        // 🔥 MODEL FIXED: Mixtral-8x7b-32768
-        // লগে দেখাচ্ছিল আপনি 70b ব্যবহার করছেন, তাই লিমিট খাচ্ছিলেন। এটা ফিক্স করা হলো।
+        // 🔥 FIXED MODEL: Using Llama 3.1 8B Instant (Currently Supported & Fast)
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
-            model: "mixtral-8x7b-32768", 
+            model: "llama-3.1-8b-instant", 
             max_tokens: 1024,
             temperature: temp,
             response_format: { type: "json_object" }
