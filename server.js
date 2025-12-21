@@ -9,31 +9,18 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * ⛔ SMART GUARDRAILS (GB APPROVED & REFINED)
- * Removed common words like "partner" to avoid false blocking.
- * Added strict checks only for explicit romantic/adult terms.
+ * ⛔ SMART GUARDRAILS
+ * Restricted terms to ensure safety and Shariah compliance.
  */
 const BANNED_TERMS = [
-    // Explicit Relationships (Removed 'partner', 'wife', 'husband' to allow general conversation context if needed, but kept strict dating terms)
     'girlfriend', 'boyfriend', 'lover', 'dating', 'bae', 'crush', 'making love',
-    // Sensitive/Adult Topics
     'sex', 'intimacy', 'nude', 'porn', 'erotic', 'xxx'
 ];
 
-/**
- * 🔒 SECURITY FILTER FUNCTION
- * Returns TRUE if content is safe.
- */
 const isContentSafe = (text) => {
     if (!text) return true;
     const lowerText = text.toLowerCase();
-    
-    // Check if any banned term exists as a distinct word or explicitly in the text
     const violation = BANNED_TERMS.find(term => lowerText.includes(term));
-    
-    if (violation) {
-        console.log(`⚠️ Blocked content due to keyword: ${violation}`); // For debugging on server console
-    }
     return !violation; 
 };
 
@@ -42,6 +29,10 @@ const sanitizeInput = (text) => {
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
+/**
+ * 🧠 MASTER SERVER (USER-CENTRIC UPDATE)
+ * - Optimized for Beginner Friendly English (A2/B1 Level)
+ */
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction } = req.body;
 
@@ -49,8 +40,6 @@ app.post('/api/chat', async (req, res) => {
     systemInstruction = sanitizeInput(systemInstruction);
 
     // 🚨 SAFETY CHECK
-    // We check the USER'S message strictly.
-    // We relax the check on systemInstruction slightly to allow standard prompts, unless it has explicit bad words.
     if (!isContentSafe(message) || !isContentSafe(systemInstruction)) {
         return res.json({ 
             reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic. (Restricted Content)" 
@@ -65,7 +54,9 @@ app.post('/api/chat', async (req, res) => {
         const messages = [
             { 
                 role: "system", 
-                content: systemInstruction || "You are Talk24AI, a helpful English conversation partner." 
+                // GB APPROVED INSTRUCTION: SIMPLE ENGLISH
+                content: (systemInstruction || "You are Talk24AI.") + 
+                "\n[IMPORTANT RULE]: Use SIMPLE, BEGINNER-FRIENDLY English (Level A2-B1). Avoid complex vocabulary. Keep sentences short and clear."
             },
             { 
                 role: "user", 
@@ -90,7 +81,7 @@ async function callGroq(messages) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile", 
-            max_tokens: 350, 
+            max_tokens: 300, 
             temperature: 0.7 
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
@@ -103,4 +94,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Smart Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Optimized Server running on http://localhost:${PORT}`));
