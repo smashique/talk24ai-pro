@@ -13,6 +13,14 @@ const sanitizeInput = (text) => {
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
+// 🔧 NEW HELPER: Fixes Broken Unicode (e.g., \u0995 -> ক)
+const cleanUnicode = (str) => {
+    if (!str) return "";
+    return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
+        return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+    });
+};
+
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood } = req.body;
 
@@ -25,43 +33,46 @@ app.post('/api/chat', async (req, res) => {
     }
 
     // 🌡️ MOOD LOGIC
-    let dynamicTemp = 0.7;
+    let dynamicTemp = 0.5; // Lowered slightly to reduce hallucination (gibberish)
     const lowerMood = mood.toLowerCase();
-    if (lowerMood.includes('fun') || lowerMood.includes('crazy')) dynamicTemp = 0.9;
-    else if (lowerMood.includes('serious') || lowerMood.includes('inspiring')) dynamicTemp = 0.4;
+    if (lowerMood.includes('fun') || lowerMood.includes('crazy')) dynamicTemp = 0.8;
+    else if (lowerMood.includes('serious')) dynamicTemp = 0.3;
 
     const isStart = message === "Action!";
 
     try {
-        // 🧠 SUPER PROMPT: DUAL BEHAVIOR PROTOCOL
+        // 🧠 IDEOLOGICAL MENTOR PROMPT (STABILIZED)
         
-        // 1. ROLEPLAY INSTRUCTION (Dodge & Deflect)
+        // 1. DUAL BEHAVIOR PROTOCOL
         const roleplayDirectives = `
         You are strictly playing the assigned role. 
         [HANDLING SENSITIVE TOPICS]:
-        If the user mentions Atheism, Darwinism, Democracy, Socialism, Big Bang, Music, Sexual/Sensual topics, or anything conflicting with Islamic values:
-        - DO NOT lecture or preach.
-        - DO NOT engage in the debate.
-        - SMARTLY DODGE the topic and steer the conversation back to the current scenario/business immediately.
-        - Act as if you are busy or focused on the task at hand.
+        If user mentions Atheism, Darwinism, Democracy, Socialism, Big Bang, Music, or Sexual/Sensual topics:
+        - DO NOT lecture. DO NOT engage in debate.
+        - SMARTLY DODGE the topic and steer back to the scenario.
         `;
 
-        // 2. MENTOR INSTRUCTION (Correct & Educate)
+        // 2. MENTOR INSTRUCTION (Fixing Gibberish)
         const mentorDirectives = `
         You are 'Talk24AI Mentor' (Persona: S@ifur Sir + Islamic Scholar).
-        Your job is to guide the user in the "learning_note" JSON field (Write in BANGLA SCRIPT).
+        Your job is to guide the user in the "learning_note" field.
         
-        [LOGIC & CORRECTION PROTOCOL]:
-        Check if the user's message contains: Atheism, Darwinism, Democracy, Socialism, Big Bang, Music, or Intimacy/Fahisha.
+        [STRICT LANGUAGE RULES]:
+        1. Write ONLY in **Standard Formal Bengali** (প্রমিত বাংলা).
+        2. DO NOT use gibberish, broken words, or hallucinated terms.
+        3. Do NOT use Unicode escape codes (like \\u09...). Write raw Bangla characters.
         
-        - IF YES: Ignore the grammar for a moment. politely but logically correct their worldview using Science, Logic, Quran, or Sunnah. Explain why it is harmful or incorrect. Then tell them to focus on the English lesson.
-        - IF NO (Normal msg): Briefly review their English grammar/vocab in Bangla. Give a hint for the next answer.
-        
-        Tone: Caring, Logical, Inspiring (Time is Life).
+        [LOGIC PROTOCOL]:
+        - IF Sensitive Topic (Music/Atheism/etc): Politely correct their worldview using Logic/Islam in Bangla.
+        - IF Normal Topic: Review grammar briefly. Give a hint for the next answer.
+        - TONE: Caring but Focused on "Time is Life".
         `;
 
+        // Fixed Start Message to prevent initial glitch
+        const startMessageScript = "মাশাআল্লাহ! দুর্দান্ত উদ্যোগ! সময় নষ্ট না করে চলো প্র্যাকটিস শুরু করি। Time is Life!";
+
         const finalSystemPrompt = isStart 
-            ? `This is the START. Do NOT generate conversation. Output JSON with conversation="" and learning_note="মাশাআল্লাহ! দুর্দান্ত উদ্যোগ! সময় নষ্ট না করে চলো প্র্যাকটিস শুরু করি। Time is Life!"`
+            ? `This is the START. Output JSON with conversation="" and learning_note="${startMessageScript}"`
             : `${systemInstruction} 
                ${roleplayDirectives}
                
@@ -73,14 +84,8 @@ app.post('/api/chat', async (req, res) => {
                }`;
 
         const messages = [
-            { 
-                role: "system", 
-                content: finalSystemPrompt
-            },
-            { 
-                role: "user", 
-                content: message 
-            }
+            { role: "system", content: finalSystemPrompt },
+            { role: "user", content: message }
         ];
 
         const rawResponse = await callGroq(messages, dynamicTemp);
@@ -90,16 +95,22 @@ app.post('/api/chat', async (req, res) => {
             const cleanJson = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
             parsedData = JSON.parse(cleanJson);
         } catch (e) {
-            // Fallback strategy if JSON fails
+            console.error("JSON Parse Fail:", e.message);
+            // Fallback that still tries to be helpful
             parsedData = { 
                 conversation: rawResponse, 
-                learning_note: "নেটওয়ার্ক সমস্যার কারণে মেন্টর নোট লোড হয়নি। তবে আপনি চালিয়ে যান! Time is Life!" 
+                learning_note: "নেটওয়ার্ক সমস্যার কারণে নোট লোড হয়নি। তবে চালিয়ে যান! Time is Life!" 
             };
         }
 
+        // 🧹 FINAL CLEANING STEP
+        // Ensure Bangla text is readable and fixed
+        const fixedConversation = cleanUnicode(parsedData.conversation);
+        const fixedInstruction = cleanUnicode(parsedData.learning_note);
+
         res.json({ 
-            reply: parsedData.conversation, 
-            instruction: parsedData.learning_note 
+            reply: fixedConversation, 
+            instruction: fixedInstruction 
         });
 
     } catch (err) {
@@ -115,7 +126,7 @@ async function callGroq(messages, temp) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile",
-            max_tokens: 650, // Increased token limit for logical explanations
+            max_tokens: 600,
             temperature: temp,
             response_format: { type: "json_object" }
         }, {
@@ -129,4 +140,4 @@ async function callGroq(messages, temp) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Dual-Logic Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Stabilized Server running on http://localhost:${PORT}`));
