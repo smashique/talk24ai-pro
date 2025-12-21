@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Talk24AI | Free Spoken English AI Partner</title>
-    <meta name="description" content="Talk24AI is your 24/7 AI Spoken English Mate. Practice conversation, roleplay, and improve fluency for free. No limits, designed for Bangladesh.">
-    <meta name="keywords" content="Spoken English, AI Tutor, Talk24AI, English Practice, Bangladesh AI, Free English Learning">
-    <meta name="author" content="Talk24AI Team">
-    
-    <meta property="og:title" content="Talk24AI | Practice English Fearlessly">
-    <meta property="og:description" content="No partner to practice English? Talk with Talk24AI endlessly for free!">
-    <meta property="og:image" content="/icon.png"> 
-    
+    <title>Talk24AI | Practice English Fearlessly</title>
+    <meta name="description" content="Talk24AI is your 24/7 AI Spoken English Mate. Practice conversation, roleplay, and improve fluency for free. No limits.">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
@@ -20,36 +13,65 @@
         :root {
             --green: #58cc02; --green-shade: #46a302;
             --blue: #1cb0f6; --blue-shade: #1899d6;
+            --yellow: #ffc800; --yellow-shade: #e5b400;
             --bg: #ffffff; --font: 'Nunito', sans-serif;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; }
 
-        /* SCREENS */
-        #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; overflow-y: auto; }
+        /* SCROLLABLE HOME */
+        #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
 
-        /* HERO & UI */
-        .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
+        /* HERO CARD */
+        .logo { font-family: 'Fredoka', sans-serif; font-size: 38px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
         
         .trial-badge { 
             background: linear-gradient(135deg, #ffd700, #ffca28); 
-            color: #5d4037; padding: 8px 18px; border-radius: 25px; 
-            font-weight: 900; font-size: 13px; text-transform: uppercase; 
+            color: #5d4037; padding: 6px 15px; border-radius: 20px; 
+            font-weight: 900; font-size: 12px; text-transform: uppercase; 
             margin-bottom: 15px; border: 2px solid #ffecb3; 
-            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 0 rgba(229, 180, 0, 0.4);
         }
         
-        .hero-card { width: 100%; max-width: 360px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; margin-bottom: 20px; }
-        .pain-point-msg { color: #4b4b4b; margin-bottom: 20px; font-weight: 700; font-size: 15px; line-height: 1.5; }
+        .hero-card { width: 100%; max-width: 400px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; margin-bottom: 20px; }
+        .pain-point-msg { color: #777; margin-bottom: 15px; font-weight: 700; font-size: 14px; line-height: 1.4; }
         .highlight { color: var(--green); font-weight: 900; }
 
-        .role-group { text-align: left; margin-bottom: 12px; }
-        .label-text { font-size: 13px; font-weight: 800; color: #afafaf; margin-bottom: 6px; margin-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; }
+        /* INPUTS & CHIPS */
+        .role-group { text-align: left; margin-bottom: 15px; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .label-text { font-size: 13px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 5px; }
         
-        .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; }
+        .input-duo { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 12px; font-size: 15px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
 
-        .btn-main { width: 100%; padding: 16px; margin-top: 10px; background: var(--green); color: white; font-size: 18px; font-weight: 800; border: none; border-radius: 20px; box-shadow: 0 4px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* SUGGESTION CHIPS (New Feature) */
+        .chip-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .chip-container::-webkit-scrollbar { display: none; }
+        
+        .chip {
+            background: #f0f0f0; border: 1px solid #e5e5e5; color: #666;
+            padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            white-space: nowrap; cursor: pointer; transition: 0.1s;
+        }
+        .chip:active { background: var(--blue); color: white; border-color: var(--blue); transform: scale(0.95); }
+
+        /* BUTTONS */
+        .action-row { display: flex; gap: 10px; margin-top: 15px; }
+        
+        .btn-magic {
+            flex: 1; padding: 15px; background: white; color: var(--yellow-shade);
+            font-size: 20px; font-weight: 800; border: 2px solid #e5e5e5; 
+            border-radius: 16px; box-shadow: 0 4px 0 #e5e5e5; cursor: pointer;
+        }
+        .btn-magic:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-main { 
+            flex: 3; padding: 15px; background: var(--green); color: white; 
+            font-size: 16px; font-weight: 800; border: none; 
+            border-radius: 16px; box-shadow: 0 4px 0 var(--green-shade); 
+            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; 
+        }
         .btn-main:active { transform: translateY(4px); box-shadow: none; }
 
         /* CHAT UI */
@@ -75,9 +97,6 @@
         .wa-btn { position: fixed; bottom: 100px; right: 20px; background: #25d366; color: white; padding: 8px 16px 8px 10px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 13px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); border: 2px solid white; transition: 0.2s; z-index: 500; }
         .wa-btn:hover { transform: scale(1.05); }
 
-        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; }
-        #install-btn:active { transform: translateY(2px); box-shadow: none; }
-
         #toast-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; display: none; z-index: 6000; }
         
         @keyframes pulse { 0% {transform: translateX(-50%) scale(1);} 50% {transform: translateX(-50%) scale(1.1);} 100% {transform: translateX(-50%) scale(1);} }
@@ -91,39 +110,55 @@
 
 <a href="https://wa.me/8801303680618?text=Hello%20Talk24AI,%20I%20have%20feedback..." target="_blank" class="wa-btn">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg>
-    Help / Feedback
+    Help
 </a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
-    <div class="trial-badge">⚡ Unlimited Time & Free ⚡</div>
+    <div class="trial-badge">⚡ Unlimited Free ⚡</div>
     
     <div class="hero-card">
         <div class="pain-point-msg">
-            Spoken English পার্টনার নেই? <br>
-            <span class="highlight">Talk24AI</span>-এর সাথে নিজের স্টোরি তৈরি করুন!
+            English পার্টনার নেই? <span class="highlight">নিজে রোল সেট করুন</span> এবং কথা বলা শুরু করুন!
         </div>
 
         <div class="role-group">
-            <div class="label-text">I want to be a...</div>
-            <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student / Angry Customer">
+            <div class="label-row"><span class="label-text">I want to be a...</span></div>
+            <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
+            <div class="chip-container">
+                <div class="chip" onclick="fillInput('user-role', 'Student')">Student</div>
+                <div class="chip" onclick="fillInput('user-role', 'Patient')">Patient</div>
+                <div class="chip" onclick="fillInput('user-role', 'Customer')">Customer</div>
+                <div class="chip" onclick="fillInput('user-role', 'Tourist')">Tourist</div>
+            </div>
         </div>
 
         <div class="role-group">
-            <div class="label-text">Talk24AI acts as a...</div>
-            <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher / Shopkeeper">
+            <div class="label-row"><span class="label-text">Talk24AI acts as a...</span></div>
+            <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
+            <div class="chip-container">
+                <div class="chip" onclick="fillInput('ai-role', 'Teacher')">Teacher</div>
+                <div class="chip" onclick="fillInput('ai-role', 'Doctor')">Doctor</div>
+                <div class="chip" onclick="fillInput('ai-role', 'Shopkeeper')">Shopkeeper</div>
+                <div class="chip" onclick="fillInput('ai-role', 'Local Guide')">Local Guide</div>
+            </div>
         </div>
 
         <div class="role-group">
-            <div class="label-text">Situation / Topic</div>
-            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for leave">
+            <div class="label-row"><span class="label-text">Situation / Topic</span></div>
+            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for directions">
+            <div class="chip-container">
+                <div class="chip" onclick="fillInput('scene-context', 'Buying Vegetables')">Buying Veg</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Job Interview')">Interview</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Visa Issue')">Visa Issue</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Feeling Sick')">Feeling Sick</div>
+            </div>
         </div>
 
-        <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
-
-        <button id="install-btn" onclick="installApp()">
-            📲 Download App
-        </button>
+        <div class="action-row">
+            <button class="btn-magic" onclick="randomize()" title="Random Surprise">🎲</button>
+            <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
+        </div>
     </div>
 </div>
 
@@ -133,7 +168,7 @@
             <div id="p-icon" style="font-size: 30px;">🎭</div>
             <div>
                 <div style="font-weight: 800; font-size: 16px;" id="p-name">AI Mate</div>
-                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE (Unlimited)</div>
+                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
         <div style="background: #fff4db; color: #d68f00; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 14px;">💎 <span id="score">0</span></div>
@@ -154,24 +189,24 @@
     let state = { userRole: '', aiRole: '', scene: '', score: 0 };
     let isMicOn = false;
     let chatHistory = [];
-    let deferredPrompt; 
 
-    // --- PWA INSTALL ---
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('install-btn').style.display = 'flex'; 
-    });
+    // --- HELPER FUNCTIONS FOR UI ---
+    function fillInput(id, value) {
+        document.getElementById(id).value = value;
+    }
 
-    async function installApp() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                document.getElementById('install-btn').style.display = 'none';
-            }
-            deferredPrompt = null;
-        }
+    function randomize() {
+        const sets = [
+            { u: 'Patient', a: 'Doctor', s: 'Describing a bad headache' },
+            { u: 'Customer', a: 'Waiter', s: 'Complaining about cold food' },
+            { u: 'Candidate', a: 'Hiring Manager', s: 'Explaining weaknesses in interview' },
+            { u: 'Tourist', a: 'Police Officer', s: 'Lost passport report' },
+            { u: 'Student', a: 'Librarian', s: 'Looking for a history book' }
+        ];
+        const random = sets[Math.floor(Math.random() * sets.length)];
+        fillInput('user-role', random.u);
+        fillInput('ai-role', random.a);
+        fillInput('scene-context', random.s);
     }
 
     // --- MAIN LOGIC ---
@@ -181,7 +216,7 @@
         const scene = document.getElementById('scene-context').value.trim() || "General Conversation";
 
         if(!uRole || !aRole) {
-            alert("Please fill in the Roles to start!");
+            alert("Please select roles or click the 🎲 dice!");
             return;
         }
 
@@ -222,13 +257,12 @@
         document.getElementById('userInput').value = '';
         toggleTyping(true);
         
-        // --- MASTER PROMPT WITH SITUATION ---
         const expertPrompt = `
             IDENTITY: You are ${state.aiRole}. I am ${state.userRole}.
             SCENE CONTEXT: ${state.scene}.
             LOCATION: Bangladesh.
             
-            [STRICT RULES - GB APPROVED]
+            [STRICT RULES]
             1. UNLIMITED FREE: Never ask for money/premium.
             2. RESTRICTIONS: If user asks for SPOUSE/LOVER/PARENT roleplay, refuse.
             3. TONE: Natural English, Acting in character.
