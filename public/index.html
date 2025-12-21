@@ -9,21 +9,28 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* CSS Unchanged */
+        /* CORE STYLES */
         :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
 
+        /* ANIMATED BG */
         .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 20s infinite linear; }
         .shape1 { width: 100px; height: 100px; background: var(--green); top: 10%; left: 10%; animation-duration: 25s; }
         .shape2 { width: 150px; height: 150px; background: var(--blue); bottom: 20%; right: 10%; animation-duration: 30s; }
         .shape3 { width: 80px; height: 80px; background: var(--yellow); top: 40%; left: 50%; animation-duration: 20s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
+        /* SCREENS */
         #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
         .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
         
-        .user-id-badge { background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: 800; margin-bottom: 20px; font-family: monospace; border: 2px solid #ddd; display: flex; gap: 10px; align-items: center; }
+        /* USER ID BADGE */
+        .user-id-badge {
+            background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; 
+            font-size: 13px; font-weight: 800; margin-bottom: 10px; font-family: monospace;
+            border: 2px solid #ddd; display: flex; gap: 10px; align-items: center;
+        }
         .live-dot { height: 8px; width: 8px; background: #25d366; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
 
         .hero-card { width: 100%; max-width: 800px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
@@ -32,6 +39,16 @@
 
         .pain-point-msg { color: #555; margin-bottom: 20px; font-weight: 700; font-size: 16px; line-height: 1.5; background: #f8fcfd; padding: 15px; border-radius: 15px; border: 2px dashed #bcebfd; }
         .highlight { color: var(--green); font-weight: 900; }
+
+        /* HOW TO USE BUTTON */
+        .tutorial-btn {
+            background: #FF9800; color: white; border: none; padding: 8px 20px; 
+            border-radius: 25px; font-weight: 800; font-size: 14px; cursor: pointer;
+            margin-bottom: 15px; box-shadow: 0 4px 10px rgba(255, 152, 0, 0.4);
+            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+            animation: pulse-orange 2s infinite;
+        }
+        .tutorial-btn:active { transform: scale(0.95); }
 
         .role-group { text-align: left; margin-bottom: 10px; }
         .label-text { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 8px; letter-spacing: 0.5px; }
@@ -84,23 +101,53 @@
         .note-btn { background: #fff3e0; color: #e65100; border: 2px solid #ffe0b2; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .note-btn:active { transform: scale(0.95); }
         
-        #install-btn { margin-top: 20px; background: white; color: var(--blue); border: 2px solid #e5e5e5; padding: 12px 25px; border-radius: 18px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; transition: 0.1s; }
-        #install-btn:active { transform: translateY(4px); box-shadow: 0 0 0; }
+        /* ATTRACTIVE INSTALL BUTTON */
+        #install-btn { 
+            margin-top: 20px; 
+            background: linear-gradient(45deg, #2196F3, #21CBF3); 
+            color: white; 
+            border: none; 
+            padding: 14px 25px; 
+            border-radius: 25px; 
+            font-weight: 900; 
+            font-size: 15px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 10px; 
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4); 
+            transition: 0.2s; 
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #install-btn:active { transform: translateY(3px); box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3); }
         
-        /* STATS DISPLAY */
         .stats-box { margin-left: auto; font-size: 11px; color: #888; font-weight: 700; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
         .stat-row { display: flex; gap: 10px; align-items: center; }
         .stat-item { background: #f5f5f5; padding: 4px 8px; border-radius: 10px; border: 1px solid #e5e5e5; }
         .lifetime-badge { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
         
-        /* PREMIUM OFFER MODAL */
-        #offer-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); animation: fadeIn 0.5s; }
-        .offer-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 30px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.8); animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        /* MODALS (OFFER & TUTORIAL) */
+        #offer-modal, #tutorial-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); animation: fadeIn 0.3s; }
+        .offer-card, .tutorial-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 30px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.95); animation: popUp 0.3s forwards; }
+        
         .offer-badge { background: #FFD700; color: #5c4d00; font-weight: 900; padding: 5px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-size: 12px; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
         .offer-title { font-size: 24px; font-weight: 900; color: #333; margin-bottom: 10px; line-height: 1.3; }
         .offer-desc { font-size: 15px; color: #666; margin-bottom: 25px; line-height: 1.6; }
         .offer-btn { width: 100%; background: linear-gradient(45deg, #1cb0f6, #25d366); color: white; padding: 15px; border: none; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
         .offer-btn:active { transform: scale(0.95); }
+        
+        /* TUTORIAL SPECIFIC */
+        .tutorial-card { text-align: left; }
+        .tutorial-card h3 { text-align: center; color: #FF9800; margin-top: 0; font-size: 22px; font-weight: 900; }
+        .tutorial-list { list-style: none; padding: 0; margin: 20px 0; }
+        .tutorial-list li { margin-bottom: 15px; font-size: 15px; color: #555; line-height: 1.5; display: flex; gap: 10px; }
+        .tutorial-list li span { font-size: 18px; }
+        .tutorial-close-btn { background: #333; color: white; width: 100%; padding: 12px; border-radius: 15px; border: none; font-weight: 800; font-size: 16px; cursor: pointer; }
+        .tutorial-close-btn:active { transform: scale(0.98); }
+
         .close-offer { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -109,6 +156,7 @@
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.7); } 70% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 0 15px rgba(255, 75, 75, 0); } 100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); } }
+        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); } }
         @keyframes spin { 0% {transform: translateX(-50%) rotate(0deg);} 100% {transform: translateX(-50%) rotate(360deg);} }
         @keyframes blink { 50% { opacity: 0.5; } }
     </style>
@@ -126,10 +174,24 @@
         <div class="offer-badge">🔥 LEVEL UP!</div>
         <div class="offer-title">You are doing Great! <br> Ready for Pro?</div>
         <div class="offer-desc">
-            মাশাআল্লাহ! আপনি গত ২০ মিনিট ধরে খুব মনোযোগ দিয়ে প্র্যাকটিস করছেন। <br><br>
-            আপনার সিরিয়াসনেস দেখে মনে হচ্ছে আপনি স্পোকেন ইংলিশে মাস্টার হতে চান। আমাদের <b>Premium Mentor</b> সাপোর্ট নিতে চান?
+            মাশাআল্লাহ! আপনি গত ২০ মিনিট ধরে খুব মনোযোগ দিয়ে প্র্যাকটিস করছেন। <br><br>
+            আপনার সিরিয়াসনেস দেখে মনে হচ্ছে আপনি স্পোকেন ইংলিশে মাস্টার হতে চান। আমাদের <b>Premium Mentor</b> সাপোর্ট নিতে চান?
         </div>
         <button class="offer-btn" onclick="buyPremium()">Get Premium Access 💎</button>
+    </div>
+</div>
+
+<div id="tutorial-modal">
+    <div class="tutorial-card">
+        <h3>🚀 How to Use</h3>
+        <ul class="tutorial-list">
+            <li><span>🎭</span> <b>Set Role:</b> আপনি কে এবং আপনার পার্টনার কে হবে তা সিলেক্ট করুন।</li>
+            <li><span>💬</span> <b>Start Chat:</b> 'START MAGIC' বাটন চাপুন এবং চ্যাট শুরু করুন।</li>
+            <li><span>🤖</span> <b>Roleplay AI:</b> সে আপনার সাথে ইংরেজিতে কথা বলবে (Practice Partner)।</li>
+            <li><span>💡</span> <b>Mentor:</b> সে আপনার ভুল ধরবে এবং বাংলায় শিখিয়ে দেবে।</li>
+            <li><span>📝</span> <b>Save Note:</b> চ্যাট শেষে 'Save Note' বাটন চেপে ক্লাস নোট ডাউনলোড করুন।</li>
+        </ul>
+        <button class="tutorial-close-btn" onclick="closeTutorial()">OK, I Understand 👍</button>
     </div>
 </div>
 
@@ -140,6 +202,9 @@
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
     <div id="user-badge" class="user-id-badge"><span class="live-dot"></span> ID: Generating...</div>
+    
+    <button class="tutorial-btn" onclick="openTutorial()">❓ How to use?</button>
+
     <div style="background:#e5f6fd; color:#1cb0f6; padding:6px 15px; border-radius:20px; font-weight:900; font-size:12px; margin-bottom:15px; border:2px solid #bcebfd;">⚡ Unlimited Free ⚡</div>
     
     <div class="hero-card">
@@ -150,8 +215,16 @@
         </div>
 
         <div class="input-grid">
-            <div class="role-group"><div class="label-text">I want to be a...</div><input type="text" id="user-role" class="input-duo" placeholder="e.g. Student"><div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Customer')">Customer</div></div></div>
-            <div class="role-group"><div class="label-text">Talk24AI acts as a...</div><input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher"><div class="chip-container"><div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div><div class="chip" onclick="selectChip('ai-role', 'Shopkeeper')">Shopkeeper</div></div></div>
+            <div class="role-group">
+                <div class="label-text">I am...</div>
+                <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
+                <div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Customer')">Customer</div></div>
+            </div>
+            <div class="role-group">
+                <div class="label-text">My AI talking partner...</div>
+                <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
+                <div class="chip-container"><div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div><div class="chip" onclick="selectChip('ai-role', 'Shopkeeper')">Shopkeeper</div></div>
+            </div>
         </div>
         <div class="input-grid">
             <div class="role-group"><div class="label-text">Mood</div><input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun"><div class="chip-container"><div class="chip" onclick="selectChip('chat-mood', 'Fun 🤣')">Fun 🤣</div><div class="chip" onclick="selectChip('chat-mood', 'Serious 🧐')">Serious 🧐</div></div></div>
@@ -162,7 +235,8 @@
             <button class="btn-magic" onclick="randomize()">🎲</button>
             <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
         </div>
-        <button id="install-btn" onclick="installApp()">📲 Install App / Add to Home</button>
+        
+        <button id="install-btn" onclick="installApp()">📲 Download App for Best Experience</button>
     </div>
 </div>
 
@@ -175,7 +249,6 @@
                 <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
-        
         <div class="stats-box">
              <div class="stat-row">
                  <div class="stat-item">Active: <span id="time-display">0m</span></div>
@@ -200,6 +273,15 @@
     
     let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal' }; 
     let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
+
+    // --- TUTORIAL LOGIC ---
+    function openTutorial() {
+        playSound('pop');
+        document.getElementById('tutorial-modal').style.display = 'flex';
+    }
+    function closeTutorial() {
+        document.getElementById('tutorial-modal').style.display = 'none';
+    }
 
     // --- 🧠 ADDICTION TIMER & LIFETIME WATCH ---
     let sessionSeconds = 0; 
@@ -226,11 +308,15 @@
 
     // Timer Logic: Runs every 1 second
     setInterval(() => {
+        // Only count if chat screen is open and tab is active
         if (!document.hidden && document.getElementById('chat-screen').style.display === 'flex') {
             sessionSeconds++;
+            
+            // Sync with Server every 60 seconds (1 Minute)
             if (sessionSeconds % 60 === 0) {
                 syncTimeWithServer(60);
             }
+            
             updateTimeDisplay();
             checkAddiction();
         }
@@ -243,7 +329,7 @@
         })
         .then(res => res.json())
         .then(data => {
-            lifetimeSeconds = data.total_time; 
+            lifetimeSeconds = data.total_time; // Update local lifetime with accurate server time
             updateLifetimeDisplay();
         });
     }
@@ -261,7 +347,7 @@
     }
 
     function checkAddiction() {
-        const totalActiveTime = lifetimeSeconds + (sessionSeconds % 60);
+        const totalActiveTime = lifetimeSeconds + (sessionSeconds % 60); // Approx total
         if (totalActiveTime >= THRESHOLD && !offerShown) {
             showOffer();
             offerShown = true;
@@ -333,60 +419,9 @@
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
     function speak(text, cb) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1.0; u.onend = cb; u.onerror = cb; window.speechSynthesis.speak(u); }
     
-    // 🎤 IMPROVED MIC LOGIC FOR LAPTOPS & DESKTOPS
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = () => {
-            isMicOn = true;
-            document.getElementById('mic-btn').classList.add('listening');
-        };
-        
-        recognition.onend = () => {
-            isMicOn = false;
-            document.getElementById('mic-btn').classList.remove('listening');
-        };
-
-        recognition.onresult = (e) => {
-            const txt = e.results[0][0].transcript;
-            document.getElementById('userInput').value = txt;
-            sendToAI(txt);
-        };
-
-        recognition.onerror = (event) => {
-            console.error("Mic Error:", event.error);
-            isMicOn = false;
-            document.getElementById('mic-btn').classList.remove('listening');
-            if (event.error === 'not-allowed') {
-                alert("⚠️ মাইক্রোফোন এক্সেস ব্লক করা আছে। দয়া করে ব্রাউজারের সেটিংস থেকে 'Allow' করে দিন। (Click lock icon in address bar)");
-            }
-        };
-    }
-
-    function toggleMic() { 
-        playSound('pop'); 
-        
-        if (!recognition) {
-            alert("⚠️ দুঃখিত! আপনার এই ব্রাউজারে মাইক্রোফোন সাপোর্ট করছে না। \n\n✅ সমাধান: দয়া করে Google Chrome বা Microsoft Edge ব্রাউজার ব্যবহার করুন।");
-            return;
-        }
-
-        if (isMicOn) {
-            recognition.stop();
-        } else {
-            try {
-                recognition.start();
-            } catch (e) {
-                console.warn("Mic start error:", e);
-            }
-        }
-    }
+    const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
+    if(recognition) { recognition.lang = 'en-US'; recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening'); recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening'); recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); }; }
+    function toggleMic() { playSound('pop'); if(!recognition) return alert("Mic error"); isMicOn ? recognition.stop() : recognition.start(); isMicOn = !isMicOn; }
 </script>
 </body>
 </html>
