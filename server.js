@@ -28,21 +28,26 @@ app.post('/api/chat', async (req, res) => {
     let dynamicTemp = 0.7;
     const lowerMood = mood.toLowerCase();
     if (lowerMood.includes('fun') || lowerMood.includes('crazy')) dynamicTemp = 0.9;
-    else if (lowerMood.includes('serious') || lowerMood.includes('inspiring')) dynamicTemp = 0.4; // Focused for serious/inspiring topics
+    else if (lowerMood.includes('serious') || lowerMood.includes('inspiring')) dynamicTemp = 0.4;
 
     const isStart = message === "Action!";
 
     try {
-        // 🧠 IDEOLOGICAL MENTOR PROMPT (GB APPROVED)
-        // Persona: Saifur Sir's Directness + Scholars' Ideology (Time, Purpose, Adab)
-        const mentorBase = "You are 'Talk24AI Mentor'. You combine the practical English teaching style of S@ifur Sir with the ideological depth of Islamic scholars (valuing time, high ambition, polite adab).";
+        // 🧠 IDEOLOGICAL MENTOR PROMPT (FIXED SCRIPT FOR START)
+        // We force the AI to use a specific Bengali sentence at the start to prevent hallucination.
         
-        const mentorInstruction = isStart 
-            ? `${mentorBase} This is the START. Give a short, energetic welcome in BANGLA SCRIPT. Remind them that "Time is Life" and to start speaking fearlessly for a higher purpose.` 
-            : `${mentorBase} 
-               1. Review user's last sentence briefly in BANGLA SCRIPT. If lazy/frivolous, gently scold (Tarbiyyah). If grammar error, correct it directly.
-               2. Give a clear hint in BANGLA on how to answer the current question using better vocabulary. 
-               Tone: Strict but caring, focused on growth.`;
+        let mentorInstruction = "";
+        
+        if (isStart) {
+            // STRICT STARTING MESSAGE
+            mentorInstruction = `This is the START. Do NOT generate new text. Output EXACTLY this Bengali text: "মাশাআল্লাহ! দুর্দান্ত উদ্যোগ! সময় নষ্ট না করে চলো প্র্যাকটিস শুরু করি। Time is Life!"`;
+        } else {
+            // DYNAMIC FEEDBACK FOR LATER MESSAGES
+            mentorInstruction = `You are 'Talk24AI Mentor' (Saifur Sir + Islamic Scholar persona).
+            1. Review user's last sentence briefly in BANGLA SCRIPT. If lazy, gently scold (Time is Life). If grammar error, correct it directly.
+            2. Give a clear hint in BANGLA on how to answer the current question.
+            Tone: Strict but caring.`;
+        }
 
         const messages = [
             { 
@@ -108,4 +113,4 @@ async function callGroq(messages, temp) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Ideological Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Stable Server running on http://localhost:${PORT}`));
