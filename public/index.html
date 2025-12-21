@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* CSS REMAINS EXACTLY THE SAME AS GAMIFIED VERSION */
+        /* BASE STYLES */
         :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
@@ -21,10 +21,8 @@
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
         #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
-
         .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
         .hero-card { width: 100%; max-width: 400px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 25px; text-align: center; box-shadow: 0 8px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
-        
         .pain-point-msg { color: #555; margin-bottom: 20px; font-weight: 700; font-size: 15px; line-height: 1.5; background: #f8fcfd; padding: 12px; border-radius: 15px; border: 2px dashed #bcebfd; }
         .highlight { color: var(--green); font-weight: 900; }
 
@@ -60,6 +58,18 @@
         .replay-btn:active { transform: scale(0.95); background: #eee; }
         
         .typing { font-size: 13px; color: #bbb; margin-left: 25px; font-weight: 800; display: none; }
+        
+        /* VOICE LOADING ANIMATION */
+        .voice-loader {
+            display: none; align-items: center; gap: 5px; margin-left: 10px; margin-top: 5px;
+            background: #e1f5fe; padding: 5px 10px; border-radius: 15px; width: fit-content;
+        }
+        .voice-bar { width: 4px; height: 10px; background: var(--blue); border-radius: 2px; animation: wave 1s infinite ease-in-out; }
+        .voice-bar:nth-child(1) { animation-delay: 0.1s; }
+        .voice-bar:nth-child(2) { animation-delay: 0.2s; }
+        .voice-bar:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 20px; } }
+        
         .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 200; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
         .input-row { width: 100%; display: flex; gap: 10px; max-width: 600px; }
         #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--green); border: 5px solid #fff; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 6px 15px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.1s; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); }
@@ -85,9 +95,7 @@
 <audio id="snd-pop" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
 <div class="bg-shape shape1"></div><div class="bg-shape shape2"></div><div class="bg-shape shape3"></div>
 
-<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI..." target="_blank" class="wa-btn">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg> Help
-</a>
+<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI..." target="_blank" class="wa-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg> Help</a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
@@ -99,49 +107,11 @@
             লজ্জা ভেঙে <span class="highlight">Talk24AI</span>-এর সাথে কথা বলুন!
             <span style="display:block; margin-top:5px; font-size:12px; color:#1cb0f6;">👉 রোল সেট করুন অথবা 🎲 বাটন চাপুন!</span>
         </div>
-
-        <div class="role-group">
-            <div class="label-text">I want to be a...</div>
-            <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
-            <div class="chip-container">
-                <div class="chip" onclick="selectChip('user-role', 'Student')">Student</div>
-                <div class="chip" onclick="selectChip('user-role', 'Customer')">Customer</div>
-                <div class="chip" onclick="selectChip('user-role', 'Patient')">Patient</div>
-            </div>
-        </div>
-
-        <div class="role-group">
-            <div class="label-text">Talk24AI acts as a...</div>
-            <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
-            <div class="chip-container">
-                <div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div>
-                <div class="chip" onclick="selectChip('ai-role', 'Shopkeeper')">Shopkeeper</div>
-                <div class="chip" onclick="selectChip('ai-role', 'Doctor')">Doctor</div>
-            </div>
-        </div>
-
-        <div class="role-group">
-            <div class="label-text">Mood</div>
-            <input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun">
-            <div class="chip-container">
-                <div class="chip" onclick="selectChip('chat-mood', 'Fun 🤣')">Fun 🤣</div>
-                <div class="chip" onclick="selectChip('chat-mood', 'Serious 🧐')">Serious 🧐</div>
-            </div>
-        </div>
-
-        <div class="role-group">
-            <div class="label-text">Situation</div>
-            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for help">
-            <div class="chip-container">
-                <div class="chip" onclick="selectChip('scene-context', 'Bargaining')">Bargaining</div>
-                <div class="chip" onclick="selectChip('scene-context', 'Interview')">Interview</div>
-            </div>
-        </div>
-
-        <div class="action-row">
-            <button class="btn-magic" onclick="randomize()">🎲</button>
-            <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
-        </div>
+        <div class="role-group"><div class="label-text">I want to be a...</div><input type="text" id="user-role" class="input-duo" placeholder="e.g. Student"><div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Customer')">Customer</div><div class="chip" onclick="selectChip('user-role', 'Patient')">Patient</div></div></div>
+        <div class="role-group"><div class="label-text">Talk24AI acts as a...</div><input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher"><div class="chip-container"><div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div><div class="chip" onclick="selectChip('ai-role', 'Shopkeeper')">Shopkeeper</div><div class="chip" onclick="selectChip('ai-role', 'Doctor')">Doctor</div></div></div>
+        <div class="role-group"><div class="label-text">Mood</div><input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun"><div class="chip-container"><div class="chip" onclick="selectChip('chat-mood', 'Fun 🤣')">Fun 🤣</div><div class="chip" onclick="selectChip('chat-mood', 'Serious 🧐')">Serious 🧐</div></div></div>
+        <div class="role-group"><div class="label-text">Situation</div><input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for help"><div class="chip-container"><div class="chip" onclick="selectChip('scene-context', 'Bargaining')">Bargaining</div><div class="chip" onclick="selectChip('scene-context', 'Interview')">Interview</div></div></div>
+        <div class="action-row"><button class="btn-magic" onclick="randomize()">🎲</button><button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button></div>
         <button id="install-btn" onclick="installApp()">📲 Install App</button>
     </div>
 </div>
@@ -157,72 +127,36 @@
         </div>
         <div style="background: #fff4db; color: #d68f00; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; box-shadow: 0 2px 0 #ffe082;">💎 <span id="score">0</span></div>
     </div>
+    
     <div id="messages"></div>
+    
+    <div id="voice-loader" class="voice-loader" style="margin: 0 auto 20px auto;">
+        <span style="font-size:12px; font-weight:700; color:#1cb0f6;">Speaking</span>
+        <div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div>
+    </div>
+
     <div id="typing-box" class="typing">Mate is typing...</div>
     <div class="bottom-area">
         <button id="mic-btn" onclick="toggleMic()">🎤</button>
-        <div class="input-row">
-            <input type="text" id="userInput" class="input-duo" placeholder="Type a message..." onkeypress="handleEnter(event)">
-        </div>
+        <div class="input-row"><input type="text" id="userInput" class="input-duo" placeholder="Type a message..." onkeypress="handleEnter(event)"></div>
     </div>
 </div>
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playSound(type) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
-        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-        if (type === 'pop') { osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
-        else if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.1); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
-        else if (type === 'message') { osc.type = 'sine'; osc.frequency.setValueAtTime(500, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
-    }
-
-    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 };
-    let isMicOn = false; let chatHistory = []; let deferredPrompt; 
-
+    function playSound(type) { if (audioCtx.state === 'suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); osc.connect(gainNode); gainNode.connect(audioCtx.destination); if (type === 'pop') { osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } else if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.1); gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); } else if (type === 'message') { osc.type = 'sine'; osc.frequency.setValueAtTime(500, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } }
+    
+    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 }; let isMicOn = false; let chatHistory = []; let deferredPrompt; 
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block'; });
     async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }
-
+    
     function selectChip(id, value) { playSound('pop'); document.getElementById(id).value = value; }
-
-    function randomize() {
-        playSound('pop');
-        const sets = [
-            { u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining hard', m: 'Fun 🤣' },
-            { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' },
-            { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' },
-            { u: 'Student', a: 'Teacher', s: 'Late for class', m: 'Scared 😨' },
-            // HIDDEN IDEOLOGICAL ROLE (Takes a few clicks to find)
-            { u: 'Youth', a: 'Scholar', s: 'Value of Time & Purpose', m: 'Inspiring 🌟' }
-        ];
-        const r = sets[Math.floor(Math.random() * sets.length)];
-        document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a;
-        document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m;
-    }
-
-    function startCustomChat() {
-        const u = document.getElementById('user-role').value; const a = document.getElementById('ai-role').value;
-        if(!u || !a) return alert("Select roles!");
-        playSound('success'); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        state.userRole = u; state.aiRole = a; state.scene = document.getElementById('scene-context').value || "Chat"; state.mood = document.getElementById('chat-mood').value || "Normal";
-        setTimeout(() => { document.getElementById('p-name').innerText = a; document.getElementById('home-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; triggerAIStart(); }, 1000);
-    }
-
-    async function triggerAIStart() {
-        toggleTyping(true);
-        const sys = `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}. Start conversation.`;
-        callAPI({ message: "Action!", systemInstruction: sys, mood: state.mood });
-    }
-
-    async function sendToAI(text) {
-        if(!text.trim()) return;
-        playSound('message'); addUserMsg(text); chatHistory.push(`User: ${text}`);
-        document.getElementById('userInput').value = ''; toggleTyping(true);
-        const sys = `Identity: ${state.aiRole}. User: ${state.userRole}. Context: ${state.scene}. Rules: Simple English.`;
-        callAPI({ message: text, systemInstruction: sys, mood: state.mood });
-    }
-
+    function randomize() { playSound('pop'); const sets = [{ u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining hard', m: 'Fun 🤣' }, { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' }, { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' }, { u: 'Student', a: 'Teacher', s: 'Late for class', m: 'Scared 😨' }, { u: 'Youth', a: 'Scholar', s: 'Value of Time & Purpose', m: 'Inspiring 🌟' }]; const r = sets[Math.floor(Math.random() * sets.length)]; document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a; document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m; }
+    
+    function startCustomChat() { const u = document.getElementById('user-role').value; const a = document.getElementById('ai-role').value; if(!u || !a) return alert("Select roles!"); playSound('success'); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); state.userRole = u; state.aiRole = a; state.scene = document.getElementById('scene-context').value || "Chat"; state.mood = document.getElementById('chat-mood').value || "Normal"; setTimeout(() => { document.getElementById('p-name').innerText = a; document.getElementById('home-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; triggerAIStart(); }, 1000); }
+    async function triggerAIStart() { toggleTyping(true); const sys = `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}. Start conversation.`; callAPI({ message: "Action!", systemInstruction: sys, mood: state.mood }); }
+    async function sendToAI(text) { if(!text.trim()) return; playSound('message'); addUserMsg(text); chatHistory.push(`User: ${text}`); document.getElementById('userInput').value = ''; toggleTyping(true); const sys = `Identity: ${state.aiRole}. User: ${state.userRole}. Context: ${state.scene}. Rules: Simple English.`; callAPI({ message: text, systemInstruction: sys, mood: state.mood }); }
+    
     async function callAPI(payload) {
         try {
             document.getElementById('mic-btn').classList.add('processing');
@@ -232,22 +166,43 @@
             chatHistory.push(`AI: ${data.reply}`); addAiMsg(data.reply, data.instruction);
         } catch (e) { document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
     }
-
+    
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
-
+    
+    // Updated Logic for Voice Animation
     function addAiMsg(text, instruction) {
         const container = document.createElement('div'); container.className = 'bubble-container';
         const bubble = document.createElement('div'); bubble.className = 'bubble ai'; bubble.innerText = text;
         const replayBtn = document.createElement('div'); replayBtn.className = 'replay-btn'; replayBtn.innerHTML = '🔊 Replay'; replayBtn.onclick = () => speak(text);
         container.appendChild(bubble); container.appendChild(replayBtn);
         if (instruction) { const note = document.createElement('div'); note.className = 'mentor-note'; note.innerHTML = `<strong>Talk24AI Mentor:</strong><br>${instruction}`; container.appendChild(note); }
-        document.getElementById('messages').appendChild(container); playSound('message'); speak(text); scrollToBottom();
+        document.getElementById('messages').appendChild(container); 
+        playSound('message'); 
+        
+        // Show Voice Animation -> Speak -> Hide Animation
+        document.getElementById('voice-loader').style.display = 'flex';
+        speak(text, () => {
+            document.getElementById('voice-loader').style.display = 'none';
+        });
+        
+        scrollToBottom();
     }
-
+    
     function addUserMsg(text) { const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text; div.style.alignSelf = 'flex-end'; document.getElementById('messages').appendChild(div); scrollToBottom(); state.score += 10; document.getElementById('score').innerText = state.score; }
     function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
-    function speak(text) { window.speechSynthesis.cancel(); const utter = new SpeechSynthesisUtterance(text); utter.rate = 1.0; window.speechSynthesis.speak(utter); }
+    
+    function speak(text, onEndCallback) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.0; 
+        
+        utter.onend = () => { if(onEndCallback) onEndCallback(); };
+        utter.onerror = () => { if(onEndCallback) onEndCallback(); };
+        
+        window.speechSynthesis.speak(utter);
+    }
+    
     const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
     if(recognition) { recognition.lang = 'en-US'; recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening'); recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening'); recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); }; }
     function toggleMic() { playSound('pop'); if(!recognition) return alert("Mic error"); isMicOn ? recognition.stop() : recognition.start(); isMicOn = !isMicOn; }
