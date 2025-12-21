@@ -11,7 +11,6 @@
         :root {
             --green: #58cc02; --green-shade: #46a302;
             --blue: #1cb0f6; --blue-shade: #1899d6;
-            --yellow: #ffc800; --yellow-shade: #e5b400;
             --bg: #ffffff; --font: 'Nunito', sans-serif;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -22,7 +21,15 @@
 
         /* HERO STYLES */
         .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
-        .trial-badge { background: #e5f6fd; color: #1cb0f6; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 20px; border: 2px solid #1cb0f6; }
+        
+        /* UNLIMITED BADGE */
+        .trial-badge { 
+            background: linear-gradient(135deg, #ffd700, #ffca28); 
+            color: #5d4037; padding: 8px 18px; border-radius: 25px; 
+            font-weight: 900; font-size: 13px; text-transform: uppercase; 
+            margin-bottom: 20px; border: 2px solid #ffecb3; 
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+        }
         
         .hero-card { width: 100%; max-width: 360px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; }
         
@@ -111,7 +118,7 @@
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
-    <div class="trial-badge">✨ Free Trial Active ✨</div>
+    <div class="trial-badge">⚡ Unlimited Time & Free ⚡</div>
     
     <div class="hero-card">
         <div class="pain-point-msg">
@@ -143,7 +150,7 @@
             <div id="p-icon" style="font-size: 30px;">🎭</div>
             <div>
                 <div style="font-weight: 800; font-size: 16px;" id="p-name">AI Mate</div>
-                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
+                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE (Unlimited)</div>
             </div>
         </div>
         <div style="background: #fff4db; color: #d68f00; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 14px;">💎 <span id="score">0</span></div>
@@ -206,11 +213,10 @@
 
     async function triggerAIStart() {
         toggleTyping(true);
-        // Initial handshake to set the stage
+        // Prompt to start without delay
         const sysPrompt = `
-            SETUP: You are playing the role of: ${state.aiRole}. 
-            I am playing: ${state.userRole}.
-            CONTEXT: We are in Bangladesh. Start the scene naturally.
+            SETUP: You are playing: ${state.aiRole}. I am playing: ${state.userRole}.
+            CONTEXT: We are in Bangladesh. Start naturally.
             RULE: English Only. Keep it short.
         `;
         callAPI({ message: "Action!", systemInstruction: sysPrompt });
@@ -231,17 +237,17 @@
         document.getElementById('userInput').value = '';
         toggleTyping(true);
         
-        // --- THE MASTER PROMPT (FIXED ENTITY & RESTRICTIONS) ---
+        // --- GOD MODE: UNLIMITED TIME & FREE ---
         const expertPrompt = `
             IDENTITY: You are ${state.aiRole}. I am ${state.userRole}.
             LOCATION: Bangladesh.
             
-            [STRICT RULES - DO NOT BREAK]
-            1. ENTITY: You are a Bangladeshi Muslim AI. I am a Bangladeshi Muslim User.
-            2. RESTRICTIONS: If the user asks for SPOUSE (Husband/Wife), LOVER, or PARENT/CHILD roleplay, REFUSE politely. Say: "I cannot roleplay that specific relationship. Let's try something else!" and stop the roleplay.
-            3. TONE: Engaging, friendly, natural English. No unnecessary Islamic terms unless relevant.
-            4. ENGAGEMENT: End with a question to keep the story moving.
-            5. MEMORY: Context: ${chatHistory.join(' | ')}.
+            [STRICT RULES]
+            1. UNLIMITED TIME: This is a FREE session. Never mention "Quota" or "Time Limit" or "Premium".
+            2. RESTRICTIONS: If user asks for SPOUSE/LOVER/PARENT roleplay, politely refuse.
+            3. TONE: Friendly, Natural English.
+            4. ENGAGEMENT: End with a question.
+            5. MEMORY: ${chatHistory.join(' | ')}.
         `;
         
         callAPI({ message: text, systemInstruction: expertPrompt });
