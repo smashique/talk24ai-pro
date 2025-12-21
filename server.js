@@ -30,18 +30,27 @@ app.post('/api/chat', async (req, res) => {
     if (lowerMood.includes('fun') || lowerMood.includes('crazy')) dynamicTemp = 0.9;
     else if (lowerMood.includes('serious')) dynamicTemp = 0.3;
 
+    // 🚀 FIRST MESSAGE CHECK
+    // If message is "Action!", it means the chat just started.
+    const isStart = message === "Action!";
+
     try {
+        // 🧠 MENTOR INSTRUCTION (SAIFUR SIR PERSONA)
+        const mentorPrompt = isStart 
+            ? "This is the START of the session. Do NOT review anything. As 'Talk24AI Mentor' (Saifur Sir), give a short, energetic welcome in BANGLA SCRIPT. Tell them to start speaking fearlessly." 
+            : "1. As 'Talk24AI Mentor' (Saifur Sir), review the user's last sentence. If there are grammar mistakes, correct them gently in BANGLA SCRIPT. 2. Give a hint in BANGLA on how to answer the current question clearly.";
+
         const messages = [
             { 
                 role: "system", 
                 content: (systemInstruction || "You are Talk24AI.") + 
                 `\n[CURRENT MOOD]: ${mood}.
                 
-                [CRITICAL OUTPUT RULE]: You MUST return the response in valid JSON format strictly. Do not add any markdown.
+                [CRITICAL OUTPUT RULE]: Return valid JSON only.
                 Structure:
                 {
-                    "conversation": "Your English response to the user (A2/B1 Level). End with a question.",
-                    "learning_note": "Write in Bangla (mix with English terms). 1. Praise/Review user's last sentence (Correct errors if any). 2. Give a Hint/Instruction on how to answer your question."
+                    "conversation": "Your Roleplay response in English (A2/B1 Level). End with a question.",
+                    "learning_note": "${mentorPrompt} (Write ONLY in Bangla Script using simple terms)."
                 }`
             },
             { 
@@ -52,17 +61,14 @@ app.post('/api/chat', async (req, res) => {
 
         const rawResponse = await callGroq(messages, dynamicTemp);
         
-        // 🧩 JSON PARSING LOGIC
         let parsedData;
         try {
-            // Sometimes AI adds ```json ... ``` wrapper, remove it
             const cleanJson = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
             parsedData = JSON.parse(cleanJson);
         } catch (e) {
-            // Fallback if JSON breaks
             parsedData = { 
                 conversation: rawResponse, 
-                learning_note: "ফিডব্যাক লোড করা যায়নি, তবে আপনি চালিয়ে যান!" 
+                learning_note: "টেকনিক্যাল সমস্যার কারণে মেন্টর টিপস লোড হয়নি। আপনি চালিয়ে যান!" 
             };
         }
 
@@ -73,7 +79,7 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("🔥 Server Error:", err.message);
-        res.status(500).json({ reply: "Connection error.", instruction: "Try again." });
+        res.status(500).json({ reply: "Connection error.", instruction: "আবার চেষ্টা করুন।" });
     }
 });
 
@@ -84,9 +90,9 @@ async function callGroq(messages, temp) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile",
-            max_tokens: 450, // Increased for JSON
+            max_tokens: 450,
             temperature: temp,
-            response_format: { type: "json_object" } // Force JSON Mode
+            response_format: { type: "json_object" }
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
         });
@@ -98,4 +104,4 @@ async function callGroq(messages, temp) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Dual-Mode Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Mentor Server running on http://localhost:${PORT}`));
