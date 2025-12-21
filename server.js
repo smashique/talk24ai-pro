@@ -24,9 +24,7 @@ const safeString = (val) => {
 
 const cleanUnicode = (str) => {
     const s = safeString(str); 
-    return s.replace(/\\u[\dA-F]{4}/gi, (match) => {
-        return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-    });
+    return s.replace(/\\u[\dA-F]{4}/gi, (match) => String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16)));
 };
 
 const sanitizeInput = (text) => {
@@ -34,29 +32,39 @@ const sanitizeInput = (text) => {
     return s.replace(/<[^>]*>?/gm, '').trim();
 };
 
-// ⏱️ API: UPDATE TIME
+// ⏱️ API: UPDATE TIME (NO CHANGE)
 app.post('/api/update-time', (req, res) => {
     const { userId, seconds } = req.body;
     const db = loadDB();
-    if (!db[userId]) db[userId] = { total_msgs: 0, total_time: 0, first_seen: new Date().toISOString() };
+    if (!db[userId]) db[userId] = { total_msgs: 0, total_mistakes: 0, total_time: 0 };
+    
     db[userId].total_time = (db[userId].total_time || 0) + seconds;
-    db[userId].last_active = new Date().toISOString();
     saveDB(db);
     res.json({ success: true });
 });
 
-// 📊 API: STATS
+// 📊 API: STATS (CALCULATE ACCURACY)
 app.post('/api/stats', (req, res) => {
     const { userId } = req.body;
     const db = loadDB();
     if (!db[userId]) {
-        db[userId] = { total_msgs: 0, total_time: 0, first_seen: new Date().toISOString() };
+        db[userId] = { total_msgs: 0, total_mistakes: 0, total_time: 0 };
         saveDB(db);
     }
-    res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
+    
+    const total = db[userId].total_msgs || 0;
+    const mistakes = db[userId].total_mistakes || 0;
+    // যদি একদম নতুন হয় (0 msg), তবে 100% দেখাবে উৎসাহ দিতে
+    const accuracy = total === 0 ? 100 : Math.round(((total - mistakes) / total) * 100);
+
+    res.json({ 
+        total: total, 
+        accuracy: accuracy,
+        lifetime_seconds: db[userId].total_time || 0 
+    });
 });
 
-// 💬 API: CHAT
+// 💬 API: CHAT (WITH JUDGE LOGIC)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     
@@ -66,77 +74,73 @@ app.post('/api/chat', async (req, res) => {
     userId = sanitizeInput(userId) || 'anonymous';
 
     const db = loadDB();
-    if (!db[userId]) db[userId] = { total_msgs: 0, total_time: 0, first_seen: new Date().toISOString() };
-    db[userId].total_msgs += 1;
+    if (!db[userId]) db[userId] = { total_msgs: 0, total_mistakes: 0, total_time: 0 };
+    
+    // মেসেজ কাউন্ট বাড়াও (শুরুর মেসেজ বাদে)
+    const isStart = message === "Action!";
+    if (!isStart) db[userId].total_msgs += 1;
+    
     saveDB(db);
 
     let dynamicTemp = 0.6; 
 
-    const isStart = message === "Action!";
-
     try {
         let finalPrompt = "";
 
+        // 🧠 PROMPT: AGENT A (Actor) + AGENT B (Mentor) + JUDGE (Mistake Counter)
         const guardRails = `
         [SYSTEM PROTOCOL]
         
-        [AGENT A: ROLEPLAY ACTOR]
-        - **Language:** STRICTLY ENGLISH ONLY. If user speaks Bangla, reply in English: "Please speak in English."
-        - **Behavior:** Act exactly as the character. 
-        - **Safety:** If topic is romance/nsfw -> Pivot immediately to a boring topic (Weather/Study).
+        [AGENT A: ACTOR]
+        - Speak ENGLISH ONLY.
+        - Be friendly and natural.
+        - Pivot from NSFW topics.
 
-        [AGENT B: MENTOR]
-        - **Language:** STRICTLY BANGLA SCRIPT.
-        - **Format:** 1. **পর্যালোচনা:** (Review mistake/praise)
-          2. **সঠিক রূপ:** (Correct sentence)
-          3. **পরবর্তী ধাপ:** (Ask a new question)
+        [AGENT B: MENTOR & JUDGE]
+        - Speak BANGLA SCRIPT.
+        - **JUDGMENT TASK:** Did the user make a grammar/vocab mistake? 
+          - Set "has_mistake": true (if error found)
+          - Set "has_mistake": false (if correct)
+        - **Structure:** 1. Review, 2. Correction, 3. Next Step.
         
         [JSON OUTPUT ONLY]:
         {
             "conversation": "English reply...",
-            "learning_note": "Bangla feedback..."
+            "learning_note": "Bangla feedback...",
+            "has_mistake": true/false
         }
         `;
 
         if (isStart) {
-            finalPrompt = `
-            ${systemInstruction}
-            ${guardRails}
-            [TASK]: Start conversation energetically.
-            [JSON]: {"conversation": "Hello! Ready?", "learning_note": "আসসালামু আলাইকুম!"}
-            `;
+            finalPrompt = `${systemInstruction} ${guardRails} [TASK]: Start warmly. [JSON REQUIRED]`;
         } else {
-            finalPrompt = `
-            ${systemInstruction}
-            ${guardRails}
-            [USER SAID]: "${message}"
-            [JSON]: {"conversation": "...", "learning_note": "..."}
-            `;
+            finalPrompt = `${systemInstruction} ${guardRails} [USER]: "${message}" [TASK]: Reply, Teach & Judge. [JSON REQUIRED]`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
+        // Call AI (Llama 3.1 8b Instant)
         const rawResponse = await callGroq(messages, dynamicTemp);
         
+        // Parsing
         let parsedData;
         try { 
             const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                parsedData = JSON.parse(jsonMatch[0]);
-            } else {
-                parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।" };
-            }
+            if (jsonMatch) parsedData = JSON.parse(jsonMatch[0]);
+            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান。", has_mistake: false };
         } 
         catch (e) {
-            console.error("JSON Parse Fail:", rawResponse);
-            parsedData = { 
-                conversation: safeString(rawResponse).replace(/["{}]/g, ''), 
-                learning_note: "যান্ত্রিক ত্রুটি, তবে প্র্যাকটিস চালিয়ে যান।" 
-            }; 
+            parsedData = { conversation: safeString(rawResponse).replace(/["{}]/g, ''), learning_note: "চালিয়ে যান।", has_mistake: false }; 
         }
 
-        if (!parsedData.conversation || parsedData.conversation.length < 2) parsedData.conversation = "I am listening...";
+        if (!parsedData.conversation) parsedData.conversation = "I am listening...";
         if (!parsedData.learning_note) parsedData.learning_note = "চালিয়ে যান।";
+
+        // 🛑 UPDATE MISTAKE COUNT IN DB
+        if (!isStart && parsedData.has_mistake === true) {
+            db[userId].total_mistakes += 1;
+            saveDB(db);
+        }
 
         res.json({ 
             reply: cleanUnicode(parsedData.conversation), 
@@ -144,11 +148,8 @@ app.post('/api/chat', async (req, res) => {
         });
 
     } catch (err) {
-        console.error("HANDLED ERROR:", err.message);
-        res.json({ 
-            reply: "Server connected. Please say that again.", 
-            instruction: "নেটওয়ার্ক কানেকশন ঠিক হয়েছে। আবার বলুন।" 
-        });
+        console.error("Error:", err.message);
+        res.json({ reply: "Connection stabilized. Say again.", instruction: "কানেকশন ঠিক হয়েছে। আবার বলুন।" });
     }
 });
 
@@ -156,30 +157,23 @@ app.post('/api/chat', async (req, res) => {
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => (b.total_time || 0) - (a.total_time || 0));
-    let html = `<html><body><h1>User Stats</h1><table><tr><th>ID</th><th>Time (Mins)</th></tr>`;
-    users.forEach(u => html += `<tr><td>${u.id}</td><td>${Math.floor((u.total_time||0)/60)}</td></tr>`);
+    let html = `<html><body><h1>User Stats</h1><table border='1'><tr><th>ID</th><th>Msgs</th><th>Mistakes</th><th>Time</th></tr>`;
+    users.forEach(u => html += `<tr><td>${u.id}</td><td>${u.total_msgs}</td><td>${u.total_mistakes||0}</td><td>${Math.floor((u.total_time||0)/60)}m</td></tr>`);
     res.send(html + `</table></body></html>`);
 });
 
 async function callGroq(messages, temp) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
-        
-        // 🔥 FIXED MODEL: Using Llama 3.1 8B Instant (Currently Supported & Fast)
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.1-8b-instant", 
             max_tokens: 1024,
             temperature: temp,
             response_format: { type: "json_object" }
-        }, {
-            headers: { "Authorization": `Bearer ${apiKey}` }
-        });
+        }, { headers: { "Authorization": `Bearer ${apiKey}` } });
         return response.data.choices[0].message.content;
-    } catch (err) {
-        console.error("Groq API Error:", err.response ? err.response.data : err.message);
-        throw new Error("AI Service Failed");
-    }
+    } catch (err) { throw new Error("AI Service Failed"); }
 }
 
 const PORT = process.env.PORT || 3000;
