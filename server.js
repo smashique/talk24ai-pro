@@ -9,35 +9,44 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * 🔓 UNRESTRICTED SERVER
- * - No Banned Words List
- * - No Content Filtering
- * - Direct Pass-through to AI
+ * 🔓 UNRESTRICTED SERVER WITH SMART MOOD
+ * - Adapts 'Temperature' based on User's Mood
  */
 
 const sanitizeInput = (text) => {
     if (typeof text !== 'string') return '';
-    // Basic cleanup to prevent code injection, but NO content filtering
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
 app.post('/api/chat', async (req, res) => {
-    let { message, systemInstruction } = req.body;
+    let { message, systemInstruction, mood } = req.body;
 
     message = sanitizeInput(message);
     systemInstruction = sanitizeInput(systemInstruction);
+    mood = sanitizeInput(mood) || 'Normal';
 
     if (!message) {
         return res.status(400).json({ reply: "Please say something!" });
+    }
+
+    // 🌡️ DYNAMIC TEMPERATURE LOGIC
+    // Fun/Crazy = High Temp (More Creative/Random)
+    // Serious/Professional = Low Temp (Focused/Strict)
+    let dynamicTemp = 0.7; // Default
+    const lowerMood = mood.toLowerCase();
+
+    if (lowerMood.includes('fun') || lowerMood.includes('crazy') || lowerMood.includes('joke')) {
+        dynamicTemp = 0.9; // High creativity
+    } else if (lowerMood.includes('serious') || lowerMood.includes('professional') || lowerMood.includes('interview')) {
+        dynamicTemp = 0.3; // High focus
     }
 
     try {
         const messages = [
             { 
                 role: "system", 
-                // Core instruction only - No restrictions added here
                 content: (systemInstruction || "You are Talk24AI.") + 
-                "\n[INSTRUCTION]: Respond naturally to the user's scenario."
+                `\n[CURRENT MOOD/TONE]: ${mood}. Adjust your style accordingly.`
             },
             { 
                 role: "user", 
@@ -45,7 +54,7 @@ app.post('/api/chat', async (req, res) => {
             }
         ];
 
-        const reply = await callGroq(messages);
+        const reply = await callGroq(messages, dynamicTemp);
         res.json({ reply });
 
     } catch (err) {
@@ -55,7 +64,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // --- AI ENGINE ---
-async function callGroq(messages) {
+async function callGroq(messages, temp) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
         
@@ -63,7 +72,7 @@ async function callGroq(messages) {
             messages: messages,
             model: "llama-3.3-70b-versatile", 
             max_tokens: 350, 
-            temperature: 0.7 
+            temperature: temp // Using the dynamic temperature
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
         });
@@ -75,4 +84,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Unrestricted Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Mood-Adaptive Server running on http://localhost:${PORT}`));
