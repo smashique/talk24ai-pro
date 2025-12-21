@@ -11,40 +11,44 @@
         :root {
             --green: #58cc02; --green-shade: #46a302;
             --blue: #1cb0f6; --blue-shade: #1899d6;
+            --yellow: #ffc800; --yellow-shade: #e5b400;
             --bg: #ffffff; --font: 'Nunito', sans-serif;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; }
 
         /* --- SCREENS --- */
-        #home-screen, #scenario-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
-        #scenario-screen { display: none; overflow-y: auto; justify-content: start; padding-top: 40px; }
+        #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
 
         /* HERO STYLES */
         .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
         .trial-badge { background: #e5f6fd; color: #1cb0f6; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 20px; border: 2px solid #1cb0f6; }
         
-        .hero-card { width: 100%; max-width: 350px; background: #fff; border: 2px solid #e5e5e5; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; }
+        .hero-card { width: 100%; max-width: 360px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; }
         
-        .pain-point-msg { color: #4b4b4b; margin-bottom: 25px; font-weight: 700; font-size: 16px; line-height: 1.6; }
-        .pain-point-highlight { color: #d32f2f; font-weight: 900; }
-        .solution-highlight { color: var(--green); font-weight: 900; }
+        .pain-point-msg { color: #4b4b4b; margin-bottom: 25px; font-weight: 700; font-size: 16px; line-height: 1.5; }
+        .highlight { color: var(--green); font-weight: 900; }
 
-        .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 15px; font-size: 16px; font-weight: 700; color: #555; background: #fdfdfd; outline: none; transition: 0.2s; }
-        .input-duo:focus { border-color: var(--blue); background: #fff; }
+        /* GAMIFIED INPUTS */
+        .role-group { text-align: left; margin-bottom: 15px; }
+        .label-text { font-size: 14px; font-weight: 800; color: #afafaf; margin-bottom: 8px; margin-left: 5px; text-transform: uppercase; }
         
-        .btn-main { width: 100%; padding: 16px; margin-top: 15px; background: var(--green); color: white; font-size: 18px; font-weight: 800; border: none; border-radius: 16px; box-shadow: 0 4px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; }
+        .input-duo { 
+            width: 100%; padding: 16px; border: 2px solid #e5e5e5; border-radius: 18px; 
+            font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; 
+            outline: none; transition: 0.2s; 
+        }
+        .input-duo:focus { border-color: var(--blue); background: #fff; }
+
+        .btn-main { 
+            width: 100%; padding: 18px; margin-top: 10px; 
+            background: var(--green); color: white; font-size: 18px; font-weight: 800; 
+            border: none; border-radius: 20px; box-shadow: 0 4px 0 var(--green-shade); 
+            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+        }
         .btn-main:active { transform: translateY(4px); box-shadow: none; }
 
-        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; }
-        #install-btn:active { transform: translateY(2px); box-shadow: none; }
-
-        /* ROLE GRID */
-        .sc-grid { width: 100%; max-width: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 80px; }
-        .role-card { background: white; border: 2px solid #e5e5e5; border-radius: 20px; padding: 20px; cursor: pointer; text-align: center; box-shadow: 0 4px 0 #e5e5e5; display: flex; flex-direction: column; align-items: center; }
-        .role-card:active { transform: translateY(4px); box-shadow: none; border-color: var(--blue); }
-
-        /* --- CHAT UI --- */
+        /* CHAT UI */
         #chat-screen { display: none; flex-direction: column; height: 100%; }
         .top-nav { padding: 10px 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
         
@@ -54,7 +58,7 @@
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); }
         .typing { font-size: 12px; color: #aaa; margin-left: 20px; font-weight: 700; display: none; }
 
-        /* --- BOTTOM CONTROLS --- */
+        /* BOTTOM CONTROLS */
         .bottom-area {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: white; padding: 15px 20px 25px 20px;
@@ -87,6 +91,9 @@
         }
         .wa-btn:hover { transform: scale(1.05); }
 
+        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; }
+        #install-btn:active { transform: translateY(2px); box-shadow: none; }
+
         #toast-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; display: none; z-index: 6000; }
         
         @keyframes pulse { 0% {transform: translateX(-50%) scale(1);} 50% {transform: translateX(-50%) scale(1.1);} 100% {transform: translateX(-50%) scale(1);} }
@@ -108,18 +115,21 @@
     
     <div class="hero-card">
         <div class="pain-point-msg">
-            Spoken English প্র্যাকটিস করার <span class="pain-point-highlight">পার্টনার পাচ্ছেন না?</span> <br>
-            লজ্জা ভেঙে কথা বলুন <span class="solution-highlight">Talk24AI</span>-এর সাথে!
+            Spoken English পার্টনার নেই? <br>
+            <span class="highlight">Talk24AI</span>-এর সাথে নিজের স্টোরি তৈরি করুন!
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="number" id="age" value="18" class="input-duo" style="text-align:center; font-weight:900;">
-            <select id="gender" class="input-duo">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
+        <div class="role-group">
+            <div class="label-text">I want to be a...</div>
+            <input type="text" id="user-role" class="input-duo" placeholder="e.g. Angry Customer">
         </div>
-        <button class="btn-main" onclick="showScenarios()">START PRACTICE</button>
+
+        <div class="role-group">
+            <div class="label-text">Talk24AI acts as a...</div>
+            <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Shopkeeper">
+        </div>
+
+        <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
 
         <button id="install-btn" onclick="installApp()">
             📲 Download App
@@ -127,20 +137,12 @@
     </div>
 </div>
 
-<div id="scenario-screen">
-    <div style="text-align:center; margin-bottom:20px;">
-        <h2 style="margin:0; color:#4b4b4b;">Choose Character</h2>
-        <p style="margin:5px 0 0 0; color:#888; font-size:14px; font-weight:700;">Tap to start talking</p>
-    </div>
-    <div class="sc-grid" id="role-grid"></div>
-</div>
-
 <div id="chat-screen">
     <div class="top-nav">
         <div style="display:flex; align-items:center; gap:10px;">
-            <div id="p-icon" style="font-size: 30px;">🤖</div>
+            <div id="p-icon" style="font-size: 30px;">🎭</div>
             <div>
-                <div style="font-weight: 800; font-size: 16px;" id="p-name">Mate</div>
+                <div style="font-weight: 800; font-size: 16px;" id="p-name">AI Mate</div>
                 <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
@@ -159,24 +161,12 @@
 </div>
 
 <script>
-    const scenarios = {
-        junior: [
-            { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell simple inspiring stories of Islamic Heroes. Keep sentences short. End with a question." },
-            { name: "English Teacher", icon: "👩‍🏫", prompt: "Be a kind teacher. Ask about school. Correct gently in brackets." },
-            { name: "Best Friend", icon: "🏸", prompt: "Talk about cricket or toys. Be very friendly." }
-        ],
-        senior: [
-            { name: "Job Interviewer", icon: "💼", prompt: "Hiring Manager. Start asking: 'Tell me about yourself'. No intro." },
-            { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Formal IELTS Speaking Part 1. Focus on fluency." },
-            { name: "Foreign Friend", icon: "🌏", prompt: "Traveler in Dhaka. Ask about local culture/food." }
-        ]
-    };
-
-    let state = { age: 18, gender: 'Male', currentRole: null, score: 0 };
+    let state = { userRole: '', aiRole: '', score: 0 };
     let isMicOn = false;
     let chatHistory = [];
     let deferredPrompt; 
 
+    // --- PWA INSTALL ---
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -194,36 +184,36 @@
         }
     }
 
-    function showScenarios() {
-        state.age = parseInt(document.getElementById('age').value);
-        const list = (state.age < 13) ? scenarios.junior : scenarios.senior;
-        const grid = document.getElementById('role-grid');
-        grid.innerHTML = ''; 
-        list.forEach(role => {
-            const div = document.createElement('div');
-            div.className = 'role-card';
-            div.innerHTML = `<div style="font-size:40px; margin-bottom:5px;">${role.icon}</div><div style="font-weight:800; font-size:15px; color:#4b4b4b;">${role.name}</div>`;
-            div.onclick = () => startChat(role);
-            grid.appendChild(div);
-        });
-        document.getElementById('home-screen').style.display = 'none';
-        document.getElementById('scenario-screen').style.display = 'flex';
-    }
+    // --- MAIN LOGIC ---
+    function startCustomChat() {
+        const uRole = document.getElementById('user-role').value.trim();
+        const aRole = document.getElementById('ai-role').value.trim();
 
-    function startChat(role) {
-        state.currentRole = role;
-        document.getElementById('p-icon').innerText = role.icon;
-        document.getElementById('p-name').innerText = role.name;
-        document.getElementById('scenario-screen').style.display = 'none';
+        if(!uRole || !aRole) {
+            alert("Please fill in both roles to start the magic!");
+            return;
+        }
+
+        state.userRole = uRole;
+        state.aiRole = aRole;
+        
+        document.getElementById('p-name').innerText = aRole;
+        document.getElementById('home-screen').style.display = 'none';
         document.getElementById('chat-screen').style.display = 'flex';
+        
         triggerAIStart();
     }
 
     async function triggerAIStart() {
         toggleTyping(true);
-        // FIX: Start conversation immediately without Salam repetition
-        const sysPrompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: Start conversation immediately with a question. English Only.`;
-        callAPI({ message: "Hi! I am ready.", systemInstruction: sysPrompt });
+        // Initial handshake to set the stage
+        const sysPrompt = `
+            SETUP: You are playing the role of: ${state.aiRole}. 
+            I am playing: ${state.userRole}.
+            CONTEXT: We are in Bangladesh. Start the scene naturally.
+            RULE: English Only. Keep it short.
+        `;
+        callAPI({ message: "Action!", systemInstruction: sysPrompt });
     }
 
     async function sendToAI(text) {
@@ -233,23 +223,27 @@
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
         }
+        
         addUserMsg(text);
-        chatHistory.push(`User: ${text}`);
-        if(chatHistory.length > 5) chatHistory.shift();
+        chatHistory.push(`User (${state.userRole}): ${text}`);
+        if(chatHistory.length > 6) chatHistory.shift();
         
         document.getElementById('userInput').value = '';
         toggleTyping(true);
         
-        // FIX: The Smart Prompt for Engagement & No Repetitive Salam
+        // --- THE MASTER PROMPT (FIXED ENTITY & RESTRICTIONS) ---
         const expertPrompt = `
-            ACT AS: ${state.currentRole.name}.
-            CONTEXT: ${state.currentRole.prompt}
-            [STRICT RULES]
-            1. NO REPETITIVE SALAM: Do NOT say "Assalamu Alaikum" at the start of every message.
-            2. THE HOOK: You MUST end every single response with a relevant, short QUESTION based on what the user just said.
-            3. CONVERSATIONAL: Chat like a friend first. Correct grammar only if needed in brackets at the end.
-            4. MEMORY: History: ${chatHistory.join(' | ')}.
+            IDENTITY: You are ${state.aiRole}. I am ${state.userRole}.
+            LOCATION: Bangladesh.
+            
+            [STRICT RULES - DO NOT BREAK]
+            1. ENTITY: You are a Bangladeshi Muslim AI. I am a Bangladeshi Muslim User.
+            2. RESTRICTIONS: If the user asks for SPOUSE (Husband/Wife), LOVER, or PARENT/CHILD roleplay, REFUSE politely. Say: "I cannot roleplay that specific relationship. Let's try something else!" and stop the roleplay.
+            3. TONE: Engaging, friendly, natural English. No unnecessary Islamic terms unless relevant.
+            4. ENGAGEMENT: End with a question to keep the story moving.
+            5. MEMORY: Context: ${chatHistory.join(' | ')}.
         `;
+        
         callAPI({ message: text, systemInstruction: expertPrompt });
     }
 
@@ -262,9 +256,11 @@
             });
             const data = await res.json();
             toggleTyping(false);
+            
             let reply = data.reply.trim();
-            if(reply.length < 3) reply = "That's interesting! Tell me more?";
-            chatHistory.push(`AI: ${reply}`);
+            if(reply.length < 3) reply = "That's interesting! What happens next?";
+            
+            chatHistory.push(`AI (${state.aiRole}): ${reply}`);
             addAiMsg(reply);
         } catch (e) { toggleTyping(false); }
     }
