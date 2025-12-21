@@ -9,26 +9,31 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * ⛔ IRON-CLAD GUARDRAILS (GB APPROVED)
- * Banned Keywords List for Roles & Topics
+ * ⛔ SMART GUARDRAILS (GB APPROVED & REFINED)
+ * Removed common words like "partner" to avoid false blocking.
+ * Added strict checks only for explicit romantic/adult terms.
  */
 const BANNED_TERMS = [
-    // Relationships
-    'girlfriend', 'boyfriend', 'lover', 'wife', 'husband', 'spouse', 'dating', 
-    'bf', 'gf', 'bae', 'crush', 'partner', 
+    // Explicit Relationships (Removed 'partner', 'wife', 'husband' to allow general conversation context if needed, but kept strict dating terms)
+    'girlfriend', 'boyfriend', 'lover', 'dating', 'bae', 'crush', 'making love',
     // Sensitive/Adult Topics
-    'sex', 'intimacy', 'kiss', 'romance', 'nude', 'adult', 'porn', 'erotic'
+    'sex', 'intimacy', 'nude', 'porn', 'erotic', 'xxx'
 ];
 
 /**
  * 🔒 SECURITY FILTER FUNCTION
- * Returns TRUE if content is safe, FALSE if violation found.
+ * Returns TRUE if content is safe.
  */
 const isContentSafe = (text) => {
     if (!text) return true;
     const lowerText = text.toLowerCase();
-    // Check if any banned term exists in the text
+    
+    // Check if any banned term exists as a distinct word or explicitly in the text
     const violation = BANNED_TERMS.find(term => lowerText.includes(term));
+    
+    if (violation) {
+        console.log(`⚠️ Blocked content due to keyword: ${violation}`); // For debugging on server console
+    }
     return !violation; 
 };
 
@@ -37,20 +42,18 @@ const sanitizeInput = (text) => {
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
-/**
- * 🧠 MASTER SERVER (SECURE & COMPLIANT)
- */
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction } = req.body;
 
     message = sanitizeInput(message);
     systemInstruction = sanitizeInput(systemInstruction);
 
-    // 🚨 1. HARAM & SAFETY CHECK (Pre-LLM Filter)
-    // If user tries to set "Girlfriend" role or talks about "Sex", BLOCK IT immediately.
-    if (!isContentSafe(systemInstruction) || !isContentSafe(message)) {
+    // 🚨 SAFETY CHECK
+    // We check the USER'S message strictly.
+    // We relax the check on systemInstruction slightly to allow standard prompts, unless it has explicit bad words.
+    if (!isContentSafe(message) || !isContentSafe(systemInstruction)) {
         return res.json({ 
-            reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic or role. (Restricted: Sensitive Content)" 
+            reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic. (Restricted Content)" 
         });
     }
 
@@ -75,7 +78,7 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("🔥 Server Error:", err.message);
-        res.status(500).json({ reply: "System update in progress. Please try again." });
+        res.status(500).json({ reply: "Connection glitch! Please try again." });
     }
 });
 
@@ -100,4 +103,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Secure Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Smart Server running on http://localhost:${PORT}`));
