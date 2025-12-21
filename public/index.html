@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <title>Talk24AI | Practice English Fearlessly</title>
-    <meta name="description" content="Talk24AI is your 24/7 AI Spoken English Mate. Practice conversation, roleplay, and improve fluency for free.">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
@@ -22,16 +20,7 @@
         /* SCROLLABLE HOME */
         #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
 
-        /* HERO CARD */
         .logo { font-family: 'Fredoka', sans-serif; font-size: 38px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
-        
-        .trial-badge { 
-            background: linear-gradient(135deg, #ffd700, #ffca28); 
-            color: #5d4037; padding: 6px 15px; border-radius: 20px; 
-            font-weight: 900; font-size: 12px; text-transform: uppercase; 
-            margin-bottom: 15px; border: 2px solid #ffecb3; 
-            box-shadow: 0 4px 0 rgba(229, 180, 0, 0.4);
-        }
         
         .hero-card { width: 100%; max-width: 400px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; margin-bottom: 20px; }
         .pain-point-msg { color: #777; margin-bottom: 15px; font-weight: 700; font-size: 14px; line-height: 1.4; }
@@ -39,80 +28,55 @@
 
         /* INPUTS & CHIPS */
         .role-group { text-align: left; margin-bottom: 12px; }
-        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .label-text { font-size: 13px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 5px; }
-        
+        .label-text { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 5px; }
         .input-duo { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 12px; font-size: 15px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
 
-        /* CHIPS */
         .chip-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .chip-container::-webkit-scrollbar { display: none; }
-        
-        .chip {
-            background: #f0f0f0; border: 1px solid #e5e5e5; color: #666;
-            padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
-            white-space: nowrap; cursor: pointer; transition: 0.1s; user-select: none;
-        }
-        .chip:active { background: var(--blue); color: white; border-color: var(--blue); transform: scale(0.95); }
+        .chip { background: #f0f0f0; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .chip:active { background: var(--blue); color: white; }
 
-        /* BUTTONS */
         .action-row { display: flex; gap: 10px; margin-top: 15px; }
-        
-        .btn-magic {
-            flex: 1; padding: 15px; background: white; color: var(--yellow-shade);
-            font-size: 24px; font-weight: 800; border: 2px solid #e5e5e5; 
-            border-radius: 16px; box-shadow: 0 4px 0 #e5e5e5; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .btn-magic:active { transform: translateY(4px); box-shadow: none; }
-
-        .btn-main { 
-            flex: 4; padding: 15px; background: var(--green); color: white; 
-            font-size: 16px; font-weight: 800; border: none; 
-            border-radius: 16px; box-shadow: 0 4px 0 var(--green-shade); 
-            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; 
-        }
+        .btn-magic { flex: 1; padding: 15px; background: white; color: var(--yellow-shade); font-size: 24px; font-weight: 800; border: 2px solid #e5e5e5; border-radius: 16px; box-shadow: 0 4px 0 #e5e5e5; cursor: pointer; }
+        .btn-main { flex: 4; padding: 15px; background: var(--green); color: white; font-size: 16px; font-weight: 800; border: none; border-radius: 16px; box-shadow: 0 4px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; }
         .btn-main:active { transform: translateY(4px); box-shadow: none; }
 
         /* CHAT UI */
         #chat-screen { display: none; flex-direction: column; height: 100%; }
         .top-nav { padding: 10px 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
         
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 160px; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 160px; }
         
-        .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; }
+        .bubble-container { display: flex; flex-direction: column; max-width: 90%; align-items: flex-start; }
+        
+        /* PART 1: Conversation Bubble */
         .bubble { padding: 14px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; width: 100%; }
         .ai { background: #f2f2f2; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #e5e5e5; }
-        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); }
+        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); margin-bottom: 5px; }
         
-        .replay-btn {
-            margin-top: 5px; margin-left: 5px;
-            font-size: 11px; color: #aaa; cursor: pointer; font-weight: 700;
-            background: #fff; border: 1px solid #eee;
-            padding: 4px 10px; border-radius: 15px;
-            display: inline-flex; align-items: center; gap: 4px;
-            transition: 0.2s;
+        /* PART 2: Mentor Note (Bangla Instruction) */
+        .mentor-note {
+            margin-top: 8px; background: #fffde7; color: #6d4c41;
+            padding: 10px 15px; border-radius: 15px; font-size: 13px;
+            font-weight: 600; border: 1px dashed #fbc02d; width: 100%;
+            line-height: 1.6;
         }
-        .replay-btn:hover { background: #f0f0f0; color: var(--blue); border-color: var(--blue); }
+        .mentor-note strong { color: #e65100; }
+
+        .replay-btn { margin-top: 5px; margin-left: 5px; font-size: 11px; color: #aaa; cursor: pointer; font-weight: 700; background: #fff; border: 1px solid #eee; padding: 4px 10px; border-radius: 15px; display: inline-flex; align-items: center; gap: 4px; }
         
         .typing { font-size: 12px; color: #aaa; margin-left: 20px; font-weight: 700; display: none; }
-
-        /* BOTTOM */
         .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 200; }
         .input-row { width: 100%; display: flex; gap: 10px; max-width: 600px; }
         
         #mic-btn { width: 70px; height: 70px; border-radius: 50%; background: var(--green); border: 4px solid #fff; color: white; font-size: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.2s; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); }
         #mic-btn:active { transform: translateX(-50%) scale(0.95); }
-        .listening { background: #ff4b4b !important; animation: pulse 1.5s infinite; box-shadow: 0 0 0 10px rgba(255, 75, 75, 0.2) !important; }
+        .listening { background: #ff4b4b !important; animation: pulse 1.5s infinite; }
         .processing { background: #ffc800 !important; animation: spin 1s infinite; font-size: 0 !important; }
         .processing::after { content: "⏳"; font-size: 24px; }
 
-        .wa-btn { position: fixed; bottom: 100px; right: 20px; background: #25d366; color: white; padding: 8px 16px 8px 10px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 13px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); border: 2px solid white; transition: 0.2s; z-index: 500; }
-        
-        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; }
-        
-        #toast-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; display: none; z-index: 6000; }
+        .wa-btn { position: fixed; bottom: 100px; right: 20px; background: #25d366; color: white; padding: 8px 16px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 13px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); z-index: 500; }
+        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; }
         
         @keyframes pulse { 0% {transform: translateX(-50%) scale(1);} 50% {transform: translateX(-50%) scale(1.1);} 100% {transform: translateX(-50%) scale(1);} }
         @keyframes spin { 0% {transform: translateX(-50%) rotate(0deg);} 100% {transform: translateX(-50%) rotate(360deg);} }
@@ -120,69 +84,55 @@
 </head>
 <body>
 
-<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
-<div id="toast-warning">🚫 Please speak in English!</div>
-
-<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI,%20I%20have%20feedback..." target="_blank" class="wa-btn">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg>
-    Help
-</a>
+<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI..." target="_blank" class="wa-btn">Help</a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
-    <div class="trial-badge">⚡ Unlimited Free ⚡</div>
+    <div style="background:#e5f6fd; color:#1cb0f6; padding:6px 15px; border-radius:20px; font-weight:900; font-size:12px; margin-bottom:15px;">⚡ Unlimited Free ⚡</div>
     
     <div class="hero-card">
-        <div class="pain-point-msg">
-            English পার্টনার নেই? <span class="highlight">নিজে রোল সেট করুন</span> অথবা <b>🎲 Dice</b> ক্লিক করুন!
-        </div>
+        <div class="pain-point-msg">Make your own story with <span class="highlight">Talk24AI</span>!</div>
 
         <div class="role-group">
-            <div class="label-row"><span class="label-text">I want to be a...</span></div>
+            <div class="label-text">I want to be a...</div>
             <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
             <div class="chip-container">
                 <div class="chip" onclick="fillInput('user-role', 'Student')">Student</div>
                 <div class="chip" onclick="fillInput('user-role', 'Customer')">Customer</div>
-                <div class="chip" onclick="fillInput('user-role', 'Passenger')">Passenger</div>
             </div>
         </div>
 
         <div class="role-group">
-            <div class="label-row"><span class="label-text">Talk24AI acts as a...</span></div>
+            <div class="label-text">Talk24AI acts as a...</div>
             <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
             <div class="chip-container">
                 <div class="chip" onclick="fillInput('ai-role', 'Teacher')">Teacher</div>
                 <div class="chip" onclick="fillInput('ai-role', 'Shopkeeper')">Shopkeeper</div>
-                <div class="chip" onclick="fillInput('ai-role', 'Driver')">Driver</div>
             </div>
         </div>
 
         <div class="role-group">
-            <div class="label-row"><span class="label-text">Mood / Tone</span></div>
+            <div class="label-text">Mood</div>
             <input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun">
             <div class="chip-container">
                 <div class="chip" onclick="fillInput('chat-mood', 'Fun 🤣')">Fun 🤣</div>
                 <div class="chip" onclick="fillInput('chat-mood', 'Serious 🧐')">Serious 🧐</div>
-                <div class="chip" onclick="fillInput('chat-mood', 'Angry 😡')">Angry 😡</div>
-                <div class="chip" onclick="fillInput('chat-mood', 'Polite 😊')">Polite 😊</div>
             </div>
         </div>
 
         <div class="role-group">
-            <div class="label-row"><span class="label-text">Situation / Topic</span></div>
-            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for directions">
+            <div class="label-text">Situation</div>
+            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for help">
             <div class="chip-container">
                 <div class="chip" onclick="fillInput('scene-context', 'Bargaining')">Bargaining</div>
                 <div class="chip" onclick="fillInput('scene-context', 'Interview')">Interview</div>
-                <div class="chip" onclick="fillInput('scene-context', 'Late Rent')">Late Rent</div>
             </div>
         </div>
 
         <div class="action-row">
-            <button class="btn-magic" onclick="randomize()" title="Random Scenario">🎲</button>
+            <button class="btn-magic" onclick="randomize()">🎲</button>
             <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
         </div>
-        
         <button id="install-btn" onclick="installApp()">📲 Install App</button>
     </div>
 </div>
@@ -216,162 +166,101 @@
     let chatHistory = [];
     let deferredPrompt; 
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('install-btn').style.display = 'block'; 
-    });
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block'; });
+    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }
 
-    async function installApp() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                document.getElementById('install-btn').style.display = 'none';
-            }
-            deferredPrompt = null;
-        }
-    }
-
-    function fillInput(id, value) {
-        document.getElementById(id).value = value;
-    }
-
+    function fillInput(id, value) { document.getElementById(id).value = value; }
     function randomize() {
         const sets = [
-            { u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining hard for a T-shirt', m: 'Fun 🤣' },
-            { u: 'Tenant', a: 'Landlord', s: 'Late rent payment excuse', m: 'Angry 😡' },
-            { u: 'Candidate', a: 'Interviewer', s: 'Job Interview for Manager', m: 'Serious 🧐' },
-            { u: 'Passenger', a: 'Rickshaw Puller', s: 'Fare negotiation', m: 'Polite 😊' },
-            { u: 'Student', a: 'Teacher', s: 'Forgot homework at home', m: 'Scared 😨' },
-            { u: 'Friend', a: 'Friend', s: 'Planning a trip to Cox\'s Bazar', m: 'Excited 🤩' },
-            { u: 'Patient', a: 'Doctor', s: 'Scared of injection', m: 'Funny 😂' },
-            { u: 'Tourist', a: 'Local', s: 'Lost in Old Dhaka', m: 'Confused 😕' }
+            { u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining hard', m: 'Fun 🤣' },
+            { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' },
+            { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' }
         ];
-        const random = sets[Math.floor(Math.random() * sets.length)];
-        fillInput('user-role', random.u);
-        fillInput('ai-role', random.a);
-        fillInput('scene-context', random.s);
-        fillInput('chat-mood', random.m);
+        const r = sets[Math.floor(Math.random() * sets.length)];
+        fillInput('user-role', r.u); fillInput('ai-role', r.a); fillInput('scene-context', r.s); fillInput('chat-mood', r.m);
     }
 
     function startCustomChat() {
-        const uRole = document.getElementById('user-role').value.trim();
-        const aRole = document.getElementById('ai-role').value.trim();
-        const scene = document.getElementById('scene-context').value.trim();
-        const mood = document.getElementById('chat-mood').value.trim();
-
-        if(!uRole || !aRole) {
-            alert("Please select roles or click the 🎲 dice!");
-            return;
-        }
-
-        state.userRole = uRole;
-        state.aiRole = aRole;
-        state.scene = scene || "General Conversation";
-        state.mood = mood || "Normal";
-        
-        document.getElementById('p-name').innerText = aRole;
+        const u = document.getElementById('user-role').value;
+        const a = document.getElementById('ai-role').value;
+        if(!u || !a) return alert("Select roles!");
+        state.userRole = u; state.aiRole = a; 
+        state.scene = document.getElementById('scene-context').value || "Chat";
+        state.mood = document.getElementById('chat-mood').value || "Normal";
+        document.getElementById('p-name').innerText = a;
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('chat-screen').style.display = 'flex';
-        
         triggerAIStart();
     }
 
     async function triggerAIStart() {
         toggleTyping(true);
-        const sysPrompt = `
-            SETUP: Roleplay. AI is ${state.aiRole}. User is ${state.userRole}.
-            SITUATION: ${state.scene}.
-            MOOD: ${state.mood}.
-            LOCATION: Bangladesh.
-            RULE: Start with a relevant line. Simple English.
-        `;
-        callAPI({ message: "Action!", systemInstruction: sysPrompt, mood: state.mood });
+        const sys = `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}. Start conversation.`;
+        callAPI({ message: "Action!", systemInstruction: sys, mood: state.mood });
     }
 
     async function sendToAI(text) {
         if(!text.trim()) return;
-        if(/[\u0980-\u09FF]/.test(text)) {
-            const toast = document.getElementById('toast-warning');
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-        }
-        
         addUserMsg(text);
         chatHistory.push(`User: ${text}`);
-        if(chatHistory.length > 8) chatHistory.shift();
-        
         document.getElementById('userInput').value = '';
         toggleTyping(true);
         
-        const expertPrompt = `
-            IDENTITY: You are ${state.aiRole}. I am ${state.userRole}.
-            SCENE CONTEXT: ${state.scene}.
-            MOOD: ${state.mood}.
-            
-            [RULES]
-            1. LEVEL: Simple English (A2/B1).
-            2. TONE: ${state.mood}. Acting in character.
-            3. ENGAGEMENT: End with a question.
-            4. MEMORY: ${chatHistory.join(' | ')}.
-        `;
-        
-        callAPI({ message: text, systemInstruction: expertPrompt, mood: state.mood });
+        const sys = `Identity: ${state.aiRole}. User: ${state.userRole}. Context: ${state.scene}. Rules: Simple English. Short sentences.`;
+        callAPI({ message: text, systemInstruction: sys, mood: state.mood });
     }
 
     async function callAPI(payload) {
         try {
-            document.getElementById('mic-btn').classList.add('processing'); 
+            document.getElementById('mic-btn').classList.add('processing');
             const res = await fetch('/api/chat', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(payload) 
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) 
             });
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('processing');
             toggleTyping(false);
             
-            let reply = data.reply.trim();
-            if(reply.length < 3) reply = "That's interesting! What happens next?";
-            
-            chatHistory.push(`AI: ${reply}`);
-            addAiMsg(reply);
+            chatHistory.push(`AI: ${data.reply}`);
+            addAiMsg(data.reply, data.instruction); // Passing instruction separately
         } catch (e) { 
             document.getElementById('mic-btn').classList.remove('processing');
             toggleTyping(false);
-            addAiMsg("(Brain Upgrade in progress. Try again!)");
         }
     }
 
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
 
-    function typeWriter(text, element, callback) {
-        element.innerText = text; 
-        scrollToBottom();
-        if(callback) callback();
-    }
-
-    function addAiMsg(text) {
+    function addAiMsg(text, instruction) {
         const container = document.createElement('div'); container.className = 'bubble-container';
-        const bubble = document.createElement('div'); bubble.className = 'bubble ai'; 
+        
+        // 1. English Bubble
+        const bubble = document.createElement('div'); bubble.className = 'bubble ai'; bubble.innerText = text;
+        
+        // Replay Button
         const replayBtn = document.createElement('div'); replayBtn.className = 'replay-btn';
-        replayBtn.innerHTML = '🔊 Replay';
-        replayBtn.onclick = () => speak(text);
+        replayBtn.innerHTML = '🔊 Replay'; replayBtn.onclick = () => speak(text);
 
         container.appendChild(bubble);
         container.appendChild(replayBtn);
+
+        // 2. Bangla Instruction Box (The New Feature)
+        if (instruction) {
+            const note = document.createElement('div');
+            note.className = 'mentor-note';
+            note.innerHTML = `<strong>Talk24AI Tips:</strong><br>${instruction}`;
+            container.appendChild(note);
+        }
+
         document.getElementById('messages').appendChild(container);
-        
-        typeWriter(text, bubble, () => speak(text));
+        speak(text); // Speak only English part
+        scrollToBottom();
     }
 
     function addUserMsg(text) {
         const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text;
-        div.style.alignSelf = 'flex-end'; 
+        div.style.alignSelf = 'flex-end';
         document.getElementById('messages').appendChild(div); scrollToBottom();
         state.score += 10; document.getElementById('score').innerText = state.score;
-        document.getElementById('snd-pop').play().catch(e=>{});
     }
 
     function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
@@ -380,27 +269,19 @@
     function speak(text) {
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 1.0;
-        window.speechSynthesis.speak(utter);
+        utter.rate = 1.0; window.speechSynthesis.speak(utter);
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = (SpeechRecognition) ? new SpeechRecognition() : null;
     if(recognition) {
         recognition.lang = 'en-US';
-        recognition.onstart = () => { isMicOn = true; document.getElementById('mic-btn').classList.add('listening'); };
-        recognition.onend = () => { isMicOn = false; document.getElementById('mic-btn').classList.remove('listening'); };
-        recognition.onresult = (e) => { 
-            const txt = e.results[0][0].transcript;
-            document.getElementById('userInput').value = txt;
-            sendToAI(txt);
-        };
+        recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening');
+        recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening');
+        recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); };
     }
     
-    function toggleMic() {
-        if(!recognition) return alert("Mic not supported.");
-        if(!isMicOn) recognition.start(); else recognition.stop();
-    }
+    function toggleMic() { if(!recognition) return alert("Mic error"); isMicOn ? recognition.stop() : recognition.start(); isMicOn = !isMicOn; }
 </script>
 </body>
 </html>
