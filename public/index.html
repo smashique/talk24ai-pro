@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Practice English Fearlessly</title>
+    <title>Talk24AI | Master English</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Fredoka:wght@600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- 🎨 PREMIUM HOSTINGER-STYLE VARIABLES --- */
+        /* --- 🎨 PREMIUM VARIABLES --- */
         :root { 
             --bg-gradient: linear-gradient(135deg, #0f3428 0%, #051a15 100%);
             --card-glass: rgba(255, 255, 255, 0.03);
@@ -49,9 +49,29 @@
             background: rgba(0, 184, 148, 0.1); color: var(--neon-accent); 
             padding: 4px 12px; border-radius: 20px; font-size: 11px; 
             font-weight: 700; font-family: monospace; border: 1px solid rgba(0, 184, 148, 0.2);
-            display: flex; gap: 6px; align-items: center; margin-bottom: 10px;
+            display: flex; gap: 6px; align-items: center; margin-bottom: 5px;
         }
         .live-dot { height: 6px; width: 6px; background: var(--neon-accent); border-radius: 50%; box-shadow: 0 0 8px var(--neon-accent); animation: blink 1.5s infinite; }
+
+        /* 🔥 NEW LEVEL CARD STYLE */
+        .level-card {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            margin-bottom: 5px;
+        }
+        .level-info { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+        .level-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .level-value { font-size: 18px; font-weight: 900; color: white; text-transform: uppercase; }
+        
+        .score-box { text-align: right; }
+        .score-val { font-size: 24px; font-weight: 900; color: var(--neon-accent); text-shadow: 0 0 15px rgba(0, 184, 148, 0.3); }
 
         /* 💎 PREMIUM GLASS CARD */
         .hero-card { 
@@ -61,7 +81,7 @@
             border: 1px solid var(--border-glass);
             border-radius: 24px; padding: 22px; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.4); 
-            display: flex; flex-direction: column; gap: 18px;
+            display: flex; flex-direction: column; gap: 15px;
         }
 
         /* 🧠 NEUROMARKETING HOOK */
@@ -74,7 +94,7 @@
         .highlight { color: #fff; font-weight: 800; text-decoration: underline; text-decoration-color: #FF9F43; }
 
         /* INPUTS */
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .label-text { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
         
         .input-duo { 
@@ -130,7 +150,9 @@
 
         /* --- 💬 CHAT SCREEN --- */
         #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; max-width: 600px; background: #051a15; }
-        .top-nav { padding: 15px 20px; background: rgba(5, 26, 21, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; z-index: 20; }
+        
+        .top-nav { padding: 15px 20px; background: rgba(5, 26, 21, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; z-index: 20; }
+        
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 140px; }
         
         .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s; }
@@ -220,6 +242,17 @@
     <div class="logo">Talk24AI</div>
     <div id="user-badge" class="user-id-badge"><span class="live-dot"></span> ID: Generating...</div>
     
+    <div class="level-card">
+        <div class="level-info">
+            <div class="level-label">Current Level</div>
+            <div id="user-level-badge" class="level-value">🌱 ROOKIE</div>
+        </div>
+        <div class="score-box">
+            <div class="level-label">Accuracy</div>
+            <div id="user-accuracy" class="score-val">100%</div>
+        </div>
+    </div>
+
     <div class="hero-card">
         <div class="pain-point-msg">
             🗣️ ইংলিশে কথা বলার জড়তা কাটানোর <b>সবচেয়ে সহজ উপায়!</b><br>
@@ -260,12 +293,12 @@
             <div id="p-icon" style="font-size: 28px;">🎭</div>
             <div>
                 <div style="font-weight: 700; font-size: 14px;" id="p-name">AI Mate</div>
-                <div style="font-size: 10px; color: var(--neon-accent); font-weight: 600;">● ONLINE</div>
+                <div id="chat-level-display" style="font-size: 10px; color: #fab1a0; font-weight: 600;">LEVEL: ROOKIE</div>
             </div>
         </div>
         <div class="stats-box">
+             <div>Acc: <span id="live-accuracy" style="color:var(--neon-accent)">100%</span></div>
              <div>Time: <span id="time-display" style="color:white">0m</span></div>
-             <div>Total: <span id="lifetime-display" style="color:var(--neon-accent)">...</span></div>
              <button class="note-btn" onclick="downloadNotes()">💾 Save</button>
         </div>
     </div>
@@ -288,9 +321,9 @@
 </div>
 
 <script>
-    const SERVER_URL = "https://talk24ai.onrender.com"; 
+    // 🚨 IMPORTANT: UPDATE THIS URL WITH YOUR CLOUDFLARE WORKER LINK
+    const SERVER_URL = "https://talk24ai-worker.YOUR_NAME.workers.dev"; 
     
-    // 🔊 AUDIO ENGINE FIXED (Pop & Magic)
     function playSound(type) { 
         try { 
             let a;
@@ -298,10 +331,7 @@
             else if (type === 'magic') a = document.getElementById('snd-magic');
             else if (type === 'offer') a = document.getElementById('snd-offer');
             
-            if(a) { 
-                a.currentTime = 0; 
-                a.play().catch(e => console.log("Audio blocked until interaction")); 
-            } 
+            if(a) { a.currentTime = 0; a.play().catch(e => console.log("Audio blocked")); } 
         } catch(e){} 
     }
     
@@ -322,8 +352,34 @@
     if (!USER_ID) { USER_ID = 'ID-' + Math.floor(10000 + Math.random() * 90000); localStorage.setItem('talk24_uid', USER_ID); }
     document.getElementById('user-badge').innerHTML = `<span class="live-dot"></span> ID: ${USER_ID}`;
 
+    // 🔥 LEVEL UPDATE LOGIC
+    function updateLevelUI(acc) {
+        let lvlName = "🌱 ROOKIE";
+        let color = "#b2bec3"; 
+
+        if (acc >= 90) { lvlName = "💎 MASTER"; color = "#00b894"; } 
+        else if (acc >= 75) { lvlName = "🔥 FLUENT"; color = "#fdcb6e"; } 
+        else if (acc >= 50) { lvlName = "🦊 LEARNER"; color = "#0984e3"; } 
+
+        // Home
+        document.getElementById('user-level-badge').innerText = lvlName;
+        document.getElementById('user-level-badge').style.color = color;
+        document.getElementById('user-accuracy').innerText = acc + "%";
+        document.getElementById('user-accuracy').style.color = color;
+
+        // Chat Screen
+        document.getElementById('chat-level-display').innerText = "LEVEL: " + lvlName;
+        document.getElementById('live-accuracy').innerText = acc + "%";
+        document.getElementById('live-accuracy').style.color = color;
+    }
+
+    // Initial Fetch
     fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID }) })
-    .then(res => res.json()).then(data => { lifetimeSeconds = data.lifetime_seconds || 0; updateLifetimeDisplay(); }).catch(e => {});
+    .then(res => res.json())
+    .then(data => { 
+        lifetimeSeconds = data.lifetime_seconds || 0; 
+        updateLevelUI(data.accuracy || 100); 
+    }).catch(e => {});
 
     setInterval(() => {
         if (!document.hidden && document.getElementById('chat-screen').style.display === 'flex') {
@@ -334,8 +390,7 @@
         }
     }, 1000);
 
-    function syncTimeWithServer(sec) { fetch(`${SERVER_URL}/api/update-time`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID, seconds: sec }) }).then(r=>r.json()).then(d=>{ lifetimeSeconds = d.total_time; updateLifetimeDisplay(); }); }
-    function updateLifetimeDisplay() { const h = Math.floor(lifetimeSeconds/3600), m = Math.floor((lifetimeSeconds%3600)/60); document.getElementById('lifetime-display').innerText = h>0 ? `${h}h ${m}m` : `${m}m`; }
+    function syncTimeWithServer(sec) { fetch(`${SERVER_URL}/api/update-time`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID, seconds: sec }) }).then(r=>r.json()).then(d=>{ lifetimeSeconds = d.total_time; }); }
 
     // --- APP LOGIC ---
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
@@ -346,7 +401,7 @@
     function startCustomChat() { 
         const u=document.getElementById('user-role').value, a=document.getElementById('ai-role').value; 
         if(!u||!a) return alert("Select roles!"); 
-        playSound('magic'); // 🎵 MAGIC SOUND
+        playSound('magic'); 
         confetti({particleCount:100,spread:70,origin:{y:0.6}}); 
         state.userRole=u; state.aiRole=a; state.scene=document.getElementById('scene-context').value||"Chat"; state.mood=document.getElementById('chat-mood').value||"Normal"; 
         setTimeout(()=>{ document.getElementById('p-name').innerText=a; document.getElementById('home-screen').style.display='none'; document.getElementById('chat-screen').style.display='flex'; triggerAIStart(); }, 800); 
@@ -362,6 +417,11 @@
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false);
             chatHistory.push(`AI: ${data.reply}`); addAiMsg(data.reply, data.instruction);
+            
+            // 🔥 RE-FETCH STATS FOR ACCURACY UPDATE
+            fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID }) })
+            .then(r=>r.json()).then(d=>updateLevelUI(d.accuracy||100));
+
         } catch (e) { document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
     }
     
