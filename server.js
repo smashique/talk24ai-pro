@@ -28,17 +28,21 @@ app.post('/api/chat', async (req, res) => {
     let dynamicTemp = 0.7;
     const lowerMood = mood.toLowerCase();
     if (lowerMood.includes('fun') || lowerMood.includes('crazy')) dynamicTemp = 0.9;
-    else if (lowerMood.includes('serious')) dynamicTemp = 0.3;
+    else if (lowerMood.includes('serious') || lowerMood.includes('inspiring')) dynamicTemp = 0.4; // Focused for serious/inspiring topics
 
-    // 🚀 FIRST MESSAGE CHECK
-    // If message is "Action!", it means the chat just started.
     const isStart = message === "Action!";
 
     try {
-        // 🧠 MENTOR INSTRUCTION (SAIFUR SIR PERSONA)
-        const mentorPrompt = isStart 
-            ? "This is the START of the session. Do NOT review anything. As 'Talk24AI Mentor' (Saifur Sir), give a short, energetic welcome in BANGLA SCRIPT. Tell them to start speaking fearlessly." 
-            : "1. As 'Talk24AI Mentor' (Saifur Sir), review the user's last sentence. If there are grammar mistakes, correct them gently in BANGLA SCRIPT. 2. Give a hint in BANGLA on how to answer the current question clearly.";
+        // 🧠 IDEOLOGICAL MENTOR PROMPT (GB APPROVED)
+        // Persona: Saifur Sir's Directness + Scholars' Ideology (Time, Purpose, Adab)
+        const mentorBase = "You are 'Talk24AI Mentor'. You combine the practical English teaching style of S@ifur Sir with the ideological depth of Islamic scholars (valuing time, high ambition, polite adab).";
+        
+        const mentorInstruction = isStart 
+            ? `${mentorBase} This is the START. Give a short, energetic welcome in BANGLA SCRIPT. Remind them that "Time is Life" and to start speaking fearlessly for a higher purpose.` 
+            : `${mentorBase} 
+               1. Review user's last sentence briefly in BANGLA SCRIPT. If lazy/frivolous, gently scold (Tarbiyyah). If grammar error, correct it directly.
+               2. Give a clear hint in BANGLA on how to answer the current question using better vocabulary. 
+               Tone: Strict but caring, focused on growth.`;
 
         const messages = [
             { 
@@ -49,8 +53,8 @@ app.post('/api/chat', async (req, res) => {
                 [CRITICAL OUTPUT RULE]: Return valid JSON only.
                 Structure:
                 {
-                    "conversation": "Your Roleplay response in English (A2/B1 Level). End with a question.",
-                    "learning_note": "${mentorPrompt} (Write ONLY in Bangla Script using simple terms)."
+                    "conversation": "Your Roleplay response in English (A2/B1 Level). Keep it natural. End with a question.",
+                    "learning_note": "${mentorInstruction}"
                 }`
             },
             { 
@@ -68,7 +72,7 @@ app.post('/api/chat', async (req, res) => {
         } catch (e) {
             parsedData = { 
                 conversation: rawResponse, 
-                learning_note: "টেকনিক্যাল সমস্যার কারণে মেন্টর টিপস লোড হয়নি। আপনি চালিয়ে যান!" 
+                learning_note: "নেটওয়ার্ক সমস্যার কারণে মেন্টর নোট লোড হয়নি। চালিয়ে যান!" 
             };
         }
 
@@ -90,7 +94,7 @@ async function callGroq(messages, temp) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile",
-            max_tokens: 450,
+            max_tokens: 500,
             temperature: temp,
             response_format: { type: "json_object" }
         }, {
@@ -104,4 +108,4 @@ async function callGroq(messages, temp) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Mentor Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Ideological Server running on http://localhost:${PORT}`));
