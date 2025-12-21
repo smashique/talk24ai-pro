@@ -9,43 +9,51 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// ১. ডাটাবেস কানেকশন
+// 1. Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ Talk24Ai Database Connected!"))
-    .catch(err => console.error("❌ Database Error:", err));
+    .then(() => console.log("✅ Talk24Ai Database Connected Successfully!"))
+    .catch(err => console.error("❌ Database Connection Error:", err));
 
-// ২. ইউজার স্কিমা
+// 2. User Schema (Simplified & English)
 const User = mongoose.model('User', {
     email: String,
     history: { type: Array, default: [] },
-    dailyLimit: { type: Number, default: 10 },
+    dailyLimit: { type: Number, default: 999999 }, // Unlimited
     usedToday: { type: Number, default: 0 },
     lastActive: String,
-    isPremium: { type: Boolean, default: false }
+    isPremium: { type: Boolean, default: true } // Default Premium Status
 });
 
-// ৩. ওস্তাদের নির্দেশাবলী
+// 3. System Prompts (Refined by Prompt Experts)
 const BASE_INSTRUCTION = `
-You are 'English Ustad', a strict but caring Bangladeshi teacher from Talk24Ai.
-1. ALWAYS use **Bangla Script** for Bengali words.
-2. Keep English words in English.
-3. Keep the answer short (max 2 sentences).
-4. Focus strictly on correcting their English mistakes.
+You are 'Talk24AI', a friendly and intelligent English conversation partner from Bangladesh.
+
+[CORE IDENTITY]
+- Name: Talk24AI Mate.
+- Origin: Bangladesh (You understand the culture but speak only English).
+- Tone: Warm, encouraging, casual, and polite.
+
+[STRICT BEHAVIORAL RULES]
+1. GOD MODE (UNLIMITED): This service is 100% FREE. Never mention quotas, limits, or ask for money.
+2. ENGAGEMENT HOOK: You MUST end every single response with a relevant, short, and open-ended QUESTION to keep the conversation flowing.
+3. NO REPETITIVE GREETINGS: Do NOT start every message with "Assalamu Alaikum". Use it only if it feels natural in the very first interaction.
+4. ROLEPLAY INTEGRITY: If assigned a role (e.g., Shopkeeper), stay in character. Do not break the fourth wall unless necessary.
+5. SENSITIVE TOPICS: If asked for romantic (spouse/lover) or family (parent/child) roleplay, politely refuse by saying: "I cannot play that specific role. Let's try something else!"
+6. CORRECTIONS: Do not lecture. If the user makes a significant grammar mistake, gently provide the correction in brackets at the very end. Example: (Correction: I went to the market).
 `;
 
 const USER_PROMPT = `${BASE_INSTRUCTION} 
-Start with "Assalamu Alaikum". Help the student improve.`;
+Context: You are speaking with a registered user. Your goal is to help them practice fluency through natural conversation.`;
 
 const GUEST_PROMPT = `${BASE_INSTRUCTION}
-CRITICAL RULE: After answering, you MUST add a short, witty line in Bangla asking them to LOGIN.
-Example: "বাবা, এত সুন্দর শিখছো, সব সেভ রাখতে লগইন করো।"
-`;
+Context: You are speaking with a guest user. Be welcoming and helpful.`;
 
-// ৪. চ্যাট এপিআই
+// 4. Chat API Route
 app.post('/api/chat', async (req, res) => {
     const { email, message, isGuest } = req.body;
 
     try {
+        // --- Guest Logic ---
         if (isGuest) {
             const reply = await callGroq([
                 { role: "system", content: GUEST_PROMPT },
@@ -55,10 +63,11 @@ app.post('/api/chat', async (req, res) => {
             return res.json({ 
                 reply, 
                 isGuest: true,
-                loginReminder: true 
+                loginReminder: false 
             });
         }
 
+        // --- Registered User Logic ---
         let user = await User.findOne({ email });
         const todayDate = new Date().toDateString();
 
@@ -66,23 +75,22 @@ app.post('/api/chat', async (req, res) => {
             user = new User({ email, lastActive: todayDate });
         }
 
+        // Reset counter on new day (Just for analytics, no limits enforced)
         if (user.lastActive !== todayDate) {
             user.usedToday = 0;
             user.lastActive = todayDate;
         }
 
-        if (user.usedToday >= user.dailyLimit && !user.isPremium) {
-            return res.json({ 
-                reply: "আজকের কোটা শেষ বাবা! ওস্তাদের সাথে আনলিমিটেড কথা বলতে প্রিমিয়াম মেম্বারশিপ নাও।",
-                quotaFull: true
-            });
-        }
-
+        // User message history
         user.history.push({ role: "user", content: message });
-        const context = user.history.slice(-10);
+        
+        // Context Management (Keep last 12 messages for better memory)
+        const context = user.history.slice(-12);
 
+        // Call AI
         const reply = await callGroq([{ role: "system", content: USER_PROMPT }, ...context]);
 
+        // Save history
         user.usedToday += 1;
         user.history.push({ role: "assistant", content: reply });
         await user.save();
@@ -91,18 +99,18 @@ app.post('/api/chat', async (req, res) => {
             reply, 
             limitInfo: { 
                 used: user.usedToday, 
-                limit: user.dailyLimit, 
-                remaining: user.dailyLimit - user.usedToday 
+                limit: "Unlimited", 
+                remaining: "Unlimited" 
             } 
         });
 
     } catch (err) {
         console.error("Chat API Error:", err.message);
-        res.status(500).json({ reply: "ওস্তাদ এখন একটু বিশ্রাম নিচ্ছেন। কিছুক্ষণ পর আবার এসো।" });
+        res.status(500).json({ reply: "I'm having a bit of trouble connecting right now. Could you please try again?" });
     }
 });
 
-// ৫. Groq API কল (সংশোধিত মডেল সহ)
+// 5. Groq API Function
 async function callGroq(messages) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
@@ -110,16 +118,15 @@ async function callGroq(messages) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile", 
-            max_tokens: 150,
-            temperature: 0.7
+            max_tokens: 250, // Increased for detailed responses
+            temperature: 0.7 // Balanced creativity
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
         });
         return response.data.choices[0].message.content;
     } catch (err) {
         if (err.response) {
-            console.error("Groq Cloud Error Status:", err.response.status);
-            console.error("Groq Cloud Error Data:", err.response.data);
+            console.error("Groq Cloud Error:", err.response.data);
         } else {
             console.error("Groq Connection Error:", err.message);
         }
@@ -128,4 +135,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Ustad running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Server running on http://localhost:${PORT}`));
