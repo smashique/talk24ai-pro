@@ -9,52 +9,32 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
+        /* CORE STYLES */
         :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
 
-        /* BACKGROUND ANIMATION */
+        /* ANIMATED BG */
         .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 20s infinite linear; }
         .shape1 { width: 100px; height: 100px; background: var(--green); top: 10%; left: 10%; animation-duration: 25s; }
         .shape2 { width: 150px; height: 150px; background: var(--blue); bottom: 20%; right: 10%; animation-duration: 30s; }
         .shape3 { width: 80px; height: 80px; background: var(--yellow); top: 40%; left: 50%; animation-duration: 20s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
-        /* SCROLLABLE HOME */
+        /* SCREENS */
         #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
-
         .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
         
-        /* WIDE HERO CARD (DESKTOP OPTIMIZED) */
-        .hero-card { 
-            width: 100%; 
-            max-width: 800px; /* Increased Width for Desktop */
-            background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; 
-            padding: 30px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; 
-            margin-bottom: 20px; transition: 0.3s; 
-        }
-
-        /* GRID LAYOUT FOR INPUTS */
-        .input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Two columns on desktop */
-            gap: 20px;
-            margin-top: 10px;
-        }
+        .hero-card { width: 100%; max-width: 800px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
         
-        /* Mobile Response: Stack columns */
-        @media (max-width: 700px) {
-            .input-grid { grid-template-columns: 1fr; }
-            .hero-card { padding: 20px; }
-            .logo { font-size: 38px; }
-        }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px; }
+        @media (max-width: 700px) { .input-grid { grid-template-columns: 1fr; } .hero-card { padding: 20px; } .logo { font-size: 38px; } }
 
         .pain-point-msg { color: #555; margin-bottom: 20px; font-weight: 700; font-size: 16px; line-height: 1.5; background: #f8fcfd; padding: 15px; border-radius: 15px; border: 2px dashed #bcebfd; }
         .highlight { color: var(--green); font-weight: 900; }
 
         .role-group { text-align: left; margin-bottom: 10px; }
         .label-text { font-size: 12px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 8px; letter-spacing: 0.5px; }
-        
         .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .input-duo:focus { border-color: var(--blue); background: #fff; transform: scale(1.01); }
 
@@ -93,7 +73,6 @@
         
         .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: transparent; padding: 0; display: flex; justify-content: center; pointer-events: none; }
         .input-wrapper { width: 100%; max-width: 900px; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; pointer-events: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
-
         .input-row { width: 100%; display: flex; gap: 10px; max-width: 800px; position: relative; }
         
         #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--green); border: 5px solid #fff; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 6px 15px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.1s; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); }
@@ -138,7 +117,6 @@
                 <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
                 <div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Customer')">Customer</div></div>
             </div>
-
             <div class="role-group">
                 <div class="label-text">Talk24AI acts as a...</div>
                 <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
@@ -152,7 +130,6 @@
                 <input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun">
                 <div class="chip-container"><div class="chip" onclick="selectChip('chat-mood', 'Fun 🤣')">Fun 🤣</div><div class="chip" onclick="selectChip('chat-mood', 'Serious 🧐')">Serious 🧐</div></div>
             </div>
-
             <div class="role-group">
                 <div class="label-text">Situation</div>
                 <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for help">
