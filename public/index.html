@@ -5,62 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Talk24AI | Your AI Spoken Mate</title>
     <link rel="manifest" href="/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #58cc02; --primary-dark: #46a302; --blue: #1cb0f6; --bg: #ffffff; --font: 'Nunito', sans-serif; }
-        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #333; }
+        /* --- DUOLINGO DESIGN SYSTEM --- */
+        :root {
+            --duo-green: #58cc02; --duo-green-shadow: #46a302;
+            --duo-blue: #1cb0f6; --duo-blue-shadow: #1899d6;
+            --duo-gray: #e5e5e5; --duo-gray-text: #777;
+            --duo-white: #ffffff;
+            --duo-bg: #fff;
+            --font-main: 'Nunito', sans-serif;
+            --font-display: 'Fredoka', sans-serif;
+        }
 
-        /* --- UI COMPONENTS --- */
-        #home-screen, #scenario-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        #scenario-screen { display: none; overflow-y: auto; justify-content: start; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-main); margin: 0; background: var(--duo-bg); color: #3c3c3c; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--primary); margin-bottom: 5px; }
-        
-        /* Free Trial Badge Style */
+        /* --- BUTTONS & INPUTS (The "Juicy" Effect) --- */
+        .btn-duo {
+            width: 100%; padding: 16px;
+            background: var(--duo-green);
+            color: white; font-size: 17px; font-weight: 800; letter-spacing: 0.5px;
+            border: none; border-radius: 16px;
+            box-shadow: 0 4px 0 var(--duo-green-shadow);
+            cursor: pointer; text-transform: uppercase;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn-duo:active { transform: translateY(4px); box-shadow: none; }
+
+        .input-duo {
+            width: 100%; padding: 15px;
+            border: 2px solid var(--duo-gray);
+            border-radius: 16px;
+            font-size: 16px; font-weight: 700; color: #4b4b4b;
+            outline: none; background: #f7f7f7;
+            transition: 0.2s;
+        }
+        .input-duo:focus { border-color: var(--duo-blue); background: white; }
+
+        /* --- SCREENS --- */
+        #home-screen, #scenario-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
+        #scenario-screen { display: none; overflow-y: auto; justify-content: start; padding-top: 40px; }
+
+        /* Home Specifics */
+        .logo { font-family: var(--font-display); font-size: 42px; color: var(--duo-green); margin-bottom: 5px; letter-spacing: -1px; }
         .trial-badge {
-            background: #e0f7fa; color: #006064; padding: 6px 15px;
-            border-radius: 20px; font-size: 13px; font-weight: 800;
-            border: 1px solid #b2ebf2; display: inline-block; margin-bottom: 20px;
-            text-transform: uppercase; letter-spacing: 1px;
+            background: linear-gradient(45deg, #ffc800, #ff9600);
+            color: white; padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 800; text-transform: uppercase;
+            margin-bottom: 25px; box-shadow: 0 3px 0 #e58900;
+        }
+        .hero-card {
+            background: white; border: 2px solid var(--duo-gray);
+            border-radius: 20px; padding: 25px; width: 100%; max-width: 360px;
+            text-align: center; box-shadow: 0 4px 0 var(--duo-gray);
         }
 
-        .tagline-box { background: #fff9c4; color: #f57f17; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-bottom: 30px; border: 1px dashed #fbc02d; line-height: 1.4; max-width: 350px; }
-        
-        .btn-main { width: 100%; max-width: 320px; padding: 18px; background: var(--primary); border: none; border-bottom: 5px solid var(--primary-dark); color: white; font-size: 18px; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase; transition: 0.1s; }
-        .sc-grid { width: 100%; max-width: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .role-card { border: 2px solid #f0f0f0; border-bottom: 5px solid #f0f0f0; border-radius: 20px; padding: 20px; cursor: pointer; text-align: center; background: white; transition: 0.2s; }
-        .role-card:active { transform: translateY(4px); border-bottom-width: 0; border-color: var(--blue); }
-
-        /* WhatsApp Button Style */
-        .wa-float {
-            position: fixed; bottom: 25px; right: 25px;
-            background: #25d366; color: white; width: 60px; height: 60px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 32px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            z-index: 6000; text-decoration: none; transition: 0.3s;
-            border: 2px solid white;
+        /* Scenario Grid */
+        .sc-grid { width: 100%; max-width: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; padding-bottom: 80px; }
+        .role-card {
+            background: white; border: 2px solid var(--duo-gray);
+            border-radius: 20px; padding: 20px; cursor: pointer;
+            text-align: center; box-shadow: 0 4px 0 var(--duo-gray);
+            transition: 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .wa-float:active { transform: scale(0.95); }
+        .role-card:active { transform: translateY(4px); box-shadow: none; border-color: var(--duo-blue); }
+        .role-icon { font-size: 40px; margin-bottom: 10px; }
+        .role-name { font-weight: 800; color: #4b4b4b; font-size: 15px; }
 
-        /* Chat Layout */
+        /* --- CHAT UI --- */
         #chat-screen { display: none; flex-direction: column; height: 100%; }
-        .top-nav { padding: 12px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 100; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; background: #fff; scroll-behavior: smooth; }
         
-        .bubble { max-width: 80%; padding: 14px 18px; border-radius: 22px; font-size: 16px; line-height: 1.5; font-weight: 600; animation: msgSlide 0.3s ease-out; }
-        .ai { background: #f0f0f0; color: #333; border-bottom-left-radius: 4px; border: 1px solid #e5e5e5; }
-        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; border-bottom: 4px solid #1899d6; }
+        .top-nav {
+            padding: 10px 20px; background: white;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+        }
+        .mate-info { display: flex; align-items: center; gap: 10px; }
+        .mate-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: #3c3c3c; }
+        .status-dot { width: 8px; height: 8px; background: var(--duo-green); border-radius: 50%; display: inline-block; margin-left: 5px; }
+
+        .xp-pill {
+            display: flex; align-items: center; gap: 5px;
+            font-weight: 800; color: #ff9600; font-size: 15px;
+        }
+
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
         
-        .typing { font-size: 12px; color: #afafaf; font-weight: 800; margin: 0 0 10px 25px; display: none; }
-        .input-bar { padding: 15px 20px 30px 20px; border-top: 1px solid #eee; display: flex; gap: 12px; align-items: center; background: white; }
-        #userInput { flex: 1; background: #f7f7f7; border: 1px solid #eee; padding: 15px 20px; border-radius: 30px; outline: none; font-size: 16px; font-weight: 600; font-family: inherit; }
-        #mic-btn { width: 55px; height: 55px; border-radius: 50%; background: var(--primary); border: none; color: white; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(88, 204, 2, 0.3); }
-        .listening { background: #ff4b4b !important; animation: pulse 1s infinite; }
+        .bubble {
+            max-width: 80%; padding: 14px 18px; border-radius: 18px;
+            font-size: 16px; line-height: 1.5; font-weight: 600;
+            position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .ai {
+            background: #f7f7f7; color: #4b4b4b;
+            border: 2px solid #e5e5e5; border-bottom-left-radius: 4px;
+        }
+        .user {
+            background: var(--duo-blue); color: white;
+            align-self: flex-end; border-bottom-right-radius: 4px;
+            box-shadow: 0 2px 0 var(--duo-blue-shadow);
+        }
 
-        #toast-warning { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 14px; z-index: 6000; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .typing { font-size: 13px; color: #afafaf; font-weight: 700; margin: 0 0 10px 25px; display: none; }
 
-        @keyframes msgSlide { from {opacity: 0; transform: translateY(15px);} to {opacity: 1; transform: translateY(0);} }
+        .input-area {
+            padding: 15px; border-top: 2px solid #e5e5e5;
+            display: flex; gap: 10px; align-items: center; background: white;
+        }
+        #mic-btn {
+            width: 50px; height: 50px; border-radius: 15px;
+            background: var(--duo-green); border: none; color: white;
+            font-size: 24px; cursor: pointer; box-shadow: 0 4px 0 var(--duo-green-shadow);
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.1s;
+        }
+        #mic-btn:active { transform: translateY(4px); box-shadow: none; }
+        .listening { background: #ff4b4b !important; box-shadow: 0 4px 0 #d13030 !important; animation: pulse 1s infinite; }
+
+        /* WhatsApp Button */
+        .wa-float {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #25d366; width: 56px; height: 56px;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 0 #1da851; z-index: 6000;
+            transition: 0.1s; border: 2px solid white;
+        }
+        .wa-float:active { transform: translateY(4px); box-shadow: none; }
+
+        /* Toast */
+        #toast-warning {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #ff4b4b; color: white; padding: 12px 20px;
+            border-radius: 15px; font-weight: 800; font-size: 14px;
+            z-index: 6000; display: none; box-shadow: 0 4px 0 #d13030;
+        }
+
+        @keyframes popIn { from {opacity: 0; transform: scale(0.8);} to {opacity: 1; transform: scale(1);} }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
     </style>
 </head>
@@ -69,54 +152,60 @@
 <audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
 <div id="toast-warning">🚫 Please speak in English!</div>
 
-<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI%20Team,%20I%20have%20some%20feedback..." target="_blank" class="wa-float" title="Give Feedback">
-    <svg width="35" height="35" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI%20Team,%20I%20have%20some%20feedback..." target="_blank" class="wa-float" title="Feedback">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M17.472 14.382C17.111 14.201 15.336 13.321 15.003 13.198C14.67 13.075 14.427 13.014 14.184 13.382C13.941 13.75 13.248 14.568 13.034 14.814C12.822 15.06 12.61 15.091 12.248 14.91C11.887 14.729 10.723 14.346 9.342 13.116C8.237 12.131 7.49 10.915 7.278 10.547C7.065 10.179 7.255 9.982 7.436 9.802C7.598 9.641 7.796 9.383 7.978 9.172C8.16 8.961 8.22 8.777 8.342 8.532C8.463 8.287 8.402 8.072 8.311 7.888C8.22 7.704 7.492 5.91 7.189 5.174C6.893 4.457 6.594 4.556 6.386 4.563C6.191 4.569 5.968 4.563 5.745 4.563C5.522 4.563 5.158 4.647 4.854 4.978C4.551 5.309 3.69 6.118 3.69 7.763C3.69 9.408 4.885 10.992 5.056 11.222C5.228 11.453 7.456 14.891 10.868 16.364C13.564 17.528 13.564 17.528 14.183 17.474C14.878 17.413 16.326 16.643 16.63 15.784C16.933 14.925 16.933 14.189 16.842 14.035C16.751 13.882 16.508 13.821 16.147 13.64V13.64ZM12.04 21.928C10.279 21.928 8.643 21.465 7.217 20.665L7.158 20.63L3.486 21.594L4.475 18.006L4.436 17.944C3.548 16.529 3.081 14.887 3.081 13.178C3.081 8.236 7.1 4.217 12.043 4.217C14.436 4.218 16.685 5.15 18.376 6.843C20.068 8.535 21 10.785 21 13.179C21 18.12 16.983 21.928 12.04 21.928ZM12.041 2C5.877 2 0.86 7.017 0.86 13.178C0.86 15.266 1.574 17.189 2.784 18.784L0.862 24L6.287 22.576C7.943 23.655 9.932 24.256 12.039 24.256H12.043C18.207 24.256 23.224 19.239 23.224 13.179C23.224 10.194 22.063 7.387 19.954 5.278C17.846 3.169 15.041 2.001 12.042 2H12.041Z"/>
     </svg>
 </a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
-    <div class="trial-badge">✨ Full Free Trial Period ✨</div>
+    <div class="trial-badge">🔥 Full Free Trial Period 🔥</div>
     
-    <div class="tagline-box">
-        No Partner to Practice? <br>
-        Meet Talk24AI: Your 24/7 Spoken English Mate.
+    <div class="hero-card">
+        <div style="font-size: 18px; font-weight: 800; color: #4b4b4b; margin-bottom: 20px;">
+            Find Your Spoken Mate
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="number" id="age" value="18" class="input-duo" style="text-align:center;">
+            <select id="gender" class="input-duo">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        
+        <button class="btn-duo" onclick="showScenarios()">START PRACTICE</button>
     </div>
-    
-    <div style="width: 100%; max-width: 320px; display: flex; gap: 10px; margin-bottom: 20px;">
-        <input type="number" id="age" value="18" style="width:50%; padding:15px; border-radius:15px; border:2px solid #ddd; text-align:center; font-weight:900;">
-        <select id="gender" style="width:50%; padding:15px; border-radius:15px; border:2px solid #ddd; font-weight:900;">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-    </div>
-    <button class="btn-main" onclick="showScenarios()">Find My Mate</button>
 </div>
 
 <div id="scenario-screen">
-    <div style="padding: 25px; text-align: center; border-bottom: 1px solid #eee;">
-        <div style="font-size: 22px; font-weight: 900;">Select Your Roleplay</div>
-        <div class="trial-badge" style="margin-top: 10px; background:#fff; color:#aaa; border:none; font-size:11px;">Free Trial Active</div>
+    <div style="text-align: center; width: 100%; max-width: 600px;">
+        <div style="font-family: 'Fredoka'; font-size: 28px; color: #4b4b4b; margin-bottom: 5px;">Choose a Mate</div>
+        <div style="color: #777; font-weight: 700; margin-bottom: 20px;">Select a character to start speaking</div>
     </div>
     <div class="sc-grid" id="role-grid"></div>
 </div>
 
 <div id="chat-screen">
     <div class="top-nav">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div id="p-icon" style="font-size: 30px;">🤖</div>
+        <div class="mate-info">
+            <div id="p-icon" style="font-size: 32px;">🤖</div>
             <div>
-                <div style="font-weight: 900; font-size: 18px;" id="p-name">AI Mate</div>
-                <div style="font-size: 10px; color: #58cc02; font-weight: 800;">ONLINE (TRIAL)</div>
+                <div class="mate-name" id="p-name">AI Mate</div>
+                <div style="font-size: 11px; color: #58cc02; font-weight: 800; display:flex; align-items:center;">
+                    <span class="status-dot"></span> ONLINE
+                </div>
             </div>
         </div>
-        <div style="background: #fff4db; color: #d68f00; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px;">⭐ <span id="score">0</span></div>
+        <div class="xp-pill">💎 <span id="score">0</span></div>
     </div>
+
     <div id="messages"></div>
-    <div id="typing-box" class="typing">Mate is thinking...</div>
-    <div class="input-bar">
-        <input type="text" id="userInput" placeholder="Type or use Mic..." onkeypress="handleEnter(event)">
+    <div id="typing-box" class="typing">Mate is typing...</div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" class="input-duo" placeholder="Type a message..." style="border-width: 2px;" onkeypress="handleEnter(event)">
         <button id="mic-btn" onclick="toggleMic()">🎤</button>
     </div>
 </div>
@@ -149,7 +238,7 @@
         list.forEach(role => {
             const div = document.createElement('div');
             div.className = 'role-card';
-            div.innerHTML = `<div style="font-size:45px; margin-bottom:10px;">${role.icon}</div><div style="font-weight:900; font-size:15px;">${role.name}</div>`;
+            div.innerHTML = `<div class="role-icon">${role.icon}</div><div class="role-name">${role.name}</div>`;
             div.onclick = () => startChat(role);
             grid.appendChild(div);
         });
