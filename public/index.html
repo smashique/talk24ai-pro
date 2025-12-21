@@ -49,7 +49,7 @@
         .btn-main:active { transform: translateY(5px); box-shadow: 0 0 0; }
 
         #chat-screen { display: none; flex-direction: column; height: 100%; z-index: 100; max-width: 900px; margin: 0 auto; width: 100%; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-        .top-nav { padding: 15px 25px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
+        .top-nav { padding: 10px 25px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
         #messages { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 160px; scroll-behavior: smooth; }
         
         .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -87,9 +87,24 @@
         #install-btn { margin-top: 20px; background: white; color: var(--blue); border: 2px solid #e5e5e5; padding: 12px 25px; border-radius: 18px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; transition: 0.1s; }
         #install-btn:active { transform: translateY(4px); box-shadow: 0 0 0; }
         
-        .stats-box { margin-left: auto; font-size: 11px; color: #888; font-weight: 700; display: flex; gap: 10px; align-items: center; }
+        /* STATS DISPLAY */
+        .stats-box { margin-left: auto; font-size: 11px; color: #888; font-weight: 700; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+        .stat-row { display: flex; gap: 10px; align-items: center; }
         .stat-item { background: #f5f5f5; padding: 4px 8px; border-radius: 10px; border: 1px solid #e5e5e5; }
+        .lifetime-badge { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
         
+        /* PREMIUM OFFER MODAL */
+        #offer-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); animation: fadeIn 0.5s; }
+        .offer-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 30px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.8); animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .offer-badge { background: #FFD700; color: #5c4d00; font-weight: 900; padding: 5px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-size: 12px; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
+        .offer-title { font-size: 24px; font-weight: 900; color: #333; margin-bottom: 10px; line-height: 1.3; }
+        .offer-desc { font-size: 15px; color: #666; margin-bottom: 25px; line-height: 1.6; }
+        .offer-btn { width: 100%; background: linear-gradient(45deg, #1cb0f6, #25d366); color: white; padding: 15px; border: none; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
+        .offer-btn:active { transform: scale(0.95); }
+        .close-offer { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popUp { to { transform: scale(1); } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -101,9 +116,22 @@
 <body>
 
 <audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3" preload="auto"></audio>
-<audio id="snd-msg" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+<audio id="snd-offer" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
 
 <div class="bg-shape shape1"></div><div class="bg-shape shape2"></div><div class="bg-shape shape3"></div>
+
+<div id="offer-modal">
+    <div class="offer-card">
+        <div class="close-offer" onclick="closeOffer()">×</div>
+        <div class="offer-badge">🔥 LEVEL UP!</div>
+        <div class="offer-title">You are doing Great! <br> Ready for Pro?</div>
+        <div class="offer-desc">
+            মাশাআল্লাহ! আপনি গত ২০ মিনিট ধরে খুব মনোযোগ দিয়ে প্র্যাকটিস করছেন। <br><br>
+            আপনার সিরিয়াসনেস দেখে মনে হচ্ছে আপনি স্পোকেন ইংলিশে মাস্টার হতে চান। আমাদের <b>Premium Mentor</b> সাপোর্ট নিতে চান?
+        </div>
+        <button class="offer-btn" onclick="buyPremium()">Get Premium Access 💎</button>
+    </div>
+</div>
 
 <a href="https://wa.me/8801303680618?text=Hello%20Talk24AI..." target="_blank" style="position:fixed; bottom:100px; right:20px; background:#25d366; color:white; padding:8px 16px; border-radius:30px; display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:700; font-size:13px; box-shadow:0 4px 10px rgba(37,211,102,0.3); z-index:500; border:2px solid white;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg> Help
@@ -147,11 +175,16 @@
                 <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
+        
         <div class="stats-box">
-             <div class="stat-item">Today: <span id="stat-avg">...</span></div>
-             <button class="note-btn" onclick="downloadNotes()">📝 Save Notes</button>
+             <div class="stat-row">
+                 <div class="stat-item">Active: <span id="time-display">0m</span></div>
+                 <button class="note-btn" onclick="downloadNotes()">📝 Save</button>
+             </div>
+             <div class="stat-item lifetime-badge">⏱️ Lifetime: <span id="lifetime-display">Loading...</span></div>
         </div>
     </div>
+    
     <div id="messages"></div>
     <div id="voice-loader" class="voice-loader" style="margin: 0 auto 20px auto;"><span style="font-size:12px; font-weight:700; color:#1cb0f6;">Speaking</span><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div></div>
     <div id="typing-box" class="typing">Mate is typing...</div>
@@ -162,41 +195,102 @@
     // ✅ CRASH-PROOF SERVER URL
     const SERVER_URL = "https://talk24ai.onrender.com"; 
     
-    // ✅ SAFE SOUND SYSTEM (No WebAudio API to avoid crashes)
-    function playSound(type) {
-        try {
-            const audioId = type === 'pop' ? 'snd-pop' : 'snd-msg';
-            const audio = document.getElementById(audioId);
-            if(audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log("Sound blocked by browser:", e));
-            }
-        } catch(e) { console.log("Audio Error Ignored"); }
-    }
+    // ✅ SAFE SOUND SYSTEM
+    function playSound(type) { try { const a = document.getElementById(type === 'pop' ? 'snd-pop' : 'snd-offer'); if(a) { a.currentTime=0; a.play().catch(e=>{}); } } catch(e){} }
     
-    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 }; 
+    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal' }; 
     let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
 
-    // --- ID & STATS ---
+    // --- 🧠 ADDICTION TIMER & LIFETIME WATCH ---
+    let sessionSeconds = 0; // Current session time
+    let lifetimeSeconds = 0; // Total lifetime from DB
+    const THRESHOLD = 1200; // 20 Mins for Offer
+    let offerShown = localStorage.getItem('talk24_offer_shown') === "true";
+
+    // Initialize ID
     let USER_ID = localStorage.getItem('talk24_uid');
     if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
     document.getElementById('user-badge').innerHTML = `<span class="live-dot"></span> ID: ${USER_ID}`;
 
+    // Load Lifetime Stats on Startup
     fetch(`${SERVER_URL}/api/stats`, {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ userId: USER_ID })
-    }).then(res => res.json()).then(data => { document.getElementById('stat-avg').innerText = data.total; }).catch(e => { document.getElementById('stat-avg').innerText = "0"; });
+    })
+    .then(res => res.json())
+    .then(data => {
+        lifetimeSeconds = data.lifetime_seconds || 0;
+        updateLifetimeDisplay();
+    })
+    .catch(e => console.log("Stats load error"));
+
+    // Timer Logic: Runs every 1 second
+    setInterval(() => {
+        // Only count if chat screen is open and tab is active
+        if (!document.hidden && document.getElementById('chat-screen').style.display === 'flex') {
+            sessionSeconds++;
+            
+            // Sync with Server every 60 seconds (1 Minute)
+            if (sessionSeconds % 60 === 0) {
+                syncTimeWithServer(60);
+            }
+            
+            updateTimeDisplay();
+            checkAddiction();
+        }
+    }, 1000);
+
+    function syncTimeWithServer(secondsToAdd) {
+        fetch(`${SERVER_URL}/api/update-time`, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userId: USER_ID, seconds: secondsToAdd })
+        })
+        .then(res => res.json())
+        .then(data => {
+            lifetimeSeconds = data.total_time; // Update local lifetime with accurate server time
+            updateLifetimeDisplay();
+        });
+    }
+
+    function updateTimeDisplay() {
+        const mins = Math.floor(sessionSeconds / 60);
+        document.getElementById('time-display').innerText = `${mins}m`;
+    }
+
+    function updateLifetimeDisplay() {
+        const hours = Math.floor(lifetimeSeconds / 3600);
+        const mins = Math.floor((lifetimeSeconds % 3600) / 60);
+        const display = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+        document.getElementById('lifetime-display').innerText = display;
+    }
+
+    function checkAddiction() {
+        const totalActiveTime = lifetimeSeconds + (sessionSeconds % 60); // Approx total
+        if (totalActiveTime >= THRESHOLD && !offerShown) {
+            showOffer();
+            offerShown = true;
+            localStorage.setItem('talk24_offer_shown', "true");
+        }
+    }
+
+    function showOffer() {
+        playSound('offer');
+        document.getElementById('offer-modal').style.display = 'flex';
+        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+    }
+
+    function closeOffer() { document.getElementById('offer-modal').style.display = 'none'; }
+    function buyPremium() { window.open('https://wa.me/8801303680618?text=I%20want%20Premium%20Talk24AI', '_blank'); closeOffer(); }
 
     // --- NOTES ---
     function downloadNotes() {
         if(mentorNotes.length === 0) return alert("Start chatting first!");
-        const header = "Talk24AI Mentor Notes\nID: " + USER_ID + "\nDate: " + new Date().toLocaleString() + "\n\n";
-        const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([header + mentorNotes.join('\n')], {type: "text/plain"})); link.download = `Talk24_Notes.txt`; link.click();
+        const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob(["Talk24AI Mentor Notes\nID: "+USER_ID+"\n\n" + mentorNotes.join('\n')], {type: "text/plain"})); link.download = `Talk24_Notes.txt`; link.click();
     }
 
     // --- PWA ---
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else alert("Check browser menu to install."); }
+    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else alert("Check browser menu."); }
     function selectChip(id, value) { playSound('pop'); document.getElementById(id).value = value; }
     function randomize() { playSound('pop'); const sets = [{ u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining', m: 'Fun 🤣' }, { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' }, { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' }]; const r = sets[Math.floor(Math.random() * sets.length)]; document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a; document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m; }
     
@@ -208,27 +302,11 @@
         setTimeout(() => { document.getElementById('p-name').innerText = a; document.getElementById('home-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; triggerAIStart(); }, 1000); 
     }
 
-    async function triggerAIStart() { 
-        toggleTyping(true); 
-        callAPI({ message: "Action!", systemInstruction: `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}.`, mood: state.mood, userId: USER_ID }); 
-    }
+    async function triggerAIStart() { toggleTyping(true); callAPI({ message: "Action!", systemInstruction: `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}.`, mood: state.mood, userId: USER_ID }); }
 
-    // ✅ CRASH PROOF sendToAI
     async function sendToAI(text) { 
-        if(!text.trim()) return; 
-        
-        // 1. Play sound safely
-        playSound('pop'); 
-        
-        // 2. Add message to UI
-        addUserMsg(text); 
-        chatHistory.push(`User: ${text}`); 
-        
-        // 3. Clear input IMMEDIATELY (Prevents double send)
-        document.getElementById('userInput').value = ''; 
-        
-        // 4. Show typing & Call API
-        toggleTyping(true); 
+        if(!text.trim()) return; playSound('pop'); addUserMsg(text); chatHistory.push(`User: ${text}`); 
+        document.getElementById('userInput').value = ''; toggleTyping(true); 
         callAPI({ message: text, systemInstruction: `Identity: ${state.aiRole}. User: ${state.userRole}. Scene: ${state.scene}.`, mood: state.mood, userId: USER_ID }); 
     }
     
@@ -239,15 +317,10 @@
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false);
             chatHistory.push(`AI: ${data.reply}`); addAiMsg(data.reply, data.instruction);
-        } catch (e) { 
-            console.error(e);
-            document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); 
-            // Optional: Alert user if API fails
-        }
+        } catch (e) { console.error(e); document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
     }
     
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
-    
     function addAiMsg(text, instruction) {
         const container = document.createElement('div'); container.className = 'bubble-container';
         const bubble = document.createElement('div'); bubble.className = 'bubble ai'; bubble.innerText = text;
@@ -255,29 +328,14 @@
         container.appendChild(bubble); container.appendChild(replayBtn);
         if (instruction) { const note = document.createElement('div'); note.className = 'mentor-note'; note.innerHTML = `<strong>Talk24AI Mentor:</strong><br>${instruction}`; container.appendChild(note); mentorNotes.push(`[${new Date().toLocaleTimeString()}] ${instruction}\n---`); }
         document.getElementById('messages').appendChild(container); playSound('pop'); 
-        
-        // SAFE VOICE LOADER
-        const loader = document.getElementById('voice-loader');
-        loader.style.display = 'flex';
-        speak(text, () => { loader.style.display = 'none'; });
-        // Fallback: If voice fails, hide loader after 3s
-        setTimeout(() => { loader.style.display = 'none'; }, 3000); 
-        
+        const loader = document.getElementById('voice-loader'); loader.style.display = 'flex'; speak(text, () => { loader.style.display = 'none'; }); setTimeout(() => { loader.style.display = 'none'; }, 3000); 
         scrollToBottom();
     }
     
     function addUserMsg(text) { const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text; div.style.alignSelf = 'flex-end'; document.getElementById('messages').appendChild(div); scrollToBottom(); }
     function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
-    
-    function speak(text, onEndCallback) {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 1.0; 
-        utter.onend = () => { if(onEndCallback) onEndCallback(); };
-        utter.onerror = () => { if(onEndCallback) onEndCallback(); };
-        window.speechSynthesis.speak(utter);
-    }
+    function speak(text, cb) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1.0; u.onend = cb; u.onerror = cb; window.speechSynthesis.speak(u); }
     
     const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
     if(recognition) { recognition.lang = 'en-US'; recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening'); recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening'); recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); }; }
