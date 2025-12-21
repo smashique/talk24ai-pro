@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>Talk24AI | Practice English Fearlessly</title>
-    <meta name="description" content="Talk24AI is your 24/7 AI Spoken English Mate. Practice conversation, roleplay, and improve fluency for free. No limits.">
+    <meta name="description" content="Talk24AI is your 24/7 AI Spoken English Mate. Practice conversation, roleplay, and improve fluency for free.">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
@@ -37,19 +37,16 @@
         .pain-point-msg { color: #777; margin-bottom: 15px; font-weight: 700; font-size: 14px; line-height: 1.4; }
         .highlight { color: var(--green); font-weight: 900; }
 
-        /* INPUTS */
-        .role-group { text-align: left; margin-bottom: 15px; }
+        /* INPUTS & CHIPS */
+        .role-group { text-align: left; margin-bottom: 12px; }
         .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .label-text { font-size: 13px; font-weight: 800; color: #afafaf; text-transform: uppercase; margin-left: 5px; }
         
         .input-duo { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 12px; font-size: 15px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
 
-        /* SUGGESTION CHIPS (THE MISSING PART) */
-        .chip-container { 
-            display: flex; gap: 8px; overflow-x: auto; padding: 8px 2px; 
-            -webkit-overflow-scrolling: touch; scrollbar-width: none; 
-        }
+        /* CHIPS */
+        .chip-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .chip-container::-webkit-scrollbar { display: none; }
         
         .chip {
@@ -89,7 +86,6 @@
         .ai { background: #f2f2f2; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #e5e5e5; }
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); }
         
-        /* REPLAY BUTTON */
         .replay-btn {
             margin-top: 5px; margin-left: 5px;
             font-size: 11px; color: #aaa; cursor: pointer; font-weight: 700;
@@ -146,9 +142,8 @@
             <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
             <div class="chip-container">
                 <div class="chip" onclick="fillInput('user-role', 'Student')">Student</div>
-                <div class="chip" onclick="fillInput('user-role', 'Patient')">Patient</div>
                 <div class="chip" onclick="fillInput('user-role', 'Customer')">Customer</div>
-                <div class="chip" onclick="fillInput('user-role', 'Tourist')">Tourist</div>
+                <div class="chip" onclick="fillInput('user-role', 'Passenger')">Passenger</div>
             </div>
         </div>
 
@@ -157,20 +152,29 @@
             <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher">
             <div class="chip-container">
                 <div class="chip" onclick="fillInput('ai-role', 'Teacher')">Teacher</div>
-                <div class="chip" onclick="fillInput('ai-role', 'Doctor')">Doctor</div>
                 <div class="chip" onclick="fillInput('ai-role', 'Shopkeeper')">Shopkeeper</div>
-                <div class="chip" onclick="fillInput('ai-role', 'Police')">Police</div>
+                <div class="chip" onclick="fillInput('ai-role', 'Driver')">Driver</div>
+            </div>
+        </div>
+
+        <div class="role-group">
+            <div class="label-row"><span class="label-text">Mood / Tone</span></div>
+            <input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Fun">
+            <div class="chip-container">
+                <div class="chip" onclick="fillInput('chat-mood', 'Fun 🤣')">Fun 🤣</div>
+                <div class="chip" onclick="fillInput('chat-mood', 'Serious 🧐')">Serious 🧐</div>
+                <div class="chip" onclick="fillInput('chat-mood', 'Angry 😡')">Angry 😡</div>
+                <div class="chip" onclick="fillInput('chat-mood', 'Polite 😊')">Polite 😊</div>
             </div>
         </div>
 
         <div class="role-group">
             <div class="label-row"><span class="label-text">Situation / Topic</span></div>
-            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for help">
+            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for directions">
             <div class="chip-container">
-                <div class="chip" onclick="fillInput('scene-context', 'Buying Food')">Buying Food</div>
-                <div class="chip" onclick="fillInput('scene-context', 'Job Interview')">Interview</div>
-                <div class="chip" onclick="fillInput('scene-context', 'Visa Issue')">Visa Issue</div>
-                <div class="chip" onclick="fillInput('scene-context', 'Feeling Sick')">Feeling Sick</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Bargaining')">Bargaining</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Interview')">Interview</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Late Rent')">Late Rent</div>
             </div>
         </div>
 
@@ -207,7 +211,7 @@
 </div>
 
 <script>
-    let state = { userRole: '', aiRole: '', scene: '', score: 0 };
+    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 };
     let isMicOn = false;
     let chatHistory = [];
     let deferredPrompt; 
@@ -229,35 +233,33 @@
         }
     }
 
-    // --- HELPER FUNCTIONS ---
     function fillInput(id, value) {
         document.getElementById(id).value = value;
     }
 
     function randomize() {
         const sets = [
-            { u: 'Patient', a: 'Doctor', s: 'Describing a bad headache' },
-            { u: 'Customer', a: 'Waiter', s: 'Complaining about cold food' },
-            { u: 'Candidate', a: 'Hiring Manager', s: 'Talking about strengths' },
-            { u: 'Tourist', a: 'Police Officer', s: 'Reporting lost passport' },
-            { u: 'Student', a: 'Librarian', s: 'Looking for a specific book' },
-            { u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining for a t-shirt' },
-            { u: 'Tenant', a: 'Landlord', s: 'Discussing rent payment' },
-            { u: 'Passenger', a: 'Driver', s: 'Asking to drive carefully' },
-            { u: 'Parent', a: 'Teacher', s: 'Discussing child\'s exam result' },
-            { u: 'Traveler', a: 'Agent', s: 'Booking a flight ticket' }
+            { u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining hard for a T-shirt', m: 'Fun 🤣' },
+            { u: 'Tenant', a: 'Landlord', s: 'Late rent payment excuse', m: 'Angry 😡' },
+            { u: 'Candidate', a: 'Interviewer', s: 'Job Interview for Manager', m: 'Serious 🧐' },
+            { u: 'Passenger', a: 'Rickshaw Puller', s: 'Fare negotiation', m: 'Polite 😊' },
+            { u: 'Student', a: 'Teacher', s: 'Forgot homework at home', m: 'Scared 😨' },
+            { u: 'Friend', a: 'Friend', s: 'Planning a trip to Cox\'s Bazar', m: 'Excited 🤩' },
+            { u: 'Patient', a: 'Doctor', s: 'Scared of injection', m: 'Funny 😂' },
+            { u: 'Tourist', a: 'Local', s: 'Lost in Old Dhaka', m: 'Confused 😕' }
         ];
         const random = sets[Math.floor(Math.random() * sets.length)];
         fillInput('user-role', random.u);
         fillInput('ai-role', random.a);
         fillInput('scene-context', random.s);
+        fillInput('chat-mood', random.m);
     }
 
-    // --- MAIN LOGIC ---
     function startCustomChat() {
         const uRole = document.getElementById('user-role').value.trim();
         const aRole = document.getElementById('ai-role').value.trim();
-        const scene = document.getElementById('scene-context').value.trim() || "General Conversation";
+        const scene = document.getElementById('scene-context').value.trim();
+        const mood = document.getElementById('chat-mood').value.trim();
 
         if(!uRole || !aRole) {
             alert("Please select roles or click the 🎲 dice!");
@@ -266,7 +268,8 @@
 
         state.userRole = uRole;
         state.aiRole = aRole;
-        state.scene = scene;
+        state.scene = scene || "General Conversation";
+        state.mood = mood || "Normal";
         
         document.getElementById('p-name').innerText = aRole;
         document.getElementById('home-screen').style.display = 'none';
@@ -280,10 +283,11 @@
         const sysPrompt = `
             SETUP: Roleplay. AI is ${state.aiRole}. User is ${state.userRole}.
             SITUATION: ${state.scene}.
+            MOOD: ${state.mood}.
             LOCATION: Bangladesh.
-            RULE: Start with a relevant line. Simple English (A2 Level).
+            RULE: Start with a relevant line. Simple English.
         `;
-        callAPI({ message: "Action!", systemInstruction: sysPrompt });
+        callAPI({ message: "Action!", systemInstruction: sysPrompt, mood: state.mood });
     }
 
     async function sendToAI(text) {
@@ -304,17 +308,16 @@
         const expertPrompt = `
             IDENTITY: You are ${state.aiRole}. I am ${state.userRole}.
             SCENE CONTEXT: ${state.scene}.
-            LOCATION: Bangladesh.
+            MOOD: ${state.mood}.
             
-            [STRICT RULES]
-            1. LEVEL: Simple English (A2/B1). Short sentences.
-            2. RESTRICTIONS: If user asks for SPOUSE/LOVER/PARENT roleplay, refuse.
-            3. TONE: Natural, Acting in character.
-            4. ENGAGEMENT: End with a question.
-            5. MEMORY: ${chatHistory.join(' | ')}.
+            [RULES]
+            1. LEVEL: Simple English (A2/B1).
+            2. TONE: ${state.mood}. Acting in character.
+            3. ENGAGEMENT: End with a question.
+            4. MEMORY: ${chatHistory.join(' | ')}.
         `;
         
-        callAPI({ message: text, systemInstruction: expertPrompt });
+        callAPI({ message: text, systemInstruction: expertPrompt, mood: state.mood });
     }
 
     async function callAPI(payload) {
