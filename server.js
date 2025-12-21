@@ -9,18 +9,35 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * ⛔ SMART GUARDRAILS
- * Restricted terms to ensure safety and Shariah compliance.
+ * ⛔ SMART GUARDRAILS (REGEX UPDATED)
+ * Using "Whole Word" matching to avoid blocking innocent words.
+ * Example: Blocks "sex" but Allows "section", "assessment", "sussex".
  */
 const BANNED_TERMS = [
-    'girlfriend', 'boyfriend', 'lover', 'dating', 'bae', 'crush', 'making love',
-    'sex', 'intimacy', 'nude', 'porn', 'erotic', 'xxx'
+    // Explicit Relationships
+    'girlfriend', 'boyfriend', 'lover', 'dating', 'bae', 'crush', 'making love', 'spouse', 'wife', 'husband',
+    // Sensitive/Adult Topics
+    'sex', 'intimacy', 'nude', 'porn', 'erotic', 'xxx', 'sexual'
 ];
 
+/**
+ * 🔒 SECURITY FILTER FUNCTION
+ * Uses Regex \b (Word Boundary) to ensure we only block exact bad words.
+ */
 const isContentSafe = (text) => {
     if (!text) return true;
     const lowerText = text.toLowerCase();
-    const violation = BANNED_TERMS.find(term => lowerText.includes(term));
+    
+    // Check for exact word matches using Regex
+    const violation = BANNED_TERMS.find(term => {
+        // \b ensures word boundary. Example: Matches "sex" but not "section"
+        const regex = new RegExp(`\\b${term}\\b`, 'i');
+        return regex.test(lowerText);
+    });
+    
+    if (violation) {
+        console.log(`⚠️ Blocked Content: Found restricted word "${violation}"`);
+    }
     return !violation; 
 };
 
@@ -30,8 +47,7 @@ const sanitizeInput = (text) => {
 };
 
 /**
- * 🧠 MASTER SERVER (USER-CENTRIC UPDATE)
- * - Optimized for Beginner Friendly English (A2/B1 Level)
+ * 🧠 MASTER SERVER
  */
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction } = req.body;
@@ -40,9 +56,10 @@ app.post('/api/chat', async (req, res) => {
     systemInstruction = sanitizeInput(systemInstruction);
 
     // 🚨 SAFETY CHECK
+    // If user's message OR the setup context contains explicit banned words -> BLOCK
     if (!isContentSafe(message) || !isContentSafe(systemInstruction)) {
         return res.json({ 
-            reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic. (Restricted Content)" 
+            reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic or role. (Restricted Content)" 
         });
     }
 
@@ -54,9 +71,9 @@ app.post('/api/chat', async (req, res) => {
         const messages = [
             { 
                 role: "system", 
-                // GB APPROVED INSTRUCTION: SIMPLE ENGLISH
+                // GB APPROVED: SIMPLE ENGLISH INSTRUCTION
                 content: (systemInstruction || "You are Talk24AI.") + 
-                "\n[IMPORTANT RULE]: Use SIMPLE, BEGINNER-FRIENDLY English (Level A2-B1). Avoid complex vocabulary. Keep sentences short and clear."
+                "\n[IMPORTANT RULE]: Use SIMPLE, BEGINNER-FRIENDLY English (Level A2-B1). Keep sentences short. Always end with a question."
             },
             { 
                 role: "user", 
@@ -94,4 +111,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Optimized Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Stable Server running on http://localhost:${PORT}`));
