@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Your AI Spoken Mate</title>
+    <title>Talk24AI | Creative Mode</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     
@@ -16,43 +16,32 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; }
 
-        /* --- SCREENS --- */
-        #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
+        /* SCREENS */
+        #home-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; overflow-y: auto; }
 
-        /* HERO STYLES */
+        /* HERO & UI */
         .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
         
-        /* UNLIMITED BADGE */
         .trial-badge { 
             background: linear-gradient(135deg, #ffd700, #ffca28); 
             color: #5d4037; padding: 8px 18px; border-radius: 25px; 
             font-weight: 900; font-size: 13px; text-transform: uppercase; 
-            margin-bottom: 20px; border: 2px solid #ffecb3; 
+            margin-bottom: 15px; border: 2px solid #ffecb3; 
             box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
         }
         
-        .hero-card { width: 100%; max-width: 360px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; }
-        
-        .pain-point-msg { color: #4b4b4b; margin-bottom: 25px; font-weight: 700; font-size: 16px; line-height: 1.5; }
+        .hero-card { width: 100%; max-width: 360px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; margin-bottom: 20px; }
+        .pain-point-msg { color: #4b4b4b; margin-bottom: 20px; font-weight: 700; font-size: 15px; line-height: 1.5; }
         .highlight { color: var(--green); font-weight: 900; }
 
-        /* GAMIFIED INPUTS */
-        .role-group { text-align: left; margin-bottom: 15px; }
-        .label-text { font-size: 14px; font-weight: 800; color: #afafaf; margin-bottom: 8px; margin-left: 5px; text-transform: uppercase; }
+        /* NEW INPUT STYLES */
+        .role-group { text-align: left; margin-bottom: 12px; }
+        .label-text { font-size: 13px; font-weight: 800; color: #afafaf; margin-bottom: 6px; margin-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; }
         
-        .input-duo { 
-            width: 100%; padding: 16px; border: 2px solid #e5e5e5; border-radius: 18px; 
-            font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; 
-            outline: none; transition: 0.2s; 
-        }
+        .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
 
-        .btn-main { 
-            width: 100%; padding: 18px; margin-top: 10px; 
-            background: var(--green); color: white; font-size: 18px; font-weight: 800; 
-            border: none; border-radius: 20px; box-shadow: 0 4px 0 var(--green-shade); 
-            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .btn-main { width: 100%; padding: 16px; margin-top: 10px; background: var(--green); color: white; font-size: 18px; font-weight: 800; border: none; border-radius: 20px; box-shadow: 0 4px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-main:active { transform: translateY(4px); box-shadow: none; }
 
         /* CHAT UI */
@@ -65,37 +54,17 @@
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); }
         .typing { font-size: 12px; color: #aaa; margin-left: 20px; font-weight: 700; display: none; }
 
-        /* BOTTOM CONTROLS */
-        .bottom-area {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: white; padding: 15px 20px 25px 20px;
-            border-top: 2px solid #f0f0f0;
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
-            z-index: 200;
-        }
+        /* BOTTOM */
+        .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 200; }
         .input-row { width: 100%; display: flex; gap: 10px; max-width: 600px; }
         
-        #mic-btn {
-            width: 70px; height: 70px; border-radius: 50%;
-            background: var(--green); border: 4px solid #fff;
-            color: white; font-size: 30px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(88, 204, 2, 0.4);
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-        }
+        #mic-btn { width: 70px; height: 70px; border-radius: 50%; background: var(--green); border: 4px solid #fff; color: white; font-size: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.2s; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); }
         #mic-btn:active { transform: translateX(-50%) scale(0.95); }
         .listening { background: #ff4b4b !important; animation: pulse 1.5s infinite; box-shadow: 0 0 0 10px rgba(255, 75, 75, 0.2) !important; }
+        .processing { background: #ffc800 !important; animation: spin 1s infinite; font-size: 0 !important; }
+        .processing::after { content: "⏳"; font-size: 24px; }
 
-        .wa-btn {
-            position: fixed; bottom: 100px; right: 20px;
-            background: #25d366; color: white;
-            padding: 8px 16px 8px 10px; border-radius: 30px;
-            display: flex; align-items: center; gap: 8px;
-            text-decoration: none; font-weight: 700; font-size: 13px;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-            border: 2px solid white; transition: 0.2s; z-index: 500;
-        }
+        .wa-btn { position: fixed; bottom: 100px; right: 20px; background: #25d366; color: white; padding: 8px 16px 8px 10px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 13px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); border: 2px solid white; transition: 0.2s; z-index: 500; }
         .wa-btn:hover { transform: scale(1.05); }
 
         #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; }
@@ -104,6 +73,7 @@
         #toast-warning { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4b4b; color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; display: none; z-index: 6000; }
         
         @keyframes pulse { 0% {transform: translateX(-50%) scale(1);} 50% {transform: translateX(-50%) scale(1.1);} 100% {transform: translateX(-50%) scale(1);} }
+        @keyframes spin { 0% {transform: translateX(-50%) rotate(0deg);} 100% {transform: translateX(-50%) rotate(360deg);} }
     </style>
 </head>
 <body>
@@ -128,12 +98,17 @@
 
         <div class="role-group">
             <div class="label-text">I want to be a...</div>
-            <input type="text" id="user-role" class="input-duo" placeholder="e.g. Angry Customer">
+            <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student / Angry Customer">
         </div>
 
         <div class="role-group">
             <div class="label-text">Talk24AI acts as a...</div>
-            <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Shopkeeper">
+            <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Teacher / Shopkeeper">
+        </div>
+
+        <div class="role-group">
+            <div class="label-text">Situation / Topic</div>
+            <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for leave / Returning a bad product">
         </div>
 
         <button class="btn-main" onclick="startCustomChat()">START MAGIC ✨</button>
@@ -168,7 +143,7 @@
 </div>
 
 <script>
-    let state = { userRole: '', aiRole: '', score: 0 };
+    let state = { userRole: '', aiRole: '', scene: '', score: 0 };
     let isMicOn = false;
     let chatHistory = [];
     let deferredPrompt; 
@@ -195,14 +170,16 @@
     function startCustomChat() {
         const uRole = document.getElementById('user-role').value.trim();
         const aRole = document.getElementById('ai-role').value.trim();
+        const scene = document.getElementById('scene-context').value.trim() || "General Conversation";
 
         if(!uRole || !aRole) {
-            alert("Please fill in both roles to start the magic!");
+            alert("Please fill in the Roles to start!");
             return;
         }
 
         state.userRole = uRole;
         state.aiRole = aRole;
+        state.scene = scene;
         
         document.getElementById('p-name').innerText = aRole;
         document.getElementById('home-screen').style.display = 'none';
@@ -213,11 +190,12 @@
 
     async function triggerAIStart() {
         toggleTyping(true);
-        // Prompt to start without delay
+        // Smart Context Setup
         const sysPrompt = `
-            SETUP: You are playing: ${state.aiRole}. I am playing: ${state.userRole}.
-            CONTEXT: We are in Bangladesh. Start naturally.
-            RULE: English Only. Keep it short.
+            SETUP: Roleplay. AI is ${state.aiRole}. User is ${state.userRole}.
+            SITUATION: ${state.scene}.
+            LOCATION: Bangladesh.
+            RULE: Start with a relevant line based on the situation. English Only.
         `;
         callAPI({ message: "Action!", systemInstruction: sysPrompt });
     }
@@ -232,21 +210,22 @@
         
         addUserMsg(text);
         chatHistory.push(`User (${state.userRole}): ${text}`);
-        if(chatHistory.length > 6) chatHistory.shift();
+        if(chatHistory.length > 8) chatHistory.shift();
         
         document.getElementById('userInput').value = '';
         toggleTyping(true);
         
-        // --- GOD MODE: UNLIMITED TIME & FREE ---
+        // --- MASTER PROMPT WITH SITUATION ---
         const expertPrompt = `
             IDENTITY: You are ${state.aiRole}. I am ${state.userRole}.
+            SCENE CONTEXT: ${state.scene}.
             LOCATION: Bangladesh.
             
             [STRICT RULES]
-            1. UNLIMITED TIME: This is a FREE session. Never mention "Quota" or "Time Limit" or "Premium".
-            2. RESTRICTIONS: If user asks for SPOUSE/LOVER/PARENT roleplay, politely refuse.
-            3. TONE: Friendly, Natural English.
-            4. ENGAGEMENT: End with a question.
+            1. UNLIMITED FREE: Never ask for money/premium.
+            2. RESTRICTIONS: If user asks for SPOUSE/LOVER/PARENT roleplay, refuse.
+            3. TONE: Natural English, Acting in character.
+            4. ENGAGEMENT: End with a relevant question to push the story.
             5. MEMORY: ${chatHistory.join(' | ')}.
         `;
         
@@ -255,12 +234,16 @@
 
     async function callAPI(payload) {
         try {
+            document.getElementById('mic-btn').classList.add('processing'); 
+
             const res = await fetch('/api/chat', { 
                 method: 'POST', 
                 headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify(payload) 
             });
             const data = await res.json();
+            
+            document.getElementById('mic-btn').classList.remove('processing');
             toggleTyping(false);
             
             let reply = data.reply.trim();
@@ -268,7 +251,11 @@
             
             chatHistory.push(`AI (${state.aiRole}): ${reply}`);
             addAiMsg(reply);
-        } catch (e) { toggleTyping(false); }
+        } catch (e) { 
+            document.getElementById('mic-btn').classList.remove('processing');
+            toggleTyping(false);
+            addAiMsg("(Brain Upgrade in progress. Try again!)");
+        }
     }
 
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
