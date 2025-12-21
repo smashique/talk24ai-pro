@@ -45,7 +45,7 @@
         .input-duo { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 12px; font-size: 15px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
 
-        /* SUGGESTION CHIPS (New Feature) */
+        /* SUGGESTION CHIPS */
         .chip-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .chip-container::-webkit-scrollbar { display: none; }
         
@@ -79,9 +79,25 @@
         .top-nav { padding: 10px 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
         
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 160px; }
-        .bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; }
+        
+        /* BUBBLE STYLES WITH REPLAY BUTTON */
+        .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; }
+        .bubble { padding: 14px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; width: 100%; }
         .ai { background: #f2f2f2; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #e5e5e5; }
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); }
+        
+        /* REPLAY ICON */
+        .replay-btn {
+            margin-top: 5px; margin-left: 5px;
+            font-size: 12px; color: #aaa; cursor: pointer;
+            background: #fff; border: 1px solid #ddd;
+            padding: 4px 10px; border-radius: 15px;
+            display: inline-flex; align-items: center; gap: 4px;
+            transition: 0.2s;
+        }
+        .replay-btn:hover { background: #f0f0f0; color: var(--blue); border-color: var(--blue); }
+        .replay-btn:active { transform: scale(0.95); }
+
         .typing { font-size: 12px; color: #aaa; margin-left: 20px; font-weight: 700; display: none; }
 
         /* BOTTOM */
@@ -129,7 +145,7 @@
                 <div class="chip" onclick="fillInput('user-role', 'Student')">Student</div>
                 <div class="chip" onclick="fillInput('user-role', 'Patient')">Patient</div>
                 <div class="chip" onclick="fillInput('user-role', 'Customer')">Customer</div>
-                <div class="chip" onclick="fillInput('user-role', 'Tourist')">Tourist</div>
+                <div class="chip" onclick="fillInput('user-role', 'Passenger')">Passenger</div>
             </div>
         </div>
 
@@ -140,7 +156,7 @@
                 <div class="chip" onclick="fillInput('ai-role', 'Teacher')">Teacher</div>
                 <div class="chip" onclick="fillInput('ai-role', 'Doctor')">Doctor</div>
                 <div class="chip" onclick="fillInput('ai-role', 'Shopkeeper')">Shopkeeper</div>
-                <div class="chip" onclick="fillInput('ai-role', 'Local Guide')">Local Guide</div>
+                <div class="chip" onclick="fillInput('ai-role', 'Driver')">Driver</div>
             </div>
         </div>
 
@@ -148,8 +164,8 @@
             <div class="label-row"><span class="label-text">Situation / Topic</span></div>
             <input type="text" id="scene-context" class="input-duo" placeholder="e.g. Asking for directions">
             <div class="chip-container">
-                <div class="chip" onclick="fillInput('scene-context', 'Buying Vegetables')">Buying Veg</div>
-                <div class="chip" onclick="fillInput('scene-context', 'Job Interview')">Interview</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Buying Veg')">Buying Veg</div>
+                <div class="chip" onclick="fillInput('scene-context', 'Interview')">Interview</div>
                 <div class="chip" onclick="fillInput('scene-context', 'Visa Issue')">Visa Issue</div>
                 <div class="chip" onclick="fillInput('scene-context', 'Feeling Sick')">Feeling Sick</div>
             </div>
@@ -190,18 +206,29 @@
     let isMicOn = false;
     let chatHistory = [];
 
-    // --- HELPER FUNCTIONS FOR UI ---
+    // --- HELPER FUNCTIONS ---
     function fillInput(id, value) {
         document.getElementById(id).value = value;
     }
 
     function randomize() {
+        // EXTENDED LIST (15 SCENARIOS - GB APPROVED)
         const sets = [
             { u: 'Patient', a: 'Doctor', s: 'Describing a bad headache' },
             { u: 'Customer', a: 'Waiter', s: 'Complaining about cold food' },
             { u: 'Candidate', a: 'Hiring Manager', s: 'Explaining weaknesses in interview' },
             { u: 'Tourist', a: 'Police Officer', s: 'Lost passport report' },
-            { u: 'Student', a: 'Librarian', s: 'Looking for a history book' }
+            { u: 'Student', a: 'Librarian', s: 'Looking for a history book' },
+            { u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining for a t-shirt' },
+            { u: 'Tenant', a: 'Landlord', s: 'Discussing rent delay' },
+            { u: 'Passenger', a: 'Driver', s: 'Asking to go faster/slower' },
+            { u: 'Parent', a: 'Teacher', s: 'Discussing child\'s progress' },
+            { u: 'Friend', a: 'Friend', s: 'Planning a picnic trip' },
+            { u: 'Neighbor', a: 'Neighbor', s: 'Asking for help with electricity' },
+            { u: 'Client', a: 'Banker', s: 'Opening a savings account' },
+            { u: 'Traveler', a: 'Ticket Seller', s: 'Booking a bus ticket to Cox\'s Bazar' },
+            { u: 'Employee', a: 'Boss', s: 'Asking for 2 days leave' },
+            { u: 'User', a: 'Support Agent', s: 'Internet connection is not working' }
         ];
         const random = sets[Math.floor(Math.random() * sets.length)];
         fillInput('user-role', random.u);
@@ -307,14 +334,29 @@
         if(callback) callback();
     }
 
+    // --- UPDATED MESSAGE FUNCTION WITH AUDIO BUTTON ---
     function addAiMsg(text) {
-        const div = document.createElement('div'); div.className = 'bubble ai'; 
-        document.getElementById('messages').appendChild(div);
-        typeWriter(text, div, () => speak(text));
+        const container = document.createElement('div'); 
+        container.className = 'bubble-container';
+
+        const bubble = document.createElement('div'); 
+        bubble.className = 'bubble ai'; 
+        
+        const replayBtn = document.createElement('div');
+        replayBtn.className = 'replay-btn';
+        replayBtn.innerHTML = '🔊 Replay';
+        replayBtn.onclick = () => speak(text);
+
+        container.appendChild(bubble);
+        container.appendChild(replayBtn);
+        document.getElementById('messages').appendChild(container);
+        
+        typeWriter(text, bubble, () => speak(text));
     }
 
     function addUserMsg(text) {
         const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text;
+        div.style.alignSelf = 'flex-end'; // Fix alignment
         document.getElementById('messages').appendChild(div); scrollToBottom();
         state.score += 10; document.getElementById('score').innerText = state.score;
         document.getElementById('snd-pop').play().catch(e=>{});
