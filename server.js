@@ -41,47 +41,49 @@ app.post('/api/stats', (req, res) => {
     res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
 });
 
-// 💬 API: CHAT (SMART PIVOT EDITION)
+// 💬 API: CHAT (SAFETY & MODERATION EDITION)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     message = sanitizeInput(message);
     mood = sanitizeInput(mood) || 'Normal';
     userId = sanitizeInput(userId) || 'anonymous';
 
-    // Track
+    // Track Usage
     const db = loadDB();
     if (!db[userId]) db[userId] = { total_msgs: 0, total_time: 0, first_seen: new Date().toISOString() };
     db[userId].total_msgs += 1;
     saveDB(db);
 
-    let dynamicTemp = 0.6; // Keep temperature balanced
+    let dynamicTemp = 0.6; 
 
     const isStart = message === "Action!";
 
     try {
         let finalPrompt = "";
 
-        // 🛡️ THE MORAL GUARDRAIL & SMART PIVOT PROTOCOL
+        // 🛡️ CONTENT MODERATION & SAFETY PROTOCOL
         const guardRails = `
-        [CORE PROTOCOL: SMART TOPIC DIVERSION]:
-        You are a Dual-Agent AI. You must detect if the User tries to initiate:
-        - Sexual content / Flirting / Romance (Kiss, Sex, Bed, Body, Love).
-        - Haram topics (Alcohol, Gambling, Atheism).
+        [SYSTEM PROTOCOL: CONTENT SAFETY & MODERATION]:
+        You are a Dual-Agent AI acting as a language learning partner. You must detect if the User's input contains:
+        - Explicit sexual content, flirting, or romantic advances.
+        - Harmful, illegal, or offensive topics.
         
-        [IF USER IS NORMAL]:
-        - Agent A (Roleplay): Speak natural English. Be friendly.
-        - Agent B (Mentor): Teach grammar in Bangla.
+        [IF USER INPUT IS APPROPRIATE]:
+        - Agent A (Roleplay): Reply naturally in English based on the role. Be friendly and engaging.
+        - Agent B (Mentor): Provide feedback on the user's English in Bangla.
 
-        [IF USER IS FLIRTY / SEXUAL / NSFW]:
-        🚨 DO NOT LECTURE. DO NOT BLOCK. DO NOT COMPLY. 🚨
+        [IF USER INPUT IS INAPPROPRIATE / SEXUAL / NSFW]:
+        🚨 ACTION REQUIRED: DIVERT AND REFOCUS 🚨
         
-        - **Agent A (Roleplay Action):** "THE SMART PIVOT".
-          Ignore the sexual context COMPLETELY. Pretend you didn't hear it or suddenly remember a boring/serious task. Change the topic to something mundane or intellectual.
-          *Example:* User: "Lets kiss." -> Agent A: "Oh! Wait, did you hear that sound? I think I left the stove on!" OR "By the way, have you prepared for the upcoming exam? It's very important."
+        - **Agent A (Roleplay Action):** "THE PIVOT".
+          Do NOT engage with the explicit content. Do NOT roleplay sexual scenarios.
+          Instead, immediately change the subject to a safe, neutral, or professional topic related to general conversation or the previous context (if safe).
+          *Example:* If user says something inappropriate, Agent A might say: "I think we are getting off track. Let's talk about your travel plans instead. Where do you want to go?" or "Oh, I just remembered, have you prepared for the interview?"
         
-        - **Agent B (Mentor Action):** "THE GENTLE SCOLD".
-          DO NOT correct the grammar of dirty sentences. Instead, say in Bangla:
-          "ভাই/বোন, এ ধরনের কথা প্র্যাকটিস করা আমাদের উদ্দেশ্যের সাথে যায় না। আসুন ক্যারিয়ার বা পড়াশোনা নিয়ে কথা বলি। সময় কিন্তু চলে যাচ্ছে!"
+        - **Agent B (Mentor Action):** "THE PROFESSIONAL REMINDER".
+          Do NOT correct the grammar of the inappropriate text.
+          Instead, output a standard message in Bangla reminding the user of the learning goal:
+          "অনুগ্রহ করে মনে রাখবেন, এটি একটি ইংরেজি শেখার প্ল্যাটফর্ম। আসুন আমরা প্রাসঙ্গিক এবং পেশাদার আলোচনায় ফিরে যাই।" (Please remember this is an English learning platform. Let's return to relevant and professional discussion.)
         `;
 
         if (isStart) {
@@ -89,36 +91,50 @@ app.post('/api/chat', async (req, res) => {
             ${systemInstruction}
             ${guardRails}
             [START]:
-            - Roleplay: Warm, professional greeting in English.
+            - Roleplay: Warm, professional greeting in English based on the scene.
             - Mentor: "আসসালামু আলাইকুম! আমি রেডি। শুরু করুন।"
-            [JSON]: {"conversation":"...", "learning_note":"..."}`;
+            [JSON OUTPUT ONLY]: {"conversation":"...", "learning_note":"..."}`;
         } else {
             finalPrompt = `
             ${systemInstruction}
             ${guardRails}
             [INPUT]: User said: "${message}"
-            [TASK]: Apply 'Smart Pivot' if needed. Otherwise, chat normally.
-            [JSON]: {"conversation":"...", "learning_note":"..."}`;
+            [TASK]: Evaluate input for safety. If safe, reply and teach. If unsafe, pivot and remind.
+            [JSON OUTPUT ONLY]: {"conversation":"...", "learning_note":"..."}`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         const rawResponse = await callGroq(messages, dynamicTemp);
         
         let parsedData;
-        try { parsedData = JSON.parse(rawResponse.replace(/```json|```/g, '').trim()); } 
-        catch { parsedData = { conversation: "I didn't catch that. Can we talk about your study plan?", learning_note: "নেটওয়ার্ক সমস্যা। আবার বলুন।" }; }
+        try { 
+            // Attempt to parse JSON response
+            const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                parsedData = JSON.parse(jsonMatch[0]);
+            } else {
+                throw new Error("No JSON found");
+            }
+        } 
+        catch (e) { 
+            console.error("Parsing Error:", e.message, rawResponse);
+            parsedData = { 
+                conversation: "I'm sorry, I didn't catch that. Could we try again?", 
+                learning_note: "যান্ত্রিক ত্রুটির কারণে নোট লোড হয়নি। আবার চেষ্টা করুন।" 
+            }; 
+        }
 
-        if (isStart && (!parsedData.conversation || parsedData.conversation.length < 2)) parsedData.conversation = "Hello! I am ready.";
+        if (isStart && (!parsedData.conversation || parsedData.conversation.length < 2)) parsedData.conversation = "Hello! I am ready to practice English.";
 
         res.json({ reply: cleanUnicode(parsedData.conversation), instruction: cleanUnicode(parsedData.learning_note) });
 
     } catch (err) {
-        console.error(err);
+        console.error("API Error:", err.message);
         res.status(500).json({ reply: "Connection error.", instruction: "Try again." });
     }
 });
 
-// ADMIN
+// ADMIN DASHBOARD
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => (b.total_time || 0) - (a.total_time || 0));
@@ -129,11 +145,20 @@ app.get('/admin/dashboard', (req, res) => {
 
 async function callGroq(messages, temp) {
     try {
+        const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: messages, model: "llama-3.3-70b-versatile", max_tokens: 850, temperature: temp, response_format: { type: "json_object" }
-        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY}` } });
+            messages: messages,
+            model: "llama-3.3-70b-versatile",
+            max_tokens: 850,
+            temperature: temp,
+            response_format: { type: "json_object" }
+        }, {
+            headers: { "Authorization": `Bearer ${apiKey}` }
+        });
         return response.data.choices[0].message.content;
-    } catch (err) { throw new Error("AI Failed"); }
+    } catch (err) {
+        throw new Error("AI Failed: " + err.message);
+    }
 }
 
 const PORT = process.env.PORT || 3000;
