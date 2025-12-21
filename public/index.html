@@ -126,8 +126,8 @@
         <div class="offer-badge">🔥 LEVEL UP!</div>
         <div class="offer-title">You are doing Great! <br> Ready for Pro?</div>
         <div class="offer-desc">
-            মাশাআল্লাহ! আপনি গত ২০ মিনিট ধরে খুব মনোযোগ দিয়ে প্র্যাকটিস করছেন। <br><br>
-            আপনার সিরিয়াসনেস দেখে মনে হচ্ছে আপনি স্পোকেন ইংলিশে মাস্টার হতে চান। আমাদের <b>Premium Mentor</b> সাপোর্ট নিতে চান?
+            মাশাআল্লাহ! আপনি গত ২০ মিনিট ধরে খুব মনোযোগ দিয়ে প্র্যাকটিস করছেন। <br><br>
+            আপনার সিরিয়াসনেস দেখে মনে হচ্ছে আপনি স্পোকেন ইংলিশে মাস্টার হতে চান। আমাদের <b>Premium Mentor</b> সাপোর্ট নিতে চান?
         </div>
         <button class="offer-btn" onclick="buyPremium()">Get Premium Access 💎</button>
     </div>
@@ -202,9 +202,9 @@
     let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
 
     // --- 🧠 ADDICTION TIMER & LIFETIME WATCH ---
-    let sessionSeconds = 0; // Current session time
-    let lifetimeSeconds = 0; // Total lifetime from DB
-    const THRESHOLD = 1200; // 20 Mins for Offer
+    let sessionSeconds = 0; 
+    let lifetimeSeconds = 0; 
+    const THRESHOLD = 1200; 
     let offerShown = localStorage.getItem('talk24_offer_shown') === "true";
 
     // Initialize ID
@@ -226,15 +226,11 @@
 
     // Timer Logic: Runs every 1 second
     setInterval(() => {
-        // Only count if chat screen is open and tab is active
         if (!document.hidden && document.getElementById('chat-screen').style.display === 'flex') {
             sessionSeconds++;
-            
-            // Sync with Server every 60 seconds (1 Minute)
             if (sessionSeconds % 60 === 0) {
                 syncTimeWithServer(60);
             }
-            
             updateTimeDisplay();
             checkAddiction();
         }
@@ -247,7 +243,7 @@
         })
         .then(res => res.json())
         .then(data => {
-            lifetimeSeconds = data.total_time; // Update local lifetime with accurate server time
+            lifetimeSeconds = data.total_time; 
             updateLifetimeDisplay();
         });
     }
@@ -265,7 +261,7 @@
     }
 
     function checkAddiction() {
-        const totalActiveTime = lifetimeSeconds + (sessionSeconds % 60); // Approx total
+        const totalActiveTime = lifetimeSeconds + (sessionSeconds % 60);
         if (totalActiveTime >= THRESHOLD && !offerShown) {
             showOffer();
             offerShown = true;
@@ -337,9 +333,60 @@
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
     function speak(text, cb) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1.0; u.onend = cb; u.onerror = cb; window.speechSynthesis.speak(u); }
     
-    const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
-    if(recognition) { recognition.lang = 'en-US'; recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening'); recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening'); recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); }; }
-    function toggleMic() { playSound('pop'); if(!recognition) return alert("Mic error"); isMicOn ? recognition.stop() : recognition.start(); isMicOn = !isMicOn; }
+    // 🎤 IMPROVED MIC LOGIC FOR LAPTOPS & DESKTOPS
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            isMicOn = true;
+            document.getElementById('mic-btn').classList.add('listening');
+        };
+        
+        recognition.onend = () => {
+            isMicOn = false;
+            document.getElementById('mic-btn').classList.remove('listening');
+        };
+
+        recognition.onresult = (e) => {
+            const txt = e.results[0][0].transcript;
+            document.getElementById('userInput').value = txt;
+            sendToAI(txt);
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Mic Error:", event.error);
+            isMicOn = false;
+            document.getElementById('mic-btn').classList.remove('listening');
+            if (event.error === 'not-allowed') {
+                alert("⚠️ মাইক্রোফোন এক্সেস ব্লক করা আছে। দয়া করে ব্রাউজারের সেটিংস থেকে 'Allow' করে দিন। (Click lock icon in address bar)");
+            }
+        };
+    }
+
+    function toggleMic() { 
+        playSound('pop'); 
+        
+        if (!recognition) {
+            alert("⚠️ দুঃখিত! আপনার এই ব্রাউজারে মাইক্রোফোন সাপোর্ট করছে না। \n\n✅ সমাধান: দয়া করে Google Chrome বা Microsoft Edge ব্রাউজার ব্যবহার করুন।");
+            return;
+        }
+
+        if (isMicOn) {
+            recognition.stop();
+        } else {
+            try {
+                recognition.start();
+            } catch (e) {
+                console.warn("Mic start error:", e);
+            }
+        }
+    }
 </script>
 </body>
 </html>
