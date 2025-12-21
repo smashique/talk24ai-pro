@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Master English</title>
+    <title>Talk24AI | Practice English Fearlessly</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Fredoka:wght@600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -11,11 +11,11 @@
     <style>
         /* --- 🎨 PREMIUM HOSTINGER-STYLE VARIABLES --- */
         :root { 
-            --bg-gradient: linear-gradient(135deg, #0f3428 0%, #051a15 100%); /* Deep Emerald */
+            --bg-gradient: linear-gradient(135deg, #0f3428 0%, #051a15 100%);
             --card-glass: rgba(255, 255, 255, 0.03);
             --border-glass: rgba(255, 255, 255, 0.08);
-            --neon-accent: #00b894; /* Professional Mint Green */
-            --magic-gradient: linear-gradient(135deg, #FF9F43, #FF6B6B); /* Action Orange/Red but soft */
+            --neon-accent: #00b894; 
+            --magic-gradient: linear-gradient(135deg, #FF9F43, #FF6B6B); 
             --text-main: #ffffff;
             --text-muted: #b2bec3;
             --font-main: 'Inter', sans-serif;
@@ -64,7 +64,7 @@
             display: flex; flex-direction: column; gap: 18px;
         }
 
-        /* 🧠 NEUROMARKETING HOOK (Fixed: Opportunity, not Error) */
+        /* 🧠 NEUROMARKETING HOOK */
         .pain-point-msg { 
             background: linear-gradient(90deg, rgba(255, 159, 67, 0.1), rgba(255, 107, 107, 0.1));
             border-left: 3px solid #FF9F43;
@@ -73,7 +73,7 @@
         }
         .highlight { color: #fff; font-weight: 800; text-decoration: underline; text-decoration-color: #FF9F43; }
 
-        /* INPUTS - HOSTINGER STYLE */
+        /* INPUTS */
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .label-text { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
         
@@ -85,7 +85,6 @@
             font-family: var(--font-main); transition: 0.3s;
         }
         .input-duo:focus { border-color: var(--neon-accent); background: rgba(0,0,0,0.5); }
-        .input-duo::placeholder { color: rgba(255,255,255,0.2); }
 
         .chip-container { display: flex; gap: 6px; overflow-x: auto; padding-top: 8px; scrollbar-width: none; }
         .chip { 
@@ -100,19 +99,17 @@
         
         .btn-3d {
             border: none; border-radius: 12px; color: white; cursor: pointer;
-            font-weight: 700; transition: 0.2s; position: relative; overflow: hidden;
+            font-weight: 700; transition: 0.1s; position: relative; overflow: hidden;
             display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         
-        /* Secondary Buttons */
         .btn-sec {
             flex: 1; font-size: 12px; padding: 12px;
             background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass);
             color: var(--text-muted);
         }
-        .btn-sec:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+        .btn-sec:active { background: rgba(255,255,255,0.1); transform: scale(0.95); }
 
-        /* MAGIC BUTTON (The Dopamine Trigger) */
         .btn-magic {
             flex: 2; font-size: 15px; padding: 12px;
             background: var(--magic-gradient);
@@ -120,9 +117,8 @@
             box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
             animation: pulse 2s infinite;
         }
-        .btn-magic:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(255, 107, 107, 0.4); }
+        .btn-magic:active { transform: scale(0.96); }
 
-        /* INSTALL BUTTON */
         #install-btn { 
             background: #ffffff; color: #0f3428; 
             border: none; padding: 14px; border-radius: 12px; 
@@ -133,49 +129,24 @@
         #install-btn:active { transform: scale(0.98); background: #eee; }
 
         /* --- 💬 CHAT SCREEN --- */
-        #chat-screen { 
-            display: none; flex-direction: column; height: 100%; width: 100%; 
-            max-width: 600px; background: #051a15; 
-        }
-        
-        .top-nav { 
-            padding: 15px 20px; background: rgba(5, 26, 21, 0.85); 
-            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); 
-            display: flex; justify-content: space-between; align-items: center; z-index: 20;
-        }
-        
+        #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; max-width: 600px; background: #051a15; }
+        .top-nav { padding: 15px 20px; background: rgba(5, 26, 21, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; z-index: 20; }
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 140px; }
         
         .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s; }
         .bubble { padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.5; font-weight: 500; color: white; }
-        
         .ai { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-bottom-left-radius: 4px; }
         .user { background: var(--neon-accent); color: #00332a; font-weight: 700; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0, 184, 148, 0.2); }
         
-        .mentor-note { 
-            margin-top: 8px; background: rgba(255, 159, 67, 0.1); color: #ffca28; 
-            padding: 10px 12px; border-radius: 10px; font-size: 13px; 
-            border-left: 2px solid #ffca28; width: 100%; line-height: 1.5; 
-        }
-
+        .mentor-note { margin-top: 8px; background: rgba(255, 159, 67, 0.1); color: #ffca28; padding: 10px 12px; border-radius: 10px; font-size: 13px; border-left: 2px solid #ffca28; width: 100%; line-height: 1.5; }
         .replay-btn { margin-top: 5px; margin-left: 5px; font-size: 11px; color: var(--text-muted); cursor: pointer; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.05); display: inline-flex; align-items: center; gap: 4px; }
         .typing { font-size: 12px; color: var(--text-muted); margin-left: 20px; margin-bottom: 10px; display: none; }
 
-        /* INPUT AREA */
         .bottom-area { position: fixed; bottom: 0; width: 100%; max-width: 600px; padding: 0; background: transparent; display: flex; justify-content: center; pointer-events: none; }
-        .input-wrapper { 
-            width: 100%; background: rgba(5, 26, 21, 0.95); padding: 15px 20px 25px; 
-            border-top: 1px solid var(--border-glass); display: flex; flex-direction: column; 
-            align-items: center; gap: 10px; pointer-events: auto; backdrop-filter: blur(10px);
-        }
+        .input-wrapper { width: 100%; background: rgba(5, 26, 21, 0.95); padding: 15px 20px 25px; border-top: 1px solid var(--border-glass); display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: auto; backdrop-filter: blur(10px); }
         .input-row { width: 100%; display: flex; position: relative; }
         
-        #mic-btn { 
-            width: 60px; height: 60px; border-radius: 50%; background: var(--neon-accent); 
-            border: 4px solid #051a15; color: #00332a; font-size: 26px; cursor: pointer; 
-            box-shadow: 0 0 20px rgba(0, 184, 148, 0.4); position: absolute; top: -45px; 
-            left: 50%; transform: translateX(-50%); transition: 0.2s; display: flex; justify-content: center; align-items: center;
-        }
+        #mic-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--neon-accent); border: 4px solid #051a15; color: #00332a; font-size: 26px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 184, 148, 0.4); position: absolute; top: -45px; left: 50%; transform: translateX(-50%); transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         #mic-btn:active { transform: translateX(-50%) scale(0.9); }
         .listening { background: #ff4757 !important; animation: pulse 1s infinite; color: white !important; }
         .processing { background: #ffa502 !important; font-size: 0 !important; } .processing::after { content: "⏳"; font-size: 24px; }
@@ -183,17 +154,14 @@
         .stats-box { font-size: 11px; color: var(--text-muted); font-weight: 600; text-align: right; }
         .note-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 3px 8px; border-radius: 6px; font-size: 10px; cursor: pointer; margin-top: 2px; }
 
-        /* MODALS */
         #offer-modal, #tutorial-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); animation: fadeIn 0.3s; }
         .offer-card, .tutorial-card { background: #0f3428; width: 100%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 0 50px rgba(0, 184, 148, 0.15); animation: popUp 0.3s; }
-        
         .offer-badge { background: #FFD700; color: black; font-weight: 900; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-size: 11px; }
         .offer-title { font-size: 20px; font-weight: 800; color: white; margin-bottom: 8px; }
         .offer-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
         .offer-btn { width: 100%; background: var(--neon-accent); color: #00332a; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; }
         .close-offer { position: absolute; top: 15px; right: 20px; font-size: 24px; color: rgba(255,255,255,0.3); cursor: pointer; }
 
-        /* TUTORIAL */
         .tutorial-card h3 { color: var(--neon-accent); margin-top: 0; font-weight: 800; }
         .tutorial-list { list-style: none; padding: 0; margin: 20px 0; text-align: left; }
         .tutorial-list li { margin-bottom: 12px; font-size: 14px; color: var(--text-muted); display: flex; gap: 12px; align-items: center; }
@@ -213,7 +181,8 @@
 </head>
 <body>
 
-<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3" preload="auto"></audio>
+<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+<audio id="snd-magic" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
 <audio id="snd-offer" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
 
 <div id="offer-modal">
@@ -242,6 +211,10 @@
         <button class="tutorial-close-btn" onclick="closeTutorial()">Let's Start! 🚀</button>
     </div>
 </div>
+
+<a href="https://wa.me/8801303680618?text=Need%20Help" target="_blank" style="position:fixed; bottom:20px; right:20px; background:rgba(255,255,255,0.1); color:var(--text-muted); padding:8px 15px; border-radius:30px; display:flex; align-items:center; gap:6px; text-decoration:none; font-weight:700; font-size:12px; backdrop-filter:blur(5px); z-index:500; border:1px solid rgba(255,255,255,0.1);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z"/></svg> Help
+</a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
@@ -284,7 +257,7 @@
 <div id="chat-screen">
     <div class="top-nav">
         <div style="display:flex; align-items:center; gap:10px;">
-            <div id="p-icon" style="font-size: 24px;">🎭</div>
+            <div id="p-icon" style="font-size: 28px;">🎭</div>
             <div>
                 <div style="font-weight: 700; font-size: 14px;" id="p-name">AI Mate</div>
                 <div style="font-size: 10px; color: var(--neon-accent); font-weight: 600;">● ONLINE</div>
@@ -317,7 +290,20 @@
 <script>
     const SERVER_URL = "https://talk24ai.onrender.com"; 
     
-    function playSound(type) { try { const a = document.getElementById(type === 'pop' ? 'snd-pop' : 'snd-offer'); if(a) { a.currentTime=0; a.play().catch(e=>{}); } } catch(e){} }
+    // 🔊 AUDIO ENGINE FIXED (Pop & Magic)
+    function playSound(type) { 
+        try { 
+            let a;
+            if (type === 'pop') a = document.getElementById('snd-pop');
+            else if (type === 'magic') a = document.getElementById('snd-magic');
+            else if (type === 'offer') a = document.getElementById('snd-offer');
+            
+            if(a) { 
+                a.currentTime = 0; 
+                a.play().catch(e => console.log("Audio blocked until interaction")); 
+            } 
+        } catch(e){} 
+    }
     
     let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal' }; 
     let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
@@ -360,7 +346,8 @@
     function startCustomChat() { 
         const u=document.getElementById('user-role').value, a=document.getElementById('ai-role').value; 
         if(!u||!a) return alert("Select roles!"); 
-        playSound('pop'); confetti({particleCount:100,spread:70,origin:{y:0.6}}); 
+        playSound('magic'); // 🎵 MAGIC SOUND
+        confetti({particleCount:100,spread:70,origin:{y:0.6}}); 
         state.userRole=u; state.aiRole=a; state.scene=document.getElementById('scene-context').value||"Chat"; state.mood=document.getElementById('chat-mood').value||"Normal"; 
         setTimeout(()=>{ document.getElementById('p-name').innerText=a; document.getElementById('home-screen').style.display='none'; document.getElementById('chat-screen').style.display='flex'; triggerAIStart(); }, 800); 
     }
@@ -382,7 +369,7 @@
     function addAiMsg(text, instruction) {
         const c=document.createElement('div'); c.className='bubble-container';
         const b=document.createElement('div'); b.className='bubble ai'; b.innerText=text;
-        const r=document.createElement('div'); r.className='replay-btn'; r.innerHTML='🔊'; r.onclick=()=>speak(text);
+        const r=document.createElement('div'); r.className='replay-btn'; r.innerHTML='🔊 Replay'; r.onclick=()=>speak(text);
         c.appendChild(b); c.appendChild(r);
         if(instruction) { const n=document.createElement('div'); n.className='mentor-note'; n.innerHTML=`<strong>Mentor:</strong> ${instruction}`; c.appendChild(n); mentorNotes.push(instruction); }
         document.getElementById('messages').appendChild(c); playSound('pop'); 
