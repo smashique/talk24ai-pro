@@ -9,28 +9,21 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* CORE STYLES */
+        /* CSS Unchanged */
         :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
 
-        /* ANIMATED BG */
         .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 20s infinite linear; }
         .shape1 { width: 100px; height: 100px; background: var(--green); top: 10%; left: 10%; animation-duration: 25s; }
         .shape2 { width: 150px; height: 150px; background: var(--blue); bottom: 20%; right: 10%; animation-duration: 30s; }
         .shape3 { width: 80px; height: 80px; background: var(--yellow); top: 40%; left: 50%; animation-duration: 20s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
-        /* SCREENS */
         #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); }
         .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
         
-        /* USER ID BADGE */
-        .user-id-badge {
-            background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; 
-            font-size: 13px; font-weight: 800; margin-bottom: 20px; font-family: monospace;
-            border: 2px solid #ddd; display: flex; gap: 10px; align-items: center;
-        }
+        .user-id-badge { background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: 800; margin-bottom: 20px; font-family: monospace; border: 2px solid #ddd; display: flex; gap: 10px; align-items: center; }
         .live-dot { height: 8px; width: 8px; background: #25d366; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
 
         .hero-card { width: 100%; max-width: 800px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
@@ -94,7 +87,6 @@
         #install-btn { margin-top: 20px; background: white; color: var(--blue); border: 2px solid #e5e5e5; padding: 12px 25px; border-radius: 18px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; transition: 0.1s; }
         #install-btn:active { transform: translateY(4px); box-shadow: 0 0 0; }
         
-        /* STATS DISPLAY */
         .stats-box { margin-left: auto; font-size: 11px; color: #888; font-weight: 700; display: flex; gap: 10px; align-items: center; }
         .stat-item { background: #f5f5f5; padding: 4px 8px; border-radius: 10px; border: 1px solid #e5e5e5; }
         
@@ -108,7 +100,9 @@
 </head>
 <body>
 
-<audio id="snd-pop" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
+<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3" preload="auto"></audio>
+<audio id="snd-msg" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+
 <div class="bg-shape shape1"></div><div class="bg-shape shape2"></div><div class="bg-shape shape3"></div>
 
 <a href="https://wa.me/8801303680618?text=Hello%20Talk24AI..." target="_blank" style="position:fixed; bottom:100px; right:20px; background:#25d366; color:white; padding:8px 16px; border-radius:30px; display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:700; font-size:13px; box-shadow:0 4px 10px rgba(37,211,102,0.3); z-index:500; border:2px solid white;">
@@ -118,7 +112,6 @@
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
     <div id="user-badge" class="user-id-badge"><span class="live-dot"></span> ID: Generating...</div>
-
     <div style="background:#e5f6fd; color:#1cb0f6; padding:6px 15px; border-radius:20px; font-weight:900; font-size:12px; margin-bottom:15px; border:2px solid #bcebfd;">⚡ Unlimited Free ⚡</div>
     
     <div class="hero-card">
@@ -154,7 +147,6 @@
                 <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
-        
         <div class="stats-box">
              <div class="stat-item">Today: <span id="stat-avg">...</span></div>
              <button class="note-btn" onclick="downloadNotes()">📝 Save Notes</button>
@@ -167,47 +159,51 @@
 </div>
 
 <script>
-    // ✅ CONNECTED TO YOUR RENDER APP
+    // ✅ CRASH-PROOF SERVER URL
     const SERVER_URL = "https://talk24ai.onrender.com"; 
     
-    // --- STABLE AUDIO ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function resumeAudio() { if (audioCtx.state === 'suspended') audioCtx.resume(); }
-    window.addEventListener('click', resumeAudio, { once: true }); window.addEventListener('touchstart', resumeAudio, { once: true });
+    // ✅ SAFE SOUND SYSTEM (No WebAudio API to avoid crashes)
     function playSound(type) {
-        resumeAudio(); try { const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); osc.connect(gainNode); gainNode.connect(audioCtx.destination); const now = audioCtx.currentTime; if (type === 'pop') { osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1); gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } else if (type === 'success') { osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(600, now + 0.1); gainNode.gain.setValueAtTime(0.1, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.3); osc.start(now); osc.stop(now + 0.3); } else if (type === 'message') { osc.type = 'sine'; osc.frequency.setValueAtTime(500, now); gainNode.gain.setValueAtTime(0.05, now); gainNode.gain.linearRampToValueAtTime(0, now + 0.1); osc.start(now); osc.stop(now + 0.1); } } catch (e) { }
+        try {
+            const audioId = type === 'pop' ? 'snd-pop' : 'snd-msg';
+            const audio = document.getElementById(audioId);
+            if(audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Sound blocked by browser:", e));
+            }
+        } catch(e) { console.log("Audio Error Ignored"); }
     }
     
-    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 }; let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
+    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal', score: 0 }; 
+    let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
 
-    // --- ID GENERATOR & STATS ---
+    // --- ID & STATS ---
     let USER_ID = localStorage.getItem('talk24_uid');
     if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
     document.getElementById('user-badge').innerHTML = `<span class="live-dot"></span> ID: ${USER_ID}`;
 
-    // Fetch Stats
     fetch(`${SERVER_URL}/api/stats`, {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ userId: USER_ID })
     }).then(res => res.json()).then(data => { document.getElementById('stat-avg').innerText = data.total; }).catch(e => { document.getElementById('stat-avg').innerText = "0"; });
 
-    // --- NOTES DOWNLOADER ---
+    // --- NOTES ---
     function downloadNotes() {
         if(mentorNotes.length === 0) return alert("Start chatting first!");
         const header = "Talk24AI Mentor Notes\nID: " + USER_ID + "\nDate: " + new Date().toLocaleString() + "\n\n";
         const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([header + mentorNotes.join('\n')], {type: "text/plain"})); link.download = `Talk24_Notes.txt`; link.click();
     }
 
-    // --- PWA LOGIC ---
+    // --- PWA ---
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
     async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else alert("Check browser menu to install."); }
     function selectChip(id, value) { playSound('pop'); document.getElementById(id).value = value; }
-    function randomize() { playSound('pop'); const sets = [{ u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining', m: 'Fun 🤣' }, { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' }, { u: 'Student', a: 'Teacher', s: 'Late for class', m: 'Scared 😨' }, { u: 'Youth', a: 'Scholar', s: 'Value of Time & Purpose', m: 'Inspiring 🌟' }]; const r = sets[Math.floor(Math.random() * sets.length)]; document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a; document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m; }
+    function randomize() { playSound('pop'); const sets = [{ u: 'Buyer', a: 'Shopkeeper', s: 'Bargaining', m: 'Fun 🤣' }, { u: 'Candidate', a: 'Interviewer', s: 'Job Interview', m: 'Serious 🧐' }, { u: 'Tourist', a: 'Local', s: 'Lost in Dhaka', m: 'Confused 😕' }]; const r = sets[Math.floor(Math.random() * sets.length)]; document.getElementById('user-role').value = r.u; document.getElementById('ai-role').value = r.a; document.getElementById('scene-context').value = r.s; document.getElementById('chat-mood').value = r.m; }
     
     function startCustomChat() { 
         const u = document.getElementById('user-role').value; const a = document.getElementById('ai-role').value; 
         if(!u || !a) return alert("Select roles!"); 
-        playSound('success'); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); 
+        playSound('pop'); confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); 
         state.userRole = u; state.aiRole = a; state.scene = document.getElementById('scene-context').value || "Chat"; state.mood = document.getElementById('chat-mood').value || "Normal"; 
         setTimeout(() => { document.getElementById('p-name').innerText = a; document.getElementById('home-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; triggerAIStart(); }, 1000); 
     }
@@ -217,10 +213,22 @@
         callAPI({ message: "Action!", systemInstruction: `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}.`, mood: state.mood, userId: USER_ID }); 
     }
 
+    // ✅ CRASH PROOF sendToAI
     async function sendToAI(text) { 
         if(!text.trim()) return; 
-        playSound('message'); addUserMsg(text); chatHistory.push(`User: ${text}`); 
-        document.getElementById('userInput').value = ''; toggleTyping(true); 
+        
+        // 1. Play sound safely
+        playSound('pop'); 
+        
+        // 2. Add message to UI
+        addUserMsg(text); 
+        chatHistory.push(`User: ${text}`); 
+        
+        // 3. Clear input IMMEDIATELY (Prevents double send)
+        document.getElementById('userInput').value = ''; 
+        
+        // 4. Show typing & Call API
+        toggleTyping(true); 
         callAPI({ message: text, systemInstruction: `Identity: ${state.aiRole}. User: ${state.userRole}. Scene: ${state.scene}.`, mood: state.mood, userId: USER_ID }); 
     }
     
@@ -231,22 +239,46 @@
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false);
             chatHistory.push(`AI: ${data.reply}`); addAiMsg(data.reply, data.instruction);
-        } catch (e) { console.error(e); document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
+        } catch (e) { 
+            console.error(e);
+            document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); 
+            // Optional: Alert user if API fails
+        }
     }
     
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
+    
     function addAiMsg(text, instruction) {
         const container = document.createElement('div'); container.className = 'bubble-container';
         const bubble = document.createElement('div'); bubble.className = 'bubble ai'; bubble.innerText = text;
         const replayBtn = document.createElement('div'); replayBtn.className = 'replay-btn'; replayBtn.innerHTML = '🔊 Replay'; replayBtn.onclick = () => speak(text);
         container.appendChild(bubble); container.appendChild(replayBtn);
         if (instruction) { const note = document.createElement('div'); note.className = 'mentor-note'; note.innerHTML = `<strong>Talk24AI Mentor:</strong><br>${instruction}`; container.appendChild(note); mentorNotes.push(`[${new Date().toLocaleTimeString()}] ${instruction}\n---`); }
-        document.getElementById('messages').appendChild(container); playSound('message'); document.getElementById('voice-loader').style.display = 'flex'; speak(text, () => { document.getElementById('voice-loader').style.display = 'none'; }); scrollToBottom();
+        document.getElementById('messages').appendChild(container); playSound('pop'); 
+        
+        // SAFE VOICE LOADER
+        const loader = document.getElementById('voice-loader');
+        loader.style.display = 'flex';
+        speak(text, () => { loader.style.display = 'none'; });
+        // Fallback: If voice fails, hide loader after 3s
+        setTimeout(() => { loader.style.display = 'none'; }, 3000); 
+        
+        scrollToBottom();
     }
+    
     function addUserMsg(text) { const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text; div.style.alignSelf = 'flex-end'; document.getElementById('messages').appendChild(div); scrollToBottom(); }
     function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
-    function speak(text, onEndCallback) { window.speechSynthesis.cancel(); const utter = new SpeechSynthesisUtterance(text); utter.rate = 1.0; utter.onend = () => { if(onEndCallback) onEndCallback(); }; window.speechSynthesis.speak(utter); }
+    
+    function speak(text, onEndCallback) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.0; 
+        utter.onend = () => { if(onEndCallback) onEndCallback(); };
+        utter.onerror = () => { if(onEndCallback) onEndCallback(); };
+        window.speechSynthesis.speak(utter);
+    }
+    
     const recognition = (window.SpeechRecognition || window.webkitSpeechRecognition) ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
     if(recognition) { recognition.lang = 'en-US'; recognition.onstart = () => document.getElementById('mic-btn').classList.add('listening'); recognition.onend = () => document.getElementById('mic-btn').classList.remove('listening'); recognition.onresult = (e) => { const txt = e.results[0][0].transcript; document.getElementById('userInput').value = txt; sendToAI(txt); }; }
     function toggleMic() { playSound('pop'); if(!recognition) return alert("Mic error"); isMicOn ? recognition.stop() : recognition.start(); isMicOn = !isMicOn; }
