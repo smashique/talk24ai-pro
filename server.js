@@ -9,20 +9,35 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * 🧠 TALK24AI SERVER (UPDATED FOR SCENE CONTEXT)
- * - Unlimited Free Access (God Mode)
- * - Handles Dynamic System Prompts with Situational Context
+ * 🔒 SECURITY LAYER (GB APPROVED)
+ * Sanitize input to prevent Script Injection & XSS Attacks
  */
+const sanitizeInput = (text) => {
+    if (typeof text !== 'string') return '';
+    // Remove HTML tags and dangerous characters
+    return text.replace(/<[^>]*>?/gm, '').trim();
+};
 
+/**
+ * 🧠 TALK24AI SERVER (CREATIVE + SECURE)
+ * - Unlimited Free Access (God Mode)
+ * - Dynamic Context with Security Filters
+ */
 app.post('/api/chat', async (req, res) => {
-    // Frontend sends: { message, systemInstruction }
-    const { message, systemInstruction } = req.body;
+    let { message, systemInstruction } = req.body;
+
+    // 🛡️ SECURITY CHECK
+    message = sanitizeInput(message);
+    systemInstruction = sanitizeInput(systemInstruction);
+
+    if (!message) {
+        return res.status(400).json({ reply: "Please say something!" });
+    }
 
     try {
         const messages = [
             { 
                 role: "system", 
-                // The frontend now sends a highly detailed prompt including the 'Situation'
                 content: systemInstruction || "You are Talk24AI, a helpful English conversation partner." 
             },
             { 
@@ -48,7 +63,7 @@ async function callGroq(messages) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile", 
-            max_tokens: 350, // Increased token limit for better storytelling
+            max_tokens: 350, 
             temperature: 0.7 
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
@@ -61,4 +76,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Secure Server running on http://localhost:${PORT}`));
