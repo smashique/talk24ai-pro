@@ -41,14 +41,14 @@ app.post('/api/stats', (req, res) => {
     res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
 });
 
-// 💬 API: CHAT (SAFETY & MODERATION EDITION)
+// 💬 API: CHAT (ERROR PROOF VERSION)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     message = sanitizeInput(message);
     mood = sanitizeInput(mood) || 'Normal';
     userId = sanitizeInput(userId) || 'anonymous';
 
-    // Track Usage
+    // Track
     const db = loadDB();
     if (!db[userId]) db[userId] = { total_msgs: 0, total_time: 0, first_seen: new Date().toISOString() };
     db[userId].total_msgs += 1;
@@ -61,29 +61,21 @@ app.post('/api/chat', async (req, res) => {
     try {
         let finalPrompt = "";
 
-        // 🛡️ CONTENT MODERATION & SAFETY PROTOCOL
+        // 🛡️ SAFE GUARDRAILS (No explicit bad words to avoid API Ban)
         const guardRails = `
-        [SYSTEM PROTOCOL: CONTENT SAFETY & MODERATION]:
-        You are a Dual-Agent AI acting as a language learning partner. You must detect if the User's input contains:
-        - Explicit sexual content, flirting, or romantic advances.
-        - Harmful, illegal, or offensive topics.
+        [SYSTEM PROTOCOL]:
+        You are a Dual-Agent AI.
         
-        [IF USER INPUT IS APPROPRIATE]:
-        - Agent A (Roleplay): Reply naturally in English based on the role. Be friendly and engaging.
-        - Agent B (Mentor): Provide feedback on the user's English in Bangla.
+        [DETECTION RULE]:
+        Check if the user input is seeking "Romance", "Flirting", "Dating", or "Unprofessional/Illegal" topics.
+        
+        [IF INPUT IS NORMAL]:
+        - Agent A (Roleplay): Reply naturally in English.
+        - Agent B (Mentor): Teach English in Bangla.
 
-        [IF USER INPUT IS INAPPROPRIATE / SEXUAL / NSFW]:
-        🚨 ACTION REQUIRED: DIVERT AND REFOCUS 🚨
-        
-        - **Agent A (Roleplay Action):** "THE PIVOT".
-          Do NOT engage with the explicit content. Do NOT roleplay sexual scenarios.
-          Instead, immediately change the subject to a safe, neutral, or professional topic related to general conversation or the previous context (if safe).
-          *Example:* If user says something inappropriate, Agent A might say: "I think we are getting off track. Let's talk about your travel plans instead. Where do you want to go?" or "Oh, I just remembered, have you prepared for the interview?"
-        
-        - **Agent B (Mentor Action):** "THE PROFESSIONAL REMINDER".
-          Do NOT correct the grammar of the inappropriate text.
-          Instead, output a standard message in Bangla reminding the user of the learning goal:
-          "অনুগ্রহ করে মনে রাখবেন, এটি একটি ইংরেজি শেখার প্ল্যাটফর্ম। আসুন আমরা প্রাসঙ্গিক এবং পেশাদার আলোচনায় ফিরে যাই।" (Please remember this is an English learning platform. Let's return to relevant and professional discussion.)
+        [IF INPUT IS FLIRTY/UNPROFESSIONAL]:
+        - **Agent A (Roleplay):** IGNORE the flirting. Immediately change the topic to something boring or intellectual (e.g., Weather, Study, Work). Act oblivious.
+        - **Agent B (Mentor):** DO NOT correct grammar. Say in Bangla: "আসুন আমরা পড়াশোনা বা ক্যারিয়ার নিয়ে কথা বলি। ফোকাস ঠিক রাখুন।"
         `;
 
         if (isStart) {
@@ -91,46 +83,60 @@ app.post('/api/chat', async (req, res) => {
             ${systemInstruction}
             ${guardRails}
             [START]:
-            - Roleplay: Warm, professional greeting in English based on the scene.
-            - Mentor: "আসসালামু আলাইকুম! আমি রেডি। শুরু করুন।"
-            [JSON OUTPUT ONLY]: {"conversation":"...", "learning_note":"..."}`;
+            - Roleplay: Warm greeting in English.
+            - Mentor: "আসসালামু আলাইকুম! শুরু করা যাক।"
+            [REQUIRED JSON FORMAT]: {"conversation":"...", "learning_note":"..."}`;
         } else {
             finalPrompt = `
             ${systemInstruction}
             ${guardRails}
             [INPUT]: User said: "${message}"
-            [TASK]: Evaluate input for safety. If safe, reply and teach. If unsafe, pivot and remind.
-            [JSON OUTPUT ONLY]: {"conversation":"...", "learning_note":"..."}`;
+            [REQUIRED JSON FORMAT]: {"conversation":"...", "learning_note":"..."}`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
+        
+        // Call AI
         const rawResponse = await callGroq(messages, dynamicTemp);
         
+        // 🛡️ ROBUST JSON PARSING (Prevents 500 Error)
         let parsedData;
         try { 
-            // Attempt to parse JSON response
-            const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                parsedData = JSON.parse(jsonMatch[0]);
-            } else {
-                throw new Error("No JSON found");
-            }
+            // Try standard parse
+            parsedData = JSON.parse(rawResponse);
         } 
-        catch (e) { 
-            console.error("Parsing Error:", e.message, rawResponse);
-            parsedData = { 
-                conversation: "I'm sorry, I didn't catch that. Could we try again?", 
-                learning_note: "যান্ত্রিক ত্রুটির কারণে নোট লোড হয়নি। আবার চেষ্টা করুন।" 
-            }; 
+        catch (e1) { 
+            try {
+                // Try to extract JSON if mixed with text
+                const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    parsedData = JSON.parse(jsonMatch[0]);
+                } else {
+                    throw new Error("No JSON");
+                }
+            } catch (e2) {
+                // Fallback if AI fails completely
+                console.error("AI JSON Fail:", rawResponse);
+                parsedData = { 
+                    conversation: rawResponse.replace(/"/g, ''), // Use raw text as reply
+                    learning_note: "যান্ত্রিক ত্রুটির কারণে নোট লোড হয়নি, তবে আপনি চালিয়ে যান।" 
+                }; 
+            }
         }
 
-        if (isStart && (!parsedData.conversation || parsedData.conversation.length < 2)) parsedData.conversation = "Hello! I am ready to practice English.";
+        if (isStart && (!parsedData.conversation || parsedData.conversation.length < 2)) {
+            parsedData.conversation = "Hello! I am ready to start.";
+        }
 
         res.json({ reply: cleanUnicode(parsedData.conversation), instruction: cleanUnicode(parsedData.learning_note) });
 
     } catch (err) {
-        console.error("API Error:", err.message);
-        res.status(500).json({ reply: "Connection error.", instruction: "Try again." });
+        console.error("CRITICAL ERROR:", err.message);
+        // Send a friendly error instead of crashing
+        res.json({ 
+            reply: "I'm having a little trouble connecting. Please say that again?", 
+            instruction: "নেটওয়ার্ক সমস্যা। দয়া করে আবার চেষ্টা করুন।" 
+        });
     }
 });
 
@@ -138,14 +144,16 @@ app.post('/api/chat', async (req, res) => {
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => (b.total_time || 0) - (a.total_time || 0));
-    let html = `<html><body><h1>Stats</h1><table>`;
-    users.forEach(u => html += `<tr><td>${u.id}</td><td>${Math.floor((u.total_time||0)/60)}m</td></tr>`);
+    let html = `<html><body><h1>User Stats</h1><table><tr><th>ID</th><th>Time (Mins)</th></tr>`;
+    users.forEach(u => html += `<tr><td>${u.id}</td><td>${Math.floor((u.total_time||0)/60)}</td></tr>`);
     res.send(html + `</table></body></html>`);
 });
 
 async function callGroq(messages, temp) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
+        if (!apiKey) throw new Error("API Key Missing");
+
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile",
@@ -157,7 +165,8 @@ async function callGroq(messages, temp) {
         });
         return response.data.choices[0].message.content;
     } catch (err) {
-        throw new Error("AI Failed: " + err.message);
+        console.error("Groq API Error:", err.response ? err.response.data : err.message);
+        throw new Error("AI Service Failed");
     }
 }
 
