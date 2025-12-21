@@ -10,27 +10,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 📂 SIMPLE DATABASE FILE
+// 📂 DATABASE SETUP
 const DB_FILE = path.join(__dirname, 'user_db.json');
-
-// 🛠️ DATABASE ENGINE (Load/Save)
-const loadDB = () => {
-    if (!fs.existsSync(DB_FILE)) return {};
-    try {
-        return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-    } catch (e) { return {}; }
-};
-
-const saveDB = (data) => {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-};
+const loadDB = () => { try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch { return {}; } };
+const saveDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
 // 🔧 UTILS
 const cleanUnicode = (str) => {
     if (!str) return "";
-    return str.replace(/\\u[\dA-F]{4}/gi, (match) => {
-        return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-    });
+    return str.replace(/\\u[\dA-F]{4}/gi, (match) => String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16)));
 };
 
 const sanitizeInput = (text) => {
@@ -38,27 +26,18 @@ const sanitizeInput = (text) => {
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
-// 📊 API: GET USER STATS (For App Display)
+// 📊 STATS API
 app.post('/api/stats', (req, res) => {
     const { userId } = req.body;
     const db = loadDB();
-    
     if (!db[userId]) {
-        // New User
-        db[userId] = { 
-            total_msgs: 0, 
-            first_seen: new Date().toISOString(), 
-            last_active: new Date().toISOString(),
-            active_days: 1 
-        };
+        db[userId] = { total_msgs: 0, first_seen: new Date().toISOString(), last_active: new Date().toISOString() };
         saveDB(db);
     }
-
-    const userData = db[userId];
-    res.json({ total: userData.total_msgs });
+    res.json({ total: db[userId].total_msgs });
 });
 
-// 💬 API: CHAT (With Tracking & Strict Logic)
+// 💬 CHAT API (UPDATED MENTOR LOGIC)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
 
@@ -67,17 +46,14 @@ app.post('/api/chat', async (req, res) => {
     mood = sanitizeInput(mood) || 'Normal';
     userId = sanitizeInput(userId) || 'anonymous';
 
-    // 📈 TRACKING LOGIC
+    // Tracking
     const db = loadDB();
-    if (!db[userId]) {
-        db[userId] = { total_msgs: 0, first_seen: new Date().toISOString(), active_days: 1 };
-    }
+    if (!db[userId]) db[userId] = { total_msgs: 0, first_seen: new Date().toISOString() };
     db[userId].total_msgs += 1;
     db[userId].last_active = new Date().toISOString();
     saveDB(db);
 
-    // 🌡️ MOOD LOGIC
-    let dynamicTemp = 0.5; 
+    let dynamicTemp = 0.5;
     if (mood.toLowerCase().includes('fun')) dynamicTemp = 0.8;
 
     const isStart = message === "Action!";
@@ -85,31 +61,49 @@ app.post('/api/chat', async (req, res) => {
     try {
         let finalPrompt = "";
 
+        // 🧠 SUPER PROMPT: STRICT LANGUAGE & TEACHING MODE
+        const commonRules = `
+        [AGENT A - ROLEPLAY CHARACTER]:
+        - You are the actor (Teacher/Shopkeeper/etc).
+        - Language: ENGLISH ONLY. Never use Bangla here.
+        - Act naturally. If user talks about Atheism/Music/Fahisha, politely change topic in English.
+
+        [AGENT B - MENTOR (Saifur Sir + Hidden Scholar)]:
+        - Language: **MUST BE IN BANGLA SCRIPT (বাংলা)**. Use English words only for examples.
+        - **MANDATORY STRUCTURE**:
+          1. **Review:** Briefly analyze user's last sentence in Bangla (e.g., "আপনার বাক্যটি সঠিক, তবে...").
+          2. **Teach:** Teach a grammar rule or better vocabulary related to the context.
+          3. **Next Step:** Suggest what to say next in Bangla (e.g., "এখন আপনি জিজ্ঞেস করতে পারেন...").
+        - **LATENT PERSONA:** If user is lazy/rude/wasting time, scold gently in Bangla using "Time is Life" logic. Otherwise, be a helpful teacher.
+        `;
+
         if (isStart) {
-            // 🚀 FORCE START PROMPT
             finalPrompt = `
             ${systemInstruction}
-            [CRITICAL TASK]: You MUST speak first.
-            [AGENT A - ROLEPLAY]: Generate natural English opening line.
-            [AGENT B - MENTOR]: Output EXACTLY: "আসসালামু আলাইকুম! সময় হলো জীবন। তাই এক মুহূর্তও নষ্ট না করে চলো প্র্যাকটিস শুরু করি। ভয় পাবে না, আমি আছি।"
+            ${commonRules}
+            
+            [CRITICAL]: User just started.
+            - Roleplay Output: Generate a warm English greeting.
+            - Mentor Output: "আসসালামু আলাইকুম! সময় হলো জীবন। তাই এক মুহূর্তও নষ্ট না করে চলো প্র্যাকটিস শুরু করি। আমি আছি আপনার সাথে।"
+            
             [OUTPUT JSON]: { "conversation": "...", "learning_note": "..." }`;
         } else {
-            // 🔄 CONTINUOUS CHAT PROMPT
             finalPrompt = `
             ${systemInstruction}
-            [AGENT A - ROLEPLAY]:
-            - Act as the character. English ONLY.
-            - If sensitive topic (Atheism/Music/Fahisha) -> Polite dodge in English.
-            [AGENT B - MENTOR (Saifur Sir + Scholar)]:
-            - Bangla ONLY.
-            - Analyze user's English. Correct errors.
-            - If lazy -> Scold gently ("Time is Life").
+            ${commonRules}
+            
+            [INPUT]: User said: "${message}"
+            
+            [TASK]:
+            1. Roleplay Agent: Reply to the user in English.
+            2. Mentor Agent: Analyze "${message}". Did they make a mistake? Can it be improved? Write feedback in BANGLA.
+            
             [OUTPUT JSON]: { "conversation": "...", "learning_note": "..." }`;
         }
 
         const messages = [
             { role: "system", content: finalPrompt },
-            { role: "user", content: isStart ? "Start now." : message }
+            { role: "user", content: isStart ? "Start conversation" : message }
         ];
 
         const rawResponse = await callGroq(messages, dynamicTemp);
@@ -120,13 +114,14 @@ app.post('/api/chat', async (req, res) => {
             parsedData = JSON.parse(cleanJson);
         } catch (e) {
             parsedData = { 
-                conversation: "Hello! I am ready to start.", 
-                learning_note: "যান্ত্রিক ত্রুটির কারণে নোট লোড হয়নি।" 
+                conversation: "I am ready. Shall we continue?", 
+                learning_note: "যান্ত্রিক ত্রুটির কারণে নোট লোড হয়নি, তবে আপনি চালিয়ে যান!" 
             };
         }
 
+        // Fallback for empty start
         if (isStart && (!parsedData.conversation || parsedData.conversation.length < 2)) {
-            parsedData.conversation = "Hello! I am ready. Shall we start?";
+            parsedData.conversation = "Hello! I'm here. How can I help you today?";
         }
 
         res.json({ 
@@ -140,52 +135,13 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// 👑 ADMIN DASHBOARD ROUTE (Secret Link)
+// 👑 ADMIN ROUTE
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
-    // Sort by Messages (High to Low)
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => b.total_msgs - a.total_msgs);
-
-    let html = `
-    <html>
-    <head>
-        <title>Talk24AI Admin</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
-            h1 { color: #333; }
-            table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-            th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-            th { background: #58cc02; color: white; }
-            tr:nth-child(even) { background: #f9f9f9; }
-            .badge { background: #1cb0f6; color: white; padding: 4px 8px; border-radius: 10px; font-weight:bold; }
-        </style>
-    </head>
-    <body>
-        <h1>👑 Admin Dashboard</h1>
-        <p>Total Users: <strong>${users.length}</strong></p>
-        <table>
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Msgs</th>
-                    <th>Last Active</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    users.forEach(u => {
-        html += `
-            <tr>
-                <td><b>${u.id}</b></td>
-                <td><span class="badge">${u.total_msgs}</span></td>
-                <td>${new Date(u.last_active).toLocaleString()}</td>
-            </tr>
-        `;
-    });
-
-    html += `</tbody></table></body></html>`;
+    let html = `<html><head><title>Admin</title><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px}</style></head><body><h1>User Stats</h1><table><tr><th>ID</th><th>Msgs</th><th>Last Active</th></tr>`;
+    users.forEach(u => html += `<tr><td>${u.id}</td><td>${u.total_msgs}</td><td>${new Date(u.last_active).toLocaleString()}</td></tr>`);
+    html += `</table></body></html>`;
     res.send(html);
 });
 
