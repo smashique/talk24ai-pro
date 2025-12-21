@@ -26,16 +26,9 @@
         
         .hero-card { width: 100%; max-width: 350px; background: #fff; border: 2px solid #e5e5e5; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; }
         
-        /* NEUROMARKETING TAGLINE STYLE */
-        .pain-point-msg {
-            color: #4b4b4b; margin-bottom: 25px; font-weight: 700; font-size: 16px; line-height: 1.6;
-        }
-        .pain-point-highlight {
-            color: #d32f2f; font-weight: 900; /* Red to highlight the 'Problem' */
-        }
-        .solution-highlight {
-            color: var(--green); font-weight: 900; /* Green to highlight 'Solution' */
-        }
+        .pain-point-msg { color: #4b4b4b; margin-bottom: 25px; font-weight: 700; font-size: 16px; line-height: 1.6; }
+        .pain-point-highlight { color: #d32f2f; font-weight: 900; }
+        .solution-highlight { color: var(--green); font-weight: 900; }
 
         .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 15px; font-size: 16px; font-weight: 700; color: #555; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
@@ -43,9 +36,7 @@
         .btn-main { width: 100%; padding: 16px; margin-top: 15px; background: var(--green); color: white; font-size: 18px; font-weight: 800; border: none; border-radius: 16px; box-shadow: 0 4px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; }
         .btn-main:active { transform: translateY(4px); box-shadow: none; }
 
-        #install-btn {
-            margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5;
-        }
+        #install-btn { margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5; }
         #install-btn:active { transform: translateY(2px); box-shadow: none; }
 
         /* ROLE GRID */
@@ -230,7 +221,8 @@
 
     async function triggerAIStart() {
         toggleTyping(true);
-        const sysPrompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: Start immediately. English Only.`;
+        // FIX: Start conversation immediately without Salam repetition
+        const sysPrompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: Start conversation immediately with a question. English Only.`;
         callAPI({ message: "Hi! I am ready.", systemInstruction: sysPrompt });
     }
 
@@ -244,17 +236,19 @@
         addUserMsg(text);
         chatHistory.push(`User: ${text}`);
         if(chatHistory.length > 5) chatHistory.shift();
+        
         document.getElementById('userInput').value = '';
         toggleTyping(true);
+        
+        // FIX: The Smart Prompt for Engagement & No Repetitive Salam
         const expertPrompt = `
             ACT AS: ${state.currentRole.name}.
             CONTEXT: ${state.currentRole.prompt}
-            [RULES]
-            1. SHORT & ENGAGING: Keep replies under 2-3 sentences.
-            2. MEMORY: History: ${chatHistory.join(' | ')}.
-            3. BANGLADESHI MATE: Be friendly. No Islamic conflicts.
-            4. CORRECTION: Only major errors in brackets (Correct: ...).
-            5. QUESTION: Always end with a question.
+            [STRICT RULES]
+            1. NO REPETITIVE SALAM: Do NOT say "Assalamu Alaikum" at the start of every message.
+            2. THE HOOK: You MUST end every single response with a relevant, short QUESTION based on what the user just said.
+            3. CONVERSATIONAL: Chat like a friend first. Correct grammar only if needed in brackets at the end.
+            4. MEMORY: History: ${chatHistory.join(' | ')}.
         `;
         callAPI({ message: text, systemInstruction: expertPrompt });
     }
@@ -269,7 +263,7 @@
             const data = await res.json();
             toggleTyping(false);
             let reply = data.reply.trim();
-            if(reply.length < 3) reply = "That's interesting! Tell me more.";
+            if(reply.length < 3) reply = "That's interesting! Tell me more?";
             chatHistory.push(`AI: ${reply}`);
             addAiMsg(reply);
         } catch (e) { toggleTyping(false); }
