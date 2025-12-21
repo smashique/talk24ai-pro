@@ -9,59 +9,23 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * ⛔ SMART GUARDRAILS (REGEX UPDATED)
- * Using "Whole Word" matching to avoid blocking innocent words.
- * Example: Blocks "sex" but Allows "section", "assessment", "sussex".
+ * 🔓 UNRESTRICTED SERVER
+ * - No Banned Words List
+ * - No Content Filtering
+ * - Direct Pass-through to AI
  */
-const BANNED_TERMS = [
-    // Explicit Relationships
-    'girlfriend', 'boyfriend', 'lover', 'dating', 'bae', 'crush', 'making love', 'spouse', 'wife', 'husband',
-    // Sensitive/Adult Topics
-    'sex', 'intimacy', 'nude', 'porn', 'erotic', 'xxx', 'sexual'
-];
-
-/**
- * 🔒 SECURITY FILTER FUNCTION
- * Uses Regex \b (Word Boundary) to ensure we only block exact bad words.
- */
-const isContentSafe = (text) => {
-    if (!text) return true;
-    const lowerText = text.toLowerCase();
-    
-    // Check for exact word matches using Regex
-    const violation = BANNED_TERMS.find(term => {
-        // \b ensures word boundary. Example: Matches "sex" but not "section"
-        const regex = new RegExp(`\\b${term}\\b`, 'i');
-        return regex.test(lowerText);
-    });
-    
-    if (violation) {
-        console.log(`⚠️ Blocked Content: Found restricted word "${violation}"`);
-    }
-    return !violation; 
-};
 
 const sanitizeInput = (text) => {
     if (typeof text !== 'string') return '';
+    // Basic cleanup to prevent code injection, but NO content filtering
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
-/**
- * 🧠 MASTER SERVER
- */
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction } = req.body;
 
     message = sanitizeInput(message);
     systemInstruction = sanitizeInput(systemInstruction);
-
-    // 🚨 SAFETY CHECK
-    // If user's message OR the setup context contains explicit banned words -> BLOCK
-    if (!isContentSafe(message) || !isContentSafe(systemInstruction)) {
-        return res.json({ 
-            reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic or role. (Restricted Content)" 
-        });
-    }
 
     if (!message) {
         return res.status(400).json({ reply: "Please say something!" });
@@ -71,9 +35,9 @@ app.post('/api/chat', async (req, res) => {
         const messages = [
             { 
                 role: "system", 
-                // GB APPROVED: SIMPLE ENGLISH INSTRUCTION
+                // Core instruction only - No restrictions added here
                 content: (systemInstruction || "You are Talk24AI.") + 
-                "\n[IMPORTANT RULE]: Use SIMPLE, BEGINNER-FRIENDLY English (Level A2-B1). Keep sentences short. Always end with a question."
+                "\n[INSTRUCTION]: Respond naturally to the user's scenario."
             },
             { 
                 role: "user", 
@@ -86,7 +50,7 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("🔥 Server Error:", err.message);
-        res.status(500).json({ reply: "Connection glitch! Please try again." });
+        res.status(500).json({ reply: "Connection error. Please try again." });
     }
 });
 
@@ -98,7 +62,7 @@ async function callGroq(messages) {
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "llama-3.3-70b-versatile", 
-            max_tokens: 300, 
+            max_tokens: 350, 
             temperature: 0.7 
         }, {
             headers: { "Authorization": `Bearer ${apiKey}` }
@@ -111,4 +75,4 @@ async function callGroq(messages) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Talk24Ai Stable Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Talk24Ai Unrestricted Server running on http://localhost:${PORT}`));
