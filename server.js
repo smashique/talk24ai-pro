@@ -9,26 +9,50 @@ app.use(express.json());
 app.use(express.static('public'));
 
 /**
- * 🔒 SECURITY LAYER (GB APPROVED)
- * Sanitize input to prevent Script Injection & XSS Attacks
+ * ⛔ IRON-CLAD GUARDRAILS (GB APPROVED)
+ * Banned Keywords List for Roles & Topics
  */
+const BANNED_TERMS = [
+    // Relationships
+    'girlfriend', 'boyfriend', 'lover', 'wife', 'husband', 'spouse', 'dating', 
+    'bf', 'gf', 'bae', 'crush', 'partner', 
+    // Sensitive/Adult Topics
+    'sex', 'intimacy', 'kiss', 'romance', 'nude', 'adult', 'porn', 'erotic'
+];
+
+/**
+ * 🔒 SECURITY FILTER FUNCTION
+ * Returns TRUE if content is safe, FALSE if violation found.
+ */
+const isContentSafe = (text) => {
+    if (!text) return true;
+    const lowerText = text.toLowerCase();
+    // Check if any banned term exists in the text
+    const violation = BANNED_TERMS.find(term => lowerText.includes(term));
+    return !violation; 
+};
+
 const sanitizeInput = (text) => {
     if (typeof text !== 'string') return '';
-    // Remove HTML tags and dangerous characters
     return text.replace(/<[^>]*>?/gm, '').trim();
 };
 
 /**
- * 🧠 TALK24AI SERVER (CREATIVE + SECURE)
- * - Unlimited Free Access (God Mode)
- * - Dynamic Context with Security Filters
+ * 🧠 MASTER SERVER (SECURE & COMPLIANT)
  */
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction } = req.body;
 
-    // 🛡️ SECURITY CHECK
     message = sanitizeInput(message);
     systemInstruction = sanitizeInput(systemInstruction);
+
+    // 🚨 1. HARAM & SAFETY CHECK (Pre-LLM Filter)
+    // If user tries to set "Girlfriend" role or talks about "Sex", BLOCK IT immediately.
+    if (!isContentSafe(systemInstruction) || !isContentSafe(message)) {
+        return res.json({ 
+            reply: "I cannot continue this conversation due to ethical guidelines. Please change the topic or role. (Restricted: Sensitive Content)" 
+        });
+    }
 
     if (!message) {
         return res.status(400).json({ reply: "Please say something!" });
@@ -51,11 +75,11 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("🔥 Server Error:", err.message);
-        res.status(500).json({ reply: "My brain is updating! Please try again in a moment." });
+        res.status(500).json({ reply: "System update in progress. Please try again." });
     }
 });
 
-// --- AI ENGINE (High Speed Llama 3.3) ---
+// --- AI ENGINE ---
 async function callGroq(messages) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
