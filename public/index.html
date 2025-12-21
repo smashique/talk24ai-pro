@@ -22,14 +22,31 @@
 
         /* HERO STYLES */
         .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; }
-        .trial-badge { background: #e5f6fd; color: #1cb0f6; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 30px; border: 2px solid #1cb0f6; }
+        .trial-badge { background: #e5f6fd; color: #1cb0f6; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 20px; border: 2px solid #1cb0f6; }
         
         .hero-card { width: 100%; max-width: 350px; background: #fff; border: 2px solid #e5e5e5; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 0 #e5e5e5; }
+        
+        /* NEUROMARKETING TAGLINE STYLE */
+        .pain-point-msg {
+            color: #4b4b4b; margin-bottom: 25px; font-weight: 700; font-size: 16px; line-height: 1.6;
+        }
+        .pain-point-highlight {
+            color: #d32f2f; font-weight: 900; /* Red to highlight the 'Problem' */
+        }
+        .solution-highlight {
+            color: var(--green); font-weight: 900; /* Green to highlight 'Solution' */
+        }
+
         .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 15px; font-size: 16px; font-weight: 700; color: #555; background: #fdfdfd; outline: none; transition: 0.2s; }
         .input-duo:focus { border-color: var(--blue); background: #fff; }
         
         .btn-main { width: 100%; padding: 16px; margin-top: 15px; background: var(--green); color: white; font-size: 18px; font-weight: 800; border: none; border-radius: 16px; box-shadow: 0 4px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; }
         .btn-main:active { transform: translateY(4px); box-shadow: none; }
+
+        #install-btn {
+            margin-top: 15px; background: white; color: var(--blue); border: 2px solid var(--blue); padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 14px; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 0 #e5e5e5;
+        }
+        #install-btn:active { transform: translateY(2px); box-shadow: none; }
 
         /* ROLE GRID */
         .sc-grid { width: 100%; max-width: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 80px; }
@@ -40,13 +57,13 @@
         #chat-screen { display: none; flex-direction: column; height: 100%; }
         .top-nav { padding: 10px 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
         
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 160px; /* Space for big mic */ }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 160px; }
         .bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; }
         .ai { background: #f2f2f2; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #e5e5e5; }
         .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 0 var(--blue-shade); }
         .typing { font-size: 12px; color: #aaa; margin-left: 20px; font-weight: 700; display: none; }
 
-        /* --- BOTTOM CONTROLS (Fixed) --- */
+        /* --- BOTTOM CONTROLS --- */
         .bottom-area {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: white; padding: 15px 20px 25px 20px;
@@ -54,10 +71,8 @@
             display: flex; flex-direction: column; align-items: center; gap: 15px;
             z-index: 200;
         }
-        
         .input-row { width: 100%; display: flex; gap: 10px; max-width: 600px; }
         
-        /* BIG CENTER MIC BUTTON */
         #mic-btn {
             width: 70px; height: 70px; border-radius: 50%;
             background: var(--green); border: 4px solid #fff;
@@ -70,7 +85,6 @@
         #mic-btn:active { transform: translateX(-50%) scale(0.95); }
         .listening { background: #ff4b4b !important; animation: pulse 1.5s infinite; box-shadow: 0 0 0 10px rgba(255, 75, 75, 0.2) !important; }
 
-        /* WhatsApp Button with Text */
         .wa-btn {
             position: fixed; bottom: 100px; right: 20px;
             background: #25d366; color: white;
@@ -92,9 +106,9 @@
 <audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
 <div id="toast-warning">🚫 Please speak in English!</div>
 
-<a href="https://wa.me/8801303680618?text=I%20have%20feedback%20for%20Talk24AI..." target="_blank" class="wa-btn">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg>
-    Feedback / Help
+<a href="https://wa.me/8801303680618?text=Hello%20Talk24AI,%20I%20have%20feedback..." target="_blank" class="wa-btn">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.48 2 2 6.48 2 12.04C2 13.81 2.46 15.46 3.28 16.92L2 21.6L6.79 20.34C8.2 21.1 9.81 21.5 11.5 21.5H12.04C17.6 21.5 22.08 17.02 22.08 11.46C22.08 5.9 17.6 2 12.04 2ZM12.04 20C10.56 20 9.12 19.61 7.85 18.82L7.54 18.64L4.47 19.46L5.3 16.48L5.1 16.16C4.24 14.81 3.79 13.25 3.79 11.63C3.79 7.08 7.49 3.38 12.04 3.38C16.59 3.38 20.29 7.08 20.29 11.63C20.29 16.18 16.59 19.88 12.04 20Z"/></svg>
+    Help / Feedback
 </a>
 
 <div id="home-screen">
@@ -102,7 +116,11 @@
     <div class="trial-badge">✨ Free Trial Active ✨</div>
     
     <div class="hero-card">
-        <h3 style="margin: 0 0 20px 0; color:#4b4b4b;">Find Your Mate</h3>
+        <div class="pain-point-msg">
+            Spoken English প্র্যাকটিস করার <span class="pain-point-highlight">পার্টনার পাচ্ছেন না?</span> <br>
+            লজ্জা ভেঙে কথা বলুন <span class="solution-highlight">Talk24AI</span>-এর সাথে!
+        </div>
+
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
             <input type="number" id="age" value="18" class="input-duo" style="text-align:center; font-weight:900;">
             <select id="gender" class="input-duo">
@@ -111,6 +129,10 @@
             </select>
         </div>
         <button class="btn-main" onclick="showScenarios()">START PRACTICE</button>
+
+        <button id="install-btn" onclick="installApp()">
+            📲 Download App
+        </button>
     </div>
 </div>
 
@@ -139,7 +161,6 @@
 
     <div class="bottom-area">
         <button id="mic-btn" onclick="toggleMic()">🎤</button>
-        
         <div class="input-row">
             <input type="text" id="userInput" class="input-duo" placeholder="Type a message..." onkeypress="handleEnter(event)">
         </div>
@@ -147,7 +168,6 @@
 </div>
 
 <script>
-    // --- DATA ---
     const scenarios = {
         junior: [
             { name: "Islamic Storyteller", icon: "🕌", prompt: "Tell simple inspiring stories of Islamic Heroes. Keep sentences short. End with a question." },
@@ -155,7 +175,7 @@
             { name: "Best Friend", icon: "🏸", prompt: "Talk about cricket or toys. Be very friendly." }
         ],
         senior: [
-            { name: "Job Interviewer", icon: "💼", prompt: "You are a Hiring Manager. Start by asking: 'Tell me about yourself'. Do not introduce yourself." },
+            { name: "Job Interviewer", icon: "💼", prompt: "Hiring Manager. Start asking: 'Tell me about yourself'. No intro." },
             { name: "IELTS Examiner", icon: "🇬🇧", prompt: "Formal IELTS Speaking Part 1. Focus on fluency." },
             { name: "Foreign Friend", icon: "🌏", prompt: "Traveler in Dhaka. Ask about local culture/food." }
         ]
@@ -164,6 +184,24 @@
     let state = { age: 18, gender: 'Male', currentRole: null, score: 0 };
     let isMicOn = false;
     let chatHistory = [];
+    let deferredPrompt; 
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('install-btn').style.display = 'flex'; 
+    });
+
+    async function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('install-btn').style.display = 'none';
+            }
+            deferredPrompt = null;
+        }
+    }
 
     function showScenarios() {
         state.age = parseInt(document.getElementById('age').value);
@@ -192,27 +230,22 @@
 
     async function triggerAIStart() {
         toggleTyping(true);
-        // FIX: Sending a natural sentence instead of command code to prevent "you should say..." error
         const sysPrompt = `IDENTITY: ${state.currentRole.name}. CONTEXT: ${state.currentRole.prompt}. RULE: Start immediately. English Only.`;
-        callAPI({ message: "Hi! I am ready to start.", systemInstruction: sysPrompt });
+        callAPI({ message: "Hi! I am ready.", systemInstruction: sysPrompt });
     }
 
     async function sendToAI(text) {
         if(!text.trim()) return;
-
         if(/[\u0980-\u09FF]/.test(text)) {
             const toast = document.getElementById('toast-warning');
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
         }
-
         addUserMsg(text);
         chatHistory.push(`User: ${text}`);
         if(chatHistory.length > 5) chatHistory.shift();
-
         document.getElementById('userInput').value = '';
         toggleTyping(true);
-
         const expertPrompt = `
             ACT AS: ${state.currentRole.name}.
             CONTEXT: ${state.currentRole.prompt}
@@ -223,7 +256,6 @@
             4. CORRECTION: Only major errors in brackets (Correct: ...).
             5. QUESTION: Always end with a question.
         `;
-
         callAPI({ message: text, systemInstruction: expertPrompt });
     }
 
@@ -236,11 +268,8 @@
             });
             const data = await res.json();
             toggleTyping(false);
-            
             let reply = data.reply.trim();
-            // Fallback for short/error replies
             if(reply.length < 3) reply = "That's interesting! Tell me more.";
-
             chatHistory.push(`AI: ${reply}`);
             addAiMsg(reply);
         } catch (e) { toggleTyping(false); }
@@ -248,9 +277,8 @@
 
     function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
 
-    // Simplified Typewriter to prevent joining words
     function typeWriter(text, element, callback) {
-        element.innerText = text; // Direct render to avoid "youshouldsay" bug
+        element.innerText = text; 
         scrollToBottom();
         if(callback) callback();
     }
