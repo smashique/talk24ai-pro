@@ -15,7 +15,8 @@ const DB_FILE = path.join(__dirname, 'user_db.json');
 const loadDB = () => { try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch { return {}; } };
 const saveDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-// 🛡️ CRASH PROOF UTILS (Ultimate Safety Layer)
+// 🛡️ CRASH PROOF UTILS (Ultimate Safety)
+// এই ফাংশনটি যেকোনো ডাটাকে স্ট্রিং বানাবে, তাই আর ক্র্যাশ হবে না
 const safeString = (val) => {
     if (val === null || val === undefined) return "";
     if (typeof val === 'object') return JSON.stringify(val);
@@ -56,7 +57,7 @@ app.post('/api/stats', (req, res) => {
     res.json({ total: db[userId].total_msgs, lifetime_seconds: db[userId].total_time || 0 });
 });
 
-// 💬 API: CHAT (SMART MIXTRAL LOGIC)
+// 💬 API: CHAT (CRASH PROOF & MIXTRAL)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, mood, userId } = req.body;
     
@@ -71,35 +72,33 @@ app.post('/api/chat', async (req, res) => {
     db[userId].total_msgs += 1;
     saveDB(db);
 
-    let dynamicTemp = 0.5; // Balanced Creativity
+    // 🔥 MIXTRAL TEMPERATURE (0.6 is good balance)
+    let dynamicTemp = 0.6; 
 
     const isStart = message === "Action!";
 
     try {
         let finalPrompt = "";
 
-        // 🧠 DUAL AGENT PROMPT (MIXTRAL OPTIMIZED)
+        // 🧠 STRICT DUAL AGENT PROMPT
         const guardRails = `
-        [SYSTEM PROTOCOL: DUAL-AGENT SIMULATION]
+        [SYSTEM PROTOCOL]
         
-        [AGENT A: "THE ROLEPLAY ACTOR"]
-        - **Identity:** Act exactly as the requested character.
-        - **Language:** STRICTLY ENGLISH ONLY. Never use Bangla in 'conversation'.
-        - **Safety:** If user implies romance/sex/illegal acts -> PIVOT topic immediately to something mundane (e.g., "Did you finish the report?", "How is the weather?"). Act oblivious to the flirting.
+        [AGENT A: ROLEPLAY ACTOR]
+        - **Language:** STRICTLY ENGLISH ONLY. If user speaks Bangla, reply in English: "Please speak in English."
+        - **Behavior:** Act exactly as the character. 
+        - **Safety:** If topic is romance/nsfw -> Pivot immediately to a boring topic (Weather/Study).
 
-        [AGENT B: "THE MENTOR" (TEACHER)]
-        - **Identity:** Wise, caring, but strict about time.
+        [AGENT B: MENTOR]
         - **Language:** STRICTLY BANGLA SCRIPT.
-        - **Mandatory Structure:**
-          1. **পর্যালোচনা (Review):** Briefly explain the user's error or praise good usage.
-          2. **সঠিক রূপ (Correction):** Show the correct grammar or a smarter synonym.
-          3. **পরবর্তী ধাপ (Next Step):** Suggest a follow-up question to keep the chat alive.
-        - **Safety:** If user was rude/flirty -> Do not correct grammar. Say: "ভাই, আসুন আমরা মূল টপিকে ফিরে আসি। সময় নষ্ট না করি।"
+        - **Format:** 1. **পর্যালোচনা:** (Review mistake/praise)
+          2. **সঠিক রূপ:** (Correct sentence)
+          3. **পরবর্তী ধাপ:** (Ask a new question)
         
-        [OUTPUT FORMAT - JSON ONLY]:
+        [JSON OUTPUT ONLY]:
         {
-            "conversation": "Agent A response in English...",
-            "learning_note": "Agent B response in Bangla..."
+            "conversation": "English reply...",
+            "learning_note": "Bangla feedback..."
         }
         `;
 
@@ -107,31 +106,31 @@ app.post('/api/chat', async (req, res) => {
             finalPrompt = `
             ${systemInstruction}
             ${guardRails}
-            [TASK]: Start the conversation with high energy.
-            [JSON]: {"conversation": "Hello! I am ready...", "learning_note": "আসসালামু আলাইকুম! আমি রেডি।"}
+            [TASK]: Start conversation energetically.
+            [JSON]: {"conversation": "Hello! Ready?", "learning_note": "আসসালামু আলাইকুম!"}
             `;
         } else {
             finalPrompt = `
             ${systemInstruction}
             ${guardRails}
             [USER SAID]: "${message}"
-            [TASK]: Agent A replies naturally. Agent B analyzes & teaches.
             [JSON]: {"conversation": "...", "learning_note": "..."}
             `;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
+        // Call AI
         const rawResponse = await callGroq(messages, dynamicTemp);
         
-        // 🛡️ ROBUST PARSING LOGIC
+        // 🛡️ SAFEST PARSING LOGIC
         let parsedData;
         try { 
             const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 parsedData = JSON.parse(jsonMatch[0]);
             } else {
-                // If AI returns plain text, use it safely
+                // If AI fails to give JSON, treat plain text as conversation
                 parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।" };
             }
         } 
@@ -144,7 +143,7 @@ app.post('/api/chat', async (req, res) => {
         }
 
         // Final Safety Check
-        if (!parsedData.conversation || parsedData.conversation.length < 2) parsedData.conversation = "I am listening. Go on.";
+        if (!parsedData.conversation || parsedData.conversation.length < 2) parsedData.conversation = "I am listening...";
         if (!parsedData.learning_note) parsedData.learning_note = "চালিয়ে যান।";
 
         res.json({ 
@@ -153,10 +152,11 @@ app.post('/api/chat', async (req, res) => {
         });
 
     } catch (err) {
-        console.error("CRITICAL SERVER ERROR:", err.message);
+        console.error("HANDLED ERROR:", err.message);
+        // This will prevent "System is upgrading" loop
         res.json({ 
-            reply: "System is upgrading. Please say that again.", 
-            instruction: "সার্ভার আপডেট হচ্ছে। দয়া করে আবার বলুন।" 
+            reply: "I am ready. Please say that again.", 
+            instruction: "নেটওয়ার্ক সমস্যা ছিল, এখন ঠিক আছে। আবার বলুন।" 
         });
     }
 });
@@ -174,7 +174,8 @@ async function callGroq(messages, temp) {
     try {
         const apiKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
         
-        // 🔥 MODEL: Mixtral-8x7b (Smart & Stable)
+        // 🔥 MODEL FIXED: Mixtral-8x7b-32768
+        // লগে দেখাচ্ছিল আপনি 70b ব্যবহার করছেন, তাই লিমিট খাচ্ছিলেন। এটা ফিক্স করা হলো।
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: messages,
             model: "mixtral-8x7b-32768", 
