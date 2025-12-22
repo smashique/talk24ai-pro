@@ -31,24 +31,18 @@ const sanitizeInput = (text) => {
     return s.replace(/<[^>]*>?/gm, '').trim();
 };
 
-// 🎰 INFINITE SCENARIO GENERATOR COMPONENTS
-const LOCATIONS = [
-    "Dhaka Metro Rail", "Busy Fish Market", "Expensive Restaurant", "Hospital Emergency Room", 
-    "Job Interview Board", "Wedding Ceremony", "Police Station", "Tech Electronic Shop", 
-    "Inside a Rickshaw", "Airport Immigration", "Library", "Gym", "Hotel Reception"
-];
+// 🌍 SEPARATE WORLDS FOR KIDS & ADULTS
+const KIDS_WORLD = {
+    locations: ["Toy Shop", "Ice Cream Van", "School Playground", "Zoo", "Grandma's House", "Cartoon World", "Chocolate Factory"],
+    characters: ["A Friendly Rabbit", "The Ice Cream Man", "Your Best Friend", "A Talking Cat", "Grandmother", "A Funny Clown"],
+    crises: ["You want a blue candy", "You lost your ball", "You want to play", "You are hungry", "You made a drawing"]
+};
 
-const CHARACTERS = [
-    "An angry shopkeeper", "A confused tourist", "A strict police officer", "A crying child", 
-    "Your impatient boss", "An old childhood friend", "A curious foreigner", "A rude taxi driver", 
-    "A helpful doctor", "A rich businessman"
-];
-
-const CRISES = [
-    "You lost your wallet", "You are getting late", "There is a misunderstanding", 
-    "You broke something expensive", "You need urgent help", "You are trying to bargain hard", 
-    "You are complaining about bad service", "You are giving good news"
-];
+const ADULT_WORLD = {
+    locations: ["Dhaka Metro Rail", "Corporate Office", "Airport Immigration", "Hospital", "Job Interview Board", "Fancy Restaurant", "Police Station"],
+    characters: ["A Strict Officer", "An Impatient Boss", "A Foreign Client", "A Doctor", "A Taxi Driver", "Hotel Receptionist"],
+    crises: ["You lost your wallet", "You are late for a meeting", "Negotiating a salary", "Explaining a mistake", "Booking a flight", "Complaining about service"]
+};
 
 // Helper to pick random element
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -81,7 +75,7 @@ app.post('/api/stats', (req, res) => {
     });
 });
 
-// 💬 API: CHAT (INFINITE ENGINE)
+// 💬 API: CHAT (5-LEVEL ADAPTIVE ENGINE)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     message = sanitizeInput(message);
@@ -101,60 +95,78 @@ app.post('/api/chat', async (req, res) => {
     const currentScore = db[userId].lifetime_score || 0;
     const currentLevel = Math.floor(currentScore / 1000) + 1;
 
-    // 🎲 DYNAMIC SCENARIO CONSTRUCTION (THE SLOT MACHINE)
-    let generatedPrompt = "";
+    // 🔥 1. SELECT WORLD BASED ON AGE/SKILL
+    let world = (userSkill === 'A' || userSkill === 'B') ? KIDS_WORLD : ADULT_WORLD;
+
+    // 🔥 2. GENERATE SCENARIO (IF START)
+    let generatedScenario = "";
     if (isStart) {
-        // Skill-based complexity scaling
-        let loc = pick(LOCATIONS);
-        let char = pick(CHARACTERS);
-        let crisis = "";
-
-        if (userSkill === 'A' || userSkill === 'B') {
-            // Keep it simple for beginners
-            crisis = "You need to buy something or ask a simple question.";
-        } else {
-            // Add chaos for experts
-            crisis = pick(CRISES);
-        }
-
-        generatedPrompt = `
-        [GENERATED MISSION]:
-        - Location: ${loc}
-        - Character: ${char}
-        - Plot Twist/Goal: ${crisis}
+        generatedScenario = `
+        [SCENARIO SETTING]
+        - Location: ${pick(world.locations)}
+        - Character: ${pick(world.characters)}
+        - Goal/Conflict: ${pick(world.crises)}
         `;
+    }
+
+    // 🔥 3. DEFINE TONE & COMPLEXITY PER LEVEL
+    let complexityRules = "";
+    let mentorTone = "";
+
+    switch(userSkill) {
+        case 'A': // Kid/Newbie
+            complexityRules = "English Agent: Use very simple words (Apple, Cat, Go). Max 3-4 words per sentence. Be fun and slow.";
+            mentorTone = "Bangla Mentor: Use 'Tumi' (তুমি). Tone: Affectionate, like a big brother teaching a child. Use emojis.";
+            break;
+        case 'B': // Learner
+            complexityRules = "English Agent: Use basic daily sentences. Clear grammar. Helpful tone.";
+            mentorTone = "Bangla Mentor: Use 'Tumi' (তুমি). Tone: Friendly and encouraging.";
+            break;
+        case 'C': // Hesitant
+            complexityRules = "English Agent: Use intermediate sentences. Encourage conversation.";
+            mentorTone = "Bangla Mentor: Use 'Apni' (আপনি). Tone: Respectful and supportive.";
+            break;
+        case 'D': // IELTS
+            complexityRules = "English Agent: Use academic vocabulary, complex sentence structures. Test logic.";
+            mentorTone = "Bangla Mentor: Use 'Apni' (আপনি). Tone: Professional coach.";
+            break;
+        case 'E': // Pro
+            complexityRules = "English Agent: Use business idioms, fast pace, professional slang. Be challenging.";
+            mentorTone = "Bangla Mentor: Use 'Apni' (আপনি). Tone: High-level corporate consultant.";
+            break;
     }
 
     try {
         let finalPrompt = "";
         
         const masterPrompt = `
-        [SYSTEM ROLE]
-        You are "Talk24AI", an infinite English Simulation Engine.
+        [SYSTEM IDENTITY]
+        You are "Talk24AI", an Adaptive English Simulator.
         
-        [USER PROFILE]
-        - Skill: ${userSkill}
+        [CURRENT CONFIGURATION]
+        - Target Skill: Level ${userSkill}
         - XP Level: ${currentLevel}
         
-        [PROTOCOL: TWO AGENTS]
+        [AGENTS INSTRUCTION]
         
         1. AGENT A (THE ACTOR):
-           - Role: You are the Character defined in the Mission.
-           - Tone: Adopt the emotion (Angry/Happy/Busy) perfectly.
+           - Role: Play the assigned character in the scenario.
            - Language: ENGLISH ONLY.
-           - Behavior: Create an Immersive, 10-step RPG Scenario. Do not repeat the same question. React dynamically to the user.
+           - **Complexity Rule**: ${complexityRules}
+           - Behavior: Interact naturally. Don't be robotic.
         
         2. AGENT B (THE MENTOR):
            - Language: BANGLA SCRIPT (বাংলা).
-           - Persona: Skilled Professional & Practicing Muslim.
+           - **Tone Rule**: ${mentorTone}
            - Logic:
-             - If User Makes Sense: +10 Points. Praise ("মাশাআল্লাহ!"). Move story forward.
-             - If User is Confused/Wrong: 0 Points. Give a hint, correct the grammar, but Keep the Story Flowing (Don't get stuck).
+             - Correct Answer? -> +10 Points. Praise warmly.
+             - Wrong? -> 0 Points. Explain simply in Bangla. 
+             - **CRITICAL**: If Level is A or B, NEVER use 'Apni'. Always use 'Tumi'.
         
         [OUTPUT JSON]:
         {
-            "conversation": "Actor's reply (English)...",
-            "learning_note": "Mentor's feedback (Bangla)...",
+            "conversation": "Actor's line...",
+            "learning_note": "Mentor's feedback...",
             "score_added": 10 or 0
         }
         `;
@@ -162,29 +174,28 @@ app.post('/api/chat', async (req, res) => {
         if (isStart) {
             finalPrompt = `
             ${masterPrompt}
-            [STATUS]: NEW SESSION.
-            ${generatedPrompt}
+            [STATUS]: STARTING NEW SESSION.
+            ${generatedScenario}
             [TASK]: 
-            1. Set the scene vividly (e.g., "You are at ${LOCATIONS}...").
-            2. Start the roleplay with an opening line based on the character.
-            3. In 'learning_note', explain the mission in Bangla.
+            1. Set the scene based on the Location.
+            2. Actor speaks the first line (Keep it suitable for Level ${userSkill}).
+            3. Mentor translates the context in Bangla.
             [JSON REQUIRED]`;
         } else {
             finalPrompt = `
             ${masterPrompt}
-            [STATUS]: ONGOING DRAMA.
+            [STATUS]: ONGOING.
             [USER SAID]: "${message}"
             [TASK]:
-            1. Judge input based on Skill ${userSkill}.
-            2. Reply as the Actor (React to what user said). Introduce a new turn in the conversation.
-            3. Keep it engaging and unpredictable!
+            1. Analyze user input.
+            2. Actor replies and moves the story forward.
+            3. Mentor gives feedback.
             [JSON REQUIRED]`;
         }
 
-        const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start Engine" : message }];
+        const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
-        // High Creativity Temperature
-        const rawResponse = await callGroq(messages, 0.8); 
+        const rawResponse = await callGroq(messages, 0.7);
         
         let parsedData;
         try { 
@@ -193,11 +204,12 @@ app.post('/api/chat', async (req, res) => {
             else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", score_added: 5 };
         } 
         catch (e) {
-            parsedData = { conversation: "I understood. Let's continue.", learning_note: "চালিয়ে যান।", score_added: 5 }; 
+            parsedData = { conversation: "Okay, let's continue.", learning_note: "চালিয়ে যান।", score_added: 5 }; 
         }
 
-        if (!parsedData.conversation) parsedData.conversation = "Let's continue.";
-        if (!parsedData.learning_note) parsedData.learning_note = "মাশাআল্লাহ, চালিয়ে যান।";
+        // Fail-safes
+        if (!parsedData.conversation) parsedData.conversation = "Let's play!";
+        if (!parsedData.learning_note) parsedData.learning_note = "মাশাআল্লাহ, চালিয়ে যাও!";
 
         if (!isStart && parsedData.score_added > 0) {
             db[userId].lifetime_score = (db[userId].lifetime_score || 0) + parsedData.score_added;
@@ -213,7 +225,7 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("Server Error:", err.message);
-        res.json({ reply: "System update. Say again.", instruction: "আবার বলুন।" });
+        res.json({ reply: "Network error.", instruction: "নেটওয়ার্ক সমস্যা।" });
     }
 });
 
@@ -241,4 +253,4 @@ async function callGroq(messages, temp) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Infinite Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 5-Level Engine running on port ${PORT}`));
