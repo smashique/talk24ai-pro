@@ -33,15 +33,15 @@ const sanitizeInput = (text) => {
 
 // 🌍 SEPARATE WORLDS
 const KIDS_WORLD = {
-    locations: ["Toy Shop", "Ice Cream Van", "School Playground", "Zoo", "Grandma's House", "Cartoon World", "Chocolate Factory"],
-    characters: ["A Friendly Rabbit", "The Ice Cream Man", "Your Best Friend", "A Talking Cat", "Grandmother", "A Funny Clown"],
-    crises: ["You want a blue candy", "You lost your ball", "You want to play", "You are hungry", "You made a drawing"]
+    locations: ["Toy Shop", "Ice Cream Van", "School Playground", "Zoo", "Grandma's House", "Cartoon World"],
+    characters: ["A Friendly Rabbit", "The Ice Cream Man", "Your Best Friend", "Grandmother", "A Funny Clown"],
+    crises: ["You want a blue candy", "You lost your ball", "You want to play", "You are hungry", "Show your drawing"]
 };
 
 const ADULT_WORLD = {
-    locations: ["Dhaka Metro Rail", "Corporate Office", "Airport Immigration", "Hospital", "Job Interview Board", "Fancy Restaurant", "Police Station"],
-    characters: ["A Strict Officer", "An Impatient Boss", "A Foreign Client", "A Doctor", "A Taxi Driver", "Hotel Receptionist"],
-    crises: ["You lost your wallet", "You are late for a meeting", "Negotiating a salary", "Explaining a mistake", "Booking a flight", "Complaining about service"]
+    locations: ["Corporate Office", "Airport Immigration", "Hospital", "Job Interview", "Restaurant", "Police Station"],
+    characters: ["Strict Officer", "Impatient Boss", "Foreign Client", "Doctor", "Manager"],
+    crises: ["Lost wallet", "Late for meeting", "Negotiating salary", "Explaining mistake", "Booking flight"]
 };
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -74,7 +74,7 @@ app.post('/api/stats', (req, res) => {
     });
 });
 
-// 💬 API: CHAT (CONTEXT AWARE & EXPERT METHODOLOGY)
+// 💬 API: CHAT (STRICT CONTEXT ENGINE)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     message = sanitizeInput(message);
@@ -85,15 +85,13 @@ app.post('/api/chat', async (req, res) => {
     userId = sanitizeInput(userId) || 'anonymous';
 
     const db = loadDB();
-    // Initialize DB with history array if missing
+    // Ensure history exists
     if (!db[userId]) db[userId] = { total_msgs: 0, lifetime_score: 0, total_time: 0, current_skill: userSkill, history: [] };
-    if (!db[userId].history) db[userId].history = [];
+    if (!Array.isArray(db[userId].history)) db[userId].history = [];
 
     const isStart = message === "Action!";
     if (!isStart) db[userId].total_msgs += 1;
-    
-    // If starting fresh, clear history logic for a new scenario
-    if (isStart) db[userId].history = [];
+    if (isStart) db[userId].history = []; // Reset history on new start
 
     const currentScore = db[userId].lifetime_score || 0;
     const currentLevel = Math.floor(currentScore / 1000) + 1;
@@ -105,88 +103,69 @@ app.post('/api/chat', async (req, res) => {
     let generatedScenario = "";
     if (isStart) {
         generatedScenario = `
-        [NEW SCENARIO]
+        [NEW SCENARIO START]
         - Location: ${pick(world.locations)}
         - Character: ${pick(world.characters)}
-        - Conflict/Goal: ${pick(world.crises)}
+        - Conflict/Topic: ${pick(world.crises)}
         `;
     }
 
-    // 🔥 3. EXPERT TEACHING METHODOLOGY (Based on Meeting Report)
-    let methodology = "";
-    let complexity = "";
-    let mentorPersona = "";
-
-    switch(userSkill) {
-        case 'A': // Beginner (Kids)
-            methodology = "METHODOLOGY: 'Play-Based Learning' (Montessori). Focus on visual words. No grammar rules. Repetition is key.";
-            complexity = "ACTOR RULE: Use max 3-4 word sentences. E.g., 'I want apple'. Be playful.";
-            mentorPersona = "MENTOR RULE: You are a Guardian/Big Brother. Use 'Tumi' (তুমি). Tone: Super affectionate & protective.";
-            break;
-        case 'B': // Learner (School)
-            methodology = "METHODOLOGY: 'Scaffolding'. Build on what user says. Gentle correction. Focus on meaning first.";
-            complexity = "ACTOR RULE: Simple daily sentences. Clear articulation.";
-            mentorPersona = "MENTOR RULE: You are a Friendly Guide. Use 'Tumi' (তুমি). Tone: Encouraging.";
-            break;
-        case 'C': // Hesitant
-            methodology = "METHODOLOGY: 'Psychological Safety'. Lower the affective filter. Validate before correcting.";
-            complexity = "ACTOR RULE: Intermediate English. Be patient. Give user time to think.";
-            mentorPersona = "MENTOR RULE: You are a Supporter. Use 'Apni' (আপনি). Tone: Respectful, soft, removing fear.";
-            break;
-        case 'D': // IELTS
-            methodology = "METHODOLOGY: 'Academic Rigor' & 'Socratic Method'. Challenge the user's logic and vocabulary.";
-            complexity = "ACTOR RULE: Use complex structures, formal vocabulary.";
-            mentorPersona = "MENTOR RULE: You are a Strict Coach. Use 'Apni' (আপনি). Tone: Professional, demanding precision.";
-            break;
-        case 'E': // Professional
-            methodology = "METHODOLOGY: 'Task-Based Learning (TBL)'. Focus on outcome, efficiency, and business etiquette.";
-            complexity = "ACTOR RULE: Use idioms, corporate slang, fast pace.";
-            mentorPersona = "MENTOR RULE: You are a Corporate Consultant. Use 'Apni' (আপনি). Tone: Efficient, direct, result-oriented.";
-            break;
+    // 🔥 3. DEFINE STRICT RULES
+    let toneInstruction = "";
+    if (userSkill === 'A' || userSkill === 'B') {
+        toneInstruction = "MENTOR: Treat user as a CHILD. Use 'Tumi' (তুমি). Be affectionate but correct them like a teacher.";
+    } else {
+        toneInstruction = "MENTOR: Treat user as an ADULT. Use 'Apni' (আপনি). Be professional.";
     }
 
-    // 🔥 4. CONTEXT HISTORY BUILDER
-    // Retrieve last 3 exchanges (6 messages) to maintain flow
-    const historyContext = db[userId].history.slice(-6).map(h => `${h.role === 'user' ? 'User' : 'Actor'}: "${h.content}"`).join('\n');
+    // 🔥 4. CONTEXT HISTORY (CRITICAL FOR RELEVANCE)
+    // We send the last 4 exchanges to the AI so it knows what was just asked.
+    const contextLog = db[userId].history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
 
     try {
         let finalPrompt = "";
         
         const masterPrompt = `
         [SYSTEM ROLE]
-        You are "Talk24AI", an Context-Aware English Training Engine.
+        You are "Talk24AI", a Strict English Training Simulator.
         
-        [CURRENT SETTINGS]
+        [CURRENT STATUS]
         - Skill Level: ${userSkill}
-        - Teaching Strategy: ${methodology}
+        - Current Context: ${generatedScenario || "Ongoing Conversation"}
         
-        [CONTEXT HISTORY (Last 3 turns)]
-        ${historyContext || "No history yet. Starting new."}
+        [RECENT HISTORY]
+        ${contextLog}
 
         [PROTOCOL: TWO AGENTS]
         
         1. AGENT A (THE ACTOR):
-           - Role: Roleplay the character in the current scenario.
            - Language: ENGLISH ONLY.
-           - **Rule**: ${complexity}
-           - **Memory**: Look at [CONTEXT HISTORY]. Do not repeat questions you just asked. React to the user's last reply logically.
-           - Identity: Practicing Muslim background (uses Islamic greetings appropriately).
+           - Role: Stay 100% in character.
+           - Logic: If the user replies appropriately, move the story forward. If irrelevant, express confusion (e.g., "Why are you talking about that?").
         
-        2. AGENT B (THE MENTOR):
+        2. AGENT B (THE MENTOR & JUDGE):
            - Language: BANGLA SCRIPT (বাংলা).
-           - **Persona**: ${mentorPersona}
-           - **SCORING ALGORITHM (STRICT)**:
-             1. **Relevance Check**: Does the user's reply fit the [CONTEXT HISTORY] and current Scenario?
-             2. **Grammar Check**: Is the English understandable?
-             3. **Scoring**:
-                - IF (Relevant + Understandable) -> Score 10.
-                - IF (Irrelevant OR Gibberish) -> Score 0.
-             - **Feedback**: If Score is 0, explain WHY (e.g., "We are at a shop, why are you talking about swimming?").
+           - Rule: ${toneInstruction}
+           
+           🚨 [JUDGMENT ALGORITHM - STRICT]:
+           step 1: Check RELEVANCE. Does the User's reply answer the Actor's last question?
+                   - Example: Actor asked "Do you like the drawing?", User said "He plays football".
+                   - Result: IRRELEVANT. Score = 0.
+           step 2: Check GRAMMAR/MEANING.
+                   - Example: User said "I rice eat".
+                   - Result: BROKEN. Score = 0.
+           step 3: SCORING.
+                   - Only give +10 if BOTH Relevance and Meaning are correct.
+                   - Otherwise, Score = 0.
+           
+           [FEEDBACK INSTRUCTION]:
+           - If Score is 0 (Irrelevant): Mentor MUST say in Bangla: "আমরা এখন [Topic] নিয়ে কথা বলছি, অন্য বিষয়ে নয়। (We are talking about X, not Y)."
+           - If Score is 0 (Grammar): Mentor MUST correct the sentence.
         
         [OUTPUT JSON FORMAT]:
         {
-            "conversation": "Actor's reply in English (advancing the story)...",
-            "learning_note": "Mentor's feedback in Bangla...",
+            "conversation": "Actor's reply (English)...",
+            "learning_note": "Mentor's feedback (Bangla)...",
             "score_added": 10 or 0
         }
         `;
@@ -194,48 +173,34 @@ app.post('/api/chat', async (req, res) => {
         if (isStart) {
             finalPrompt = `
             ${masterPrompt}
-            [STATUS]: STARTING NEW SESSION.
-            ${generatedScenario}
-            [TASK]: 
-            1. Actor: Start the roleplay based on the Location/Character.
-            2. Mentor: Explain the scenario in Bangla according to the Methodology.
+            [TASK]: Start the scenario based on the location.
             [JSON REQUIRED]`;
         } else {
             finalPrompt = `
             ${masterPrompt}
-            [STATUS]: ONGOING CONVERSATION.
-            [USER SAID]: "${message}"
-            [TASK]:
-            1. Check Relevance with Context History.
-            2. Actor: Reply logically.
-            3. Mentor: Judge and Guide.
+            [USER INPUT]: "${message}"
+            [TASK]: STRICTLY judge relevance and grammar. Reply accordingly.
             [JSON REQUIRED]`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
-        const rawResponse = await callGroq(messages, 0.7);
+        // Lower temperature for stricter logic
+        const rawResponse = await callGroq(messages, 0.5);
         
         let parsedData;
         try { 
             const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
             if (jsonMatch) parsedData = JSON.parse(jsonMatch[0]);
-            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", score_added: 5 };
+            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", score_added: 0 };
         } 
         catch (e) {
-            parsedData = { conversation: "I'm listening.", learning_note: "চালিয়ে যান।", score_added: 5 }; 
+            parsedData = { conversation: "I didn't catch that.", learning_note: "বুঝতে পারিনি, আবার বলুন।", score_added: 0 }; 
         }
 
-        // Fail-safe
-        if (!parsedData.conversation) parsedData.conversation = "Tell me more.";
-        if (!parsedData.learning_note) parsedData.learning_note = "মাশাআল্লাহ, চালিয়ে যান।";
-
-        // 🛑 SAVE HISTORY & SCORE
-        // Push current exchange to history
-        db[userId].history.push({ role: 'user', content: message });
-        db[userId].history.push({ role: 'assistant', content: parsedData.conversation });
-        
-        // Trim history to keep DB size manageable (last 10 messages max)
+        // 🛑 SAVE HISTORY
+        db[userId].history.push({ role: 'Actor', content: parsedData.conversation });
+        // Keep history limited to last 10 turns
         if (db[userId].history.length > 10) db[userId].history = db[userId].history.slice(-10);
 
         if (!isStart && parsedData.score_added > 0) {
@@ -253,7 +218,7 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("Server Error:", err.message);
-        res.json({ reply: "Connection unstable.", instruction: "নেটওয়ার্ক সমস্যা, আবার বলুন।" });
+        res.json({ reply: "Connection error.", instruction: "নেটওয়ার্ক সমস্যা।" });
     }
 });
 
@@ -280,8 +245,8 @@ async function callGroq(messages, temp) {
             timeout: 20000 
         });
         return response.data.choices[0].message.content;
-    } catch (err) { throw new Error("AI Service Failed or Timed Out"); }
+    } catch (err) { throw new Error("AI Service Failed"); }
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Intelligent Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Strict Context Engine running on port ${PORT}`));
