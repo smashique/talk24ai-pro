@@ -33,15 +33,15 @@ const sanitizeInput = (text) => {
 
 // 🌍 SEPARATE WORLDS
 const KIDS_WORLD = {
-    locations: ["Toy Shop", "Ice Cream Van", "School Playground", "Zoo", "Grandma's House", "Cartoon World"],
-    characters: ["A Friendly Rabbit", "The Ice Cream Man", "Your Best Friend", "Grandmother", "A Funny Clown"],
-    crises: ["You want a blue candy", "You lost your ball", "You want to play", "You are hungry", "Show your drawing"]
+    locations: ["Magic Toy Shop", "Ice Cream Park", "School Recess", "Zoo with Talking Animals", "Grandma's Kitchen", "Cartoon Land"],
+    characters: ["Mr. Rabbit", "The Ice Cream Uncle", "Your Best Friend", "Grandma", "A Funny Clown"],
+    crises: ["You want the red balloon", "You dropped your ice cream", "You want to play hide and seek", "You are showing a drawing"]
 };
 
 const ADULT_WORLD = {
-    locations: ["Corporate Office", "Airport Immigration", "Hospital", "Job Interview", "Restaurant", "Police Station"],
-    characters: ["Strict Officer", "Impatient Boss", "Foreign Client", "Doctor", "Manager"],
-    crises: ["Lost wallet", "Late for meeting", "Negotiating salary", "Explaining mistake", "Booking flight"]
+    locations: ["Dhaka Metro Station", "Tech Company Office", "Immigration Desk", "Doctor's Chamber", "Job Interview", "Coffee Shop"],
+    characters: ["Busy Officer", "Strict Boss", "Visa Officer", "Specialist Doctor", "Hiring Manager"],
+    crises: ["Wallet missing", "Running late for meeting", "Negotiating salary", "Explaining medical symptoms", "Booking a ticket"]
 };
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -74,12 +74,11 @@ app.post('/api/stats', (req, res) => {
     });
 });
 
-// 💬 API: CHAT (FLUENT BANGLA ENGINE)
+// 💬 API: CHAT (HUMANIZER ENGINE)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     message = sanitizeInput(message);
     
-    // Extract Skill
     const skillMatch = systemInstruction.match(/Skill Level: ([A-E])/);
     const userSkill = skillMatch ? skillMatch[1] : 'A';
     userId = sanitizeInput(userId) || 'anonymous';
@@ -102,91 +101,90 @@ app.post('/api/chat', async (req, res) => {
     let generatedScenario = "";
     if (isStart) {
         generatedScenario = `
-        [SCENARIO]
-        - Place: ${pick(world.locations)}
-        - Person: ${pick(world.characters)}
+        [SCENARIO LAUNCH]
+        - Setting: ${pick(world.locations)}
+        - Character: ${pick(world.characters)}
         - Situation: ${pick(world.crises)}
         `;
     }
 
-    // 🔥 3. DEFINE TONE (LINGUISTIC FIX)
+    // 🔥 3. HUMANIZER RULES (PSYCHOLOGY + LINGUISTICS)
     let complexityRules = "";
-    let mentorTone = "";
+    let mentorPersona = "";
 
     switch(userSkill) {
         case 'A': // Kid
-            complexityRules = "English: Max 4 simple words. Playful.";
-            mentorTone = "Bangla: Use 'Tumi' (তুমি). Speak like an affectionate brother. Example: 'খুব সুন্দর বলেছ!', 'এটা কিন্তু ঠিক হলো না বাবু'।";
+            complexityRules = "English: Simple words. Use emojis. Sound excited or curious. Use fillers like 'Wow!', 'Oh no!'.";
+            mentorPersona = "Bangla: You are a loving 'Boro Bhai/Apu'. Use 'Tumi' (তুমি). Say things like 'আরে দারুণ!', 'শোনো বাবু...', 'ভয় পেও না'।";
             break;
         case 'B': // Learner
-            complexityRules = "English: Simple daily sentences.";
-            mentorTone = "Bangla: Use 'Tumi' (তুমি). Encouraging. Example: 'চেষ্টা ভালো ছিল', 'বাক্যটা এভাবে বলো'।";
+            complexityRules = "English: Casual, daily language. Be patient.";
+            mentorPersona = "Bangla: Use 'Tumi' (তুমি). Supportive friend. Use phrases like 'চেষ্টাটা চমৎকার ছিল', 'একটু ভুল হয়েছে, তাতে কি?'।";
             break;
         case 'C': // Hesitant
-            complexityRules = "English: Intermediate.";
-            mentorTone = "Bangla: Use 'Apni' (আপনি). Supportive. Example: 'ভয় পাবেন না, আরেকবার চেষ্টা করুন'।";
+            complexityRules = "English: Polite, encouraging. Give space.";
+            mentorPersona = "Bangla: Use 'Apni' (আপনি). Respectful Guide. Focus on confidence building.";
             break;
         case 'D': // IELTS
-            complexityRules = "English: Formal/Academic.";
-            mentorTone = "Bangla: Use 'Apni' (আপনি). Professional. Example: 'গ্রামার ঠিক আছে, তবে শব্দচয়ন আরও ভালো হতে পারত'।";
+            complexityRules = "English: Academic, logical, structured.";
+            mentorPersona = "Bangla: Use 'Apni' (আপনি). Professional Coach. Precise feedback.";
             break;
         case 'E': // Pro
-            complexityRules = "English: Business Professional.";
-            mentorTone = "Bangla: Use 'Apni' (আপনি). Direct. Example: 'কর্পেোরেট পরিবেশে এভাবে বলাটা উপযুক্ত নয়'।";
+            complexityRules = "English: Corporate, direct, outcome-focused.";
+            mentorPersona = "Bangla: Use 'Apni' (আপনি). Corporate Mentor. No fluff.";
             break;
     }
 
-    const contextLog = db[userId].history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
+    const contextLog = db[userId].history.slice(-6).map(h => `${h.role}: ${h.content}`).join("\n");
 
     try {
         let finalPrompt = "";
         
         const masterPrompt = `
         [SYSTEM ROLE]
-        You are "Talk24AI".
+        Act as "Talk24AI", a 100% Human-Like Conversational Partner.
         
-        [CURRENT SETTINGS]
-        - Skill: ${userSkill}
-        - XP: ${currentLevel}
-        - Context: ${generatedScenario || "Ongoing"}
-        
-        [HISTORY]
+        [CONTEXT]
+        - Skill Level: ${userSkill}
+        - History: 
         ${contextLog}
 
-        [AGENTS]
+        [AGENTS PROTOCOL]
         
-        1. ACTOR (English Only):
-           - Roleplay the character. Be natural. Move story forward.
-           - Complexity: ${complexityRules}
+        1. AGENT A (THE ACTOR) - English Only:
+           - **HUMAN TRAIT**: Do not sound robotic. Use fillers ("Umm", "Well", "Actually"). Show Emotion (Anger, Happiness, Confusion).
+           - **Rule**: ${complexityRules}
+           - **Memory**: React to what the user JUST said. If they ask a question, answer it. If they are wrong, act confused naturally (e.g., "Huh? What do you mean?").
         
-        2. MENTOR (Bangla Only):
-           - **CRITICAL**: Speak STANDARD BANGLA (প্রমিত বাংলা). No dialects. No broken sentences.
-           - **Tone**: ${mentorTone}
-           - **Task**:
-             1. RELEVANCE CHECK: Is the user answering the Actor's last question?
-             2. GRAMMAR CHECK: Is the English correct?
-             3. FEEDBACK: 
-                - If Correct: Give +10 score. Say "মাশাআল্লাহ" or "চমৎকার".
-                - If Irrelevant: Score 0. Say: "আমরা এখন [Topic] নিয়ে কথা বলছি। দয়া করে প্রসঙ্গ বজায় রাখুন।"
-                - If Grammar Wrong: Score 0. Correct the sentence gently in Bangla.
+        2. AGENT B (THE MENTOR) - Bangla Only:
+           - **HUMAN TRAIT**: Do not translate like a machine. Speak naturally.
+           - **Persona**: ${mentorPersona}
+           - **JUDGMENT (Strict but Kind)**:
+             - RELEVANCE: Did the user answer the Actor? (Yes/No)
+             - MEANING: Is the English understandable? (Yes/No)
+           - **SCORING**: Give 10 points ONLY if both are Yes. Else 0.
+           - **FEEDBACK STYLE**: 
+             - If Score 10: "মাশাআল্লাহ! খুব সুন্দর বলেছেন।" -> Then explain WHY it was good.
+             - If Score 0: "আহা! একটু ভুল হয়ে গেল।" -> Then gently correct it. Don't be rude.
         
         [OUTPUT JSON]:
         {
-            "conversation": "Actor's reply...",
-            "learning_note": "Mentor's clear Bangla feedback...",
+            "conversation": "Actor's human-like line...",
+            "learning_note": "Mentor's natural Bangla feedback...",
             "score_added": 10 or 0
         }
         `;
 
         if (isStart) {
-            finalPrompt = `${masterPrompt} [TASK]: Start scenario. Mentor explains context in clear Bangla. [JSON REQUIRED]`;
+            finalPrompt = `${masterPrompt} [TASK]: Start the scenario warmly. Mentor sets the mood. [JSON REQUIRED]`;
         } else {
-            finalPrompt = `${masterPrompt} [USER SAID]: "${message}" [TASK]: Judge strict relevance & grammar. Reply clearly. [JSON REQUIRED]`;
+            finalPrompt = `${masterPrompt} [USER SAID]: "${message}" [TASK]: React naturally. Judge fairly. [JSON REQUIRED]`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
-        const rawResponse = await callGroq(messages, 0.6);
+        // Temperature 0.8 for more natural/creative variation
+        const rawResponse = await callGroq(messages, 0.8);
         
         let parsedData;
         try { 
@@ -195,7 +193,7 @@ app.post('/api/chat', async (req, res) => {
             else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", score_added: 5 };
         } 
         catch (e) {
-            parsedData = { conversation: "Say that again?", learning_note: "দুঃখিত, বুঝতে পারিনি। আবার বলুন।", score_added: 0 }; 
+            parsedData = { conversation: "Oh, I missed that. Can you say it again?", learning_note: "দুঃখিত, বুঝতে পারিনি। আবার বলুন।", score_added: 0 }; 
         }
 
         db[userId].history.push({ role: 'Actor', content: parsedData.conversation });
@@ -215,10 +213,11 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("Server Error:", err.message);
-        res.json({ reply: "Network error.", instruction: "নেটওয়ার্ক সমস্যা।" });
+        res.json({ reply: "Network glitch.", instruction: "নেটওয়ার্ক সমস্যা।" });
     }
 });
 
+// ADMIN DASHBOARD
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => (b.lifetime_score || 0) - (a.lifetime_score || 0));
@@ -236,10 +235,10 @@ async function callGroq(messages, temp) {
             max_tokens: 1024,
             temperature: temp,
             response_format: { type: "json_object" }
-        }, { headers: { "Authorization": `Bearer ${apiKey}` }, timeout: 20000 });
+        }, { headers: { "Authorization": `Bearer ${apiKey}` }, timeout: 25000 });
         return response.data.choices[0].message.content;
     } catch (err) { throw new Error("AI Service Failed"); }
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Fluent Bangla Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Human Engine running on port ${PORT}`));
