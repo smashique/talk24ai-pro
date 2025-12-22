@@ -3,301 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Practice English Fearlessly</title>
+    <title>Talk24AI | Level Up Your English</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* CORE STYLES (UNCHANGED) */
-        :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
+        /* --- 🎨 COLOR PALETTE (PSYCHOLOGY BASED) --- */
+        :root { 
+            --green: #58cc02; --green-dark: #46a302; /* Success, Growth */
+            --blue: #1cb0f6; --blue-dark: #1899d6;   /* Trust, Calm */
+            --red: #ff4b4b; --red-dark: #ea2b2b;     /* Error, Urgent */
+            --gold: #ffc800; --gold-dark: #e5b400;   /* Reward, Premium */
+            --bg: #ffffff; --text: #3c3c3c;
+            --font: 'Nunito', sans-serif;
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
+        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--text); user-select: none; }
 
-        /* ANIMATED BACKGROUND */
-        .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 20s infinite linear; }
-        .shape1 { width: 100px; height: 100px; background: var(--green); top: 10%; left: 10%; animation-duration: 25s; }
-        .shape2 { width: 150px; height: 150px; background: var(--blue); bottom: 20%; right: 10%; animation-duration: 30s; }
-        .shape3 { width: 80px; height: 80px; background: var(--yellow); top: 40%; left: 50%; animation-duration: 20s; }
-        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
+        /* --- 🌀 ANIMATED BACKGROUND --- */
+        .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 25s infinite linear; }
+        .shape1 { width: 150px; height: 150px; background: var(--green); top: -50px; left: -50px; }
+        .shape2 { width: 200px; height: 200px; background: var(--blue); bottom: -50px; right: -50px; animation-duration: 35s; }
+        .shape3 { width: 80px; height: 80px; background: var(--gold); top: 40%; left: 50%; animation-duration: 20s; }
+        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(30px, 50px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
-        /* HOME SCREEN */
-        #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); }
-        .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
-        .user-id-badge { background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: 800; margin-bottom: 20px; font-family: monospace; border: 2px solid #ddd; display: flex; gap: 10px; align-items: center; }
-        .live-dot { height: 8px; width: 8px; background: #25d366; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
-        .hero-card { width: 100%; max-width: 600px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 25px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
+        /* --- 🏠 HOME SCREEN --- */
+        #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); }
+        .logo { font-family: 'Fredoka', sans-serif; font-size: 42px; color: var(--green); margin-bottom: 5px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
         
-        /* SKILL SELECTION STYLES (NEW) */
-        .skill-title { font-size: 16px; font-weight: 800; color: #4b4b4b; margin-bottom: 15px; text-align: left; }
-        .skill-option { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #e5e5e5; border-radius: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; text-align: left; background: #fdfdfd; }
-        .skill-option:hover { background: #f5f5f5; }
-        .skill-option.selected { border-color: var(--blue); background: #e3f2fd; box-shadow: 0 4px 0 var(--blue-shade); transform: translateY(-2px); }
-        .radio-circle { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .selected .radio-circle { border-color: var(--blue); background: var(--blue); }
-        .radio-inner { width: 8px; height: 8px; background: white; border-radius: 50%; display: none; }
-        .selected .radio-inner { display: block; }
-        .skill-text { font-size: 14px; font-weight: 700; color: #555; line-height: 1.4; }
+        /* USER STATS ON HOME */
+        .home-stats { display: flex; gap: 15px; margin-bottom: 25px; font-weight: 800; font-size: 14px; color: #777; background: #f0f0f0; padding: 8px 15px; border-radius: 20px; }
+        .stat-badge { display: flex; align-items: center; gap: 5px; }
 
-        .btn-main { width: 100%; padding: 16px; background: var(--green); color: white; font-size: 18px; font-weight: 900; border: none; border-radius: 20px; box-shadow: 0 5px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.1s; margin-top: 15px; }
-        .btn-main:active { transform: translateY(5px); box-shadow: 0 0 0; }
+        .hero-card { width: 100%; max-width: 500px; background: #fff; border: 2px solid #e5e5e5; border-radius: 25px; padding: 25px; box-shadow: 0 8px 0 #e5e5e5; transition: 0.3s; }
         
-        /* CHAT SCREEN */
-        #chat-screen { display: none; flex-direction: column; height: 100%; z-index: 100; max-width: 900px; margin: 0 auto; width: 100%; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-        .top-nav { padding: 10px 25px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
-        #messages { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 160px; scroll-behavior: smooth; }
+        /* SKILL CARDS */
+        .skill-list { display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow-y: auto; padding: 5px; }
+        .skill-option { display: flex; align-items: center; gap: 12px; padding: 15px; border: 2px solid #e5e5e5; border-radius: 16px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); background: #fff; position: relative; overflow: hidden; }
+        .skill-option:active { transform: scale(0.98); }
+        .skill-option.selected { border-color: var(--blue); background: #f0f9ff; box-shadow: 0 4px 0 var(--blue-dark); transform: translateY(-2px); }
         
-        /* BUBBLES */
-        .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .bubble { padding: 15px 20px; border-radius: 22px; font-size: 17px; line-height: 1.6; font-weight: 600; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .ai { background: #f5f5f5; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #eeeeee; }
-        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 0 var(--blue-shade); margin-bottom: 5px; }
+        .skill-icon { font-size: 24px; }
+        .skill-info { flex: 1; text-align: left; }
+        .skill-head { font-weight: 800; font-size: 15px; color: #4b4b4b; }
+        .skill-sub { font-size: 12px; color: #888; font-weight: 600; margin-top: 2px; }
         
-        /* MENTOR NOTE */
-        .mentor-note { margin-top: 10px; background: #fffde7; color: #5d4037; padding: 12px 16px; border-radius: 18px; font-size: 15px; font-weight: 600; border: 2px dashed #fbc02d; width: 100%; line-height: 1.6; position: relative; animation: slideUp 0.5s ease; }
-        .mentor-note::before { content: '💡'; margin-right: 5px; }
-        
-        /* BOTTOM AREA */
-        .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: transparent; padding: 0; display: flex; justify-content: center; pointer-events: none; }
-        .input-wrapper { width: 100%; max-width: 900px; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; pointer-events: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
-        .input-row { width: 100%; display: flex; gap: 10px; max-width: 800px; position: relative; }
-        
-        /* MIC BUTTON */
-        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--green); border: 5px solid #fff; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 6px 15px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.1s; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); }
-        #mic-btn:active { transform: translateX(-50%) scale(0.9); }
-        .listening { background: #ff4b4b !important; animation: pulse 1s infinite; }
-        
-        /* INPUT FIELD */
-        .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-        .input-duo:focus { border-color: var(--blue); background: #fff; transform: scale(1.01); }
+        .btn-start { width: 100%; padding: 16px; background: var(--green); color: white; font-size: 18px; font-weight: 900; border: none; border-radius: 20px; box-shadow: 0 5px 0 var(--green-dark); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.1s; margin-top: 20px; }
+        .btn-start:active { transform: translateY(5px); box-shadow: none; }
 
-        /* SCORE POPUP */
-        #score-popup { display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 7000; text-align: center; border: 3px solid #58cc02; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .score-val { font-size: 32px; font-weight: 900; color: #58cc02; display: block; }
-        .score-msg { font-size: 14px; font-weight: 700; color: #555; }
+        /* --- 💬 CHAT SCREEN --- */
+        #chat-screen { display: none; flex-direction: column; height: 100%; max-width: 800px; margin: 0 auto; background: white; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
+        
+        /* TOP BAR (GAMIFIED) */
+        .top-nav { padding: 10px 20px; border-bottom: 2px solid #f0f0f0; display: flex; align-items: center; gap: 15px; background: #fff; z-index: 10; height: 70px; }
+        
+        .level-badge { background: var(--gold); color: #5c4d00; padding: 5px 12px; border-radius: 15px; font-weight: 900; font-size: 12px; border: 2px solid var(--gold-dark); box-shadow: 0 3px 0 var(--gold-dark); text-transform: uppercase; white-space: nowrap; }
+        
+        .progress-container { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #aaa; }
+        .progress-track { height: 12px; background: #e5e5e5; border-radius: 10px; overflow: hidden; position: relative; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #ffd700, #ffc800); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
+        
+        /* MESSAGES */
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 140px; scroll-behavior: smooth; }
+        
+        .bubble-group { display: flex; flex-direction: column; width: 100%; max-width: 85%; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .bubble { padding: 15px 18px; border-radius: 20px; font-size: 16px; line-height: 1.5; font-weight: 600; width: fit-content; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .ai-group { align-items: flex-start; }
+        .user-group { align-items: flex-end; align-self: flex-end; }
+        
+        .ai-bubble { background: #f7f7f7; color: #4b4b4b; border: 2px solid #eee; border-bottom-left-radius: 4px; }
+        .user-bubble { background: var(--blue); color: white; border: 2px solid var(--blue-dark); border-bottom-right-radius: 4px; }
+        
+        .mentor-note { margin-top: 8px; background: #fffde7; color: #5d4037; padding: 10px 14px; border-radius: 14px; font-size: 14px; font-weight: 700; border: 2px dashed var(--gold); position: relative; width: 100%; }
+        .mentor-note::before { content: '💡 Mentor:'; display: block; font-size: 11px; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 4px; font-weight: 900; }
 
+        /* BOTTOM INPUT */
+        .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; padding-bottom: 20px; pointer-events: none; }
+        .input-deck { width: 90%; max-width: 600px; background: white; padding: 10px; border-radius: 25px; border: 2px solid #eee; display: flex; align-items: center; gap: 10px; pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        #mic-btn { width: 55px; height: 55px; border-radius: 50%; background: var(--green); border: none; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 0 var(--green-dark); transition: 0.1s; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        #mic-btn:active { transform: translateY(4px); box-shadow: none; }
+        #mic-btn.listening { background: var(--red); box-shadow: 0 4px 0 var(--red-dark); animation: pulse 1s infinite; }
+
+        .input-box { flex: 1; border: none; background: #f5f5f5; padding: 15px; border-radius: 20px; font-weight: 700; font-size: 16px; outline: none; color: #333; }
+        .input-box::placeholder { color: #bbb; }
+
+        /* --- 🎉 POPUPS & MODALS --- */
+        #score-popup { display: none; position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 6000; pointer-events: none; }
+        .score-anim { font-size: 40px; font-weight: 900; color: var(--gold); text-shadow: 2px 2px 0 #fff, 0 5px 10px rgba(0,0,0,0.2); animation: floatUp 1.5s ease-out forwards; }
+        
+        #level-up-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 7000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .levelup-card { background: white; padding: 40px; border-radius: 30px; text-align: center; border: 4px solid var(--gold); box-shadow: 0 0 50px var(--gold); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(0.5); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        @keyframes popUp { from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 75, 75, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); } }
+
     </style>
 </head>
 <body>
 
-<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
-<audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+<audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="snd-levelup" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
 
 <div class="bg-shape shape1"></div><div class="bg-shape shape2"></div><div class="bg-shape shape3"></div>
 
-<div id="score-popup">
-    <span class="score-val">+10</span>
-    <span class="score-msg">মাশাআল্লাহ!</span>
+<div id="score-popup"></div>
+
+<div id="level-up-modal">
+    <div class="levelup-card">
+        <div style="font-size:60px;">🚀</div>
+        <h1 style="color:var(--gold-dark); margin:10px 0; font-weight:900;">LEVEL UP!</h1>
+        <p style="color:#555; font-weight:700;">You are now Level <span id="new-level-display" style="color:var(--blue);">2</span></p>
+        <button class="btn-start" onclick="closeLevelModal()">Keep Going!</button>
+    </div>
 </div>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
-    <div id="user-badge" class="user-id-badge"><span class="live-dot"></span> ID: Generating...</div>
     
-    <div class="hero-card">
-        <h2 style="margin:0 0 10px 0; color:#333;">Select Your Level</h2>
-        <p style="color:#666; font-size:14px; margin-bottom:20px;">AI will create a custom plan for you.</p>
-
-        <div class="skill-title">Which one describes you best?</div>
-        
-        <div class="skill-option" onclick="selectSkill('A', this)">
-            <div class="radio-circle"><div class="radio-inner"></div></div>
-            <div class="skill-text">🐣 <b>Newbie:</b> Primary School / Just starting ABCs.</div>
-        </div>
-
-        <div class="skill-option" onclick="selectSkill('B', this)">
-            <div class="radio-circle"><div class="radio-inner"></div></div>
-            <div class="skill-text">📚 <b>Learner:</b> Know Grammar but can't speak fluently.</div>
-        </div>
-
-        <div class="skill-option" onclick="selectSkill('C', this)">
-            <div class="radio-circle"><div class="radio-inner"></div></div>
-            <div class="skill-text">🗣️ <b>Hesitant Speaker:</b> Good Grammar but get stuck while speaking.</div>
-        </div>
-
-        <div class="skill-option" onclick="selectSkill('D', this)">
-            <div class="radio-circle"><div class="radio-inner"></div></div>
-            <div class="skill-text">✈️ <b>Exam Prep:</b> Preparing for IELTS / GRE.</div>
-        </div>
-
-        <div class="skill-option" onclick="selectSkill('E', this)">
-            <div class="radio-circle"><div class="radio-inner"></div></div>
-            <div class="skill-text">💼 <b>Professional:</b> Need Business English fluency.</div>
-        </div>
-
-        <button class="btn-main" onclick="startSession()">Start My Session 🚀</button>
+    <div class="home-stats">
+        <div class="stat-badge">⭐ Lvl <span id="home-lvl">1</span></div>
+        <div class="stat-badge">⚡ <span id="home-score">0</span> XP</div>
     </div>
-    
-    <div style="font-size:12px; color:#aaa; margin-top:20px;">Painpoint Hook: No Login Required. Fearless Practice.</div>
+
+    <div class="hero-card">
+        <h2 style="margin:0 0 15px 0; color:#333; font-weight:800;">Select Your Path</h2>
+        
+        <div class="skill-list">
+            <div class="skill-option" onclick="selectSkill('A', this)">
+                <div class="skill-icon">🐣</div>
+                <div class="skill-info"><div class="skill-head">Beginner</div><div class="skill-sub">Starting from ABCs</div></div>
+            </div>
+            <div class="skill-option" onclick="selectSkill('B', this)">
+                <div class="skill-icon">📚</div>
+                <div class="skill-info"><div class="skill-head">Learner</div><div class="skill-sub">Know grammar, need fluency</div></div>
+            </div>
+            <div class="skill-option" onclick="selectSkill('C', this)">
+                <div class="skill-icon">🗣️</div>
+                <div class="skill-info"><div class="skill-head">Hesitant</div><div class="skill-sub">Get stuck while speaking</div></div>
+            </div>
+            <div class="skill-option" onclick="selectSkill('D', this)">
+                <div class="skill-icon">✈️</div>
+                <div class="skill-info"><div class="skill-head">Exam Prep</div><div class="skill-sub">IELTS / GRE Focus</div></div>
+            </div>
+            <div class="skill-option" onclick="selectSkill('E', this)">
+                <div class="skill-icon">💼</div>
+                <div class="skill-info"><div class="skill-head">Professional</div><div class="skill-sub">Business Communication</div></div>
+            </div>
+        </div>
+
+        <button class="btn-start" onclick="startSession()">Start Mission 🚀</button>
+    </div>
+    <div style="font-size:11px; color:#999; margin-top:15px; font-weight:700;">No Login Required • Lifetime Stats • Fearless Practice</div>
 </div>
 
 <div id="chat-screen">
     <div class="top-nav">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div style="font-size: 32px;">🎓</div>
-            <div>
-                <div style="font-weight: 800; font-size: 16px;">AI Mentor</div>
-                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
-            </div>
-        </div>
-        
-        <div style="text-align:right;">
-             <div style="font-size:11px; color:#888; font-weight:700;">Score</div>
-             <div style="font-size:20px; font-weight:900; color:#58cc02;" id="score-display">0</div>
+        <div class="level-badge" id="chat-lvl-badge">LEVEL 1</div>
+        <div class="progress-container">
+            <div class="progress-label"><span>XP Progress</span><span id="xp-text">0 / 1000</span></div>
+            <div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div>
         </div>
     </div>
-    
+
     <div id="messages"></div>
-    <div style="height:100px;"></div> <div class="bottom-area">
-        <div class="input-wrapper">
+
+    <div class="bottom-area">
+        <div class="input-deck">
             <button id="mic-btn" onclick="toggleMic()">🎤</button>
-            <div class="input-row"><input type="text" id="userInput" class="input-duo" placeholder="Type here (English Only)..." onkeypress="handleEnter(event)"></div>
+            <input type="text" id="userInput" class="input-box" placeholder="Speak or Type (English Only)..." onkeypress="handleEnter(event)">
         </div>
     </div>
 </div>
 
 <script>
-    // ⚙️ CONFIG
+    // --- ⚙️ CORE CONFIG & STATE ---
     const SERVER_URL = "https://talk24ai.onrender.com"; 
-    let selectedSkill = '';
-    let currentScore = 0;
     let USER_ID = localStorage.getItem('talk24_uid');
-
     if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
-    document.getElementById('user-badge').innerHTML = `<span class="live-dot"></span> ID: ${USER_ID}`;
 
-    // 🔊 SOUNDS
-    function playSound(type) { 
-        const id = type === 'success' ? 'snd-success' : 'snd-pop';
-        const audio = document.getElementById(id);
-        if(audio) { audio.currentTime=0; audio.play().catch(()=>{}); }
+    let state = {
+        skill: null,
+        level: 1,
+        score: 0
+    };
+
+    // --- 🔊 SOUND ENGINE ---
+    const play = (id) => { const a = document.getElementById(id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } };
+
+    // --- 🚀 INITIALIZATION (LIFETIME STATS) ---
+    window.onload = async () => {
+        try {
+            const res = await fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({userId: USER_ID}) });
+            const data = await res.json();
+            updateStatsUI(data.score, data.level);
+        } catch(e) { console.log("Offline mode or Server error"); }
+    };
+
+    function updateStatsUI(score, level) {
+        state.score = score;
+        state.level = level;
+        
+        // Update Home
+        document.getElementById('home-score').innerText = score;
+        document.getElementById('home-lvl').innerText = level;
+
+        // Update Chat Topbar
+        document.getElementById('chat-lvl-badge').innerText = `LEVEL ${level}`;
+        
+        const currentXP = score % 1000;
+        document.getElementById('xp-text').innerText = `${currentXP} / 1000`;
+        document.getElementById('xp-bar').style.width = `${(currentXP / 1000) * 100}%`;
     }
 
-    // 🎯 SKILL SELECTION
+    // --- 🎯 SKILL SELECTION ---
     function selectSkill(code, el) {
-        playSound('pop');
+        play('snd-click');
         document.querySelectorAll('.skill-option').forEach(d => d.classList.remove('selected'));
         el.classList.add('selected');
-        selectedSkill = code;
+        state.skill = code;
     }
 
-    // 🚀 START SESSION
+    // --- 🚦 START SESSION ---
     function startSession() {
-        if (!selectedSkill) return alert("Please select your level first!");
+        if (!state.skill) return alert("⚠️ Please select a path first!");
         
-        playSound('success');
+        play('snd-click');
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('chat-screen').style.display = 'flex';
         
-        // Define Persona based on Skill
-        let persona = "Teacher";
-        if(selectedSkill === 'D') persona = "IELTS Examiner";
-        if(selectedSkill === 'E') persona = "Business Client";
-
-        // Initial Trigger
-        const sys = `Skill Level: ${selectedSkill}. Role: ${persona}. Start a scenario relevant to this level.`;
+        // Determine Persona
+        let personaMap = { 'A': 'Teacher', 'B': 'Friend', 'C': 'Coach', 'D': 'Examiner', 'E': 'Client' };
+        
+        // Send Action Trigger
+        const sys = `Skill Level: ${state.skill}. Role: ${personaMap[state.skill]}. Start Scenario.`;
         callAPI({ message: "Action!", systemInstruction: sys, userId: USER_ID });
     }
 
-    // 📨 SEND MESSAGE
+    // --- 📨 MESSAGING SYSTEM ---
     async function sendToAI(text) {
         if (!text.trim()) return;
         
-        // STRICT ENGLISH CHECK (Client Side)
+        // CLIENT SIDE STRICT ENGLISH CHECK
         if (/[অ-ঔক-হ]/.test(text)) {
-            alert("⚠️ Only English allowed here! প্র্যাকটিস করতে হলে ইংরেজিতে চেষ্টা করুন।");
+            alert("⚠️ Only English allowed! Please try again in English.");
             return;
         }
 
-        playSound('pop');
+        play('snd-click');
         addUserMsg(text);
         document.getElementById('userInput').value = '';
         
-        callAPI({ message: text, systemInstruction: "Check grammar. If correct, give points.", userId: USER_ID });
+        callAPI({ message: text, systemInstruction: "Check grammar", userId: USER_ID });
     }
 
-    // 🌐 API CALL
     async function callAPI(payload) {
         try {
-            document.getElementById('mic-btn').classList.add('listening'); // reusing class for visual
-            const res = await fetch(`${SERVER_URL}/api/chat`, { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(payload) 
-            });
+            document.getElementById('mic-btn').classList.add('listening');
+            const res = await fetch(`${SERVER_URL}/api/chat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('listening');
             
-            // SCORE LOGIC (From Server Judgment)
-            // Note: Server currently sends 'has_mistake'. 
-            // If has_mistake is false AND it's not the start message, give points.
-            if (payload.message !== "Action!" && data.instruction && !data.instruction.includes("ভুল")) {
-                showScorePopup(10);
+            // 🧠 LOGIC: SCORE & LEVEL
+            if (data.score_added > 0) {
+                triggerReward(data.score_added);
+                
+                // Check Level Up
+                const oldLvl = state.level;
+                const newLvl = Math.floor(data.new_total_score / 1000) + 1;
+                if (newLvl > oldLvl) {
+                    setTimeout(() => showLevelUp(newLvl), 1000);
+                }
+                
+                updateStatsUI(data.new_total_score, newLvl);
             }
 
             addAiMsg(data.reply, data.instruction);
             
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error(e);
+            document.getElementById('mic-btn').classList.remove('listening');
+        }
     }
 
-    // 🎉 SCORE POPUP
-    function showScorePopup(points) {
-        currentScore += points;
-        document.getElementById('score-display').innerText = currentScore;
-        playSound('success');
+    // --- 🎁 REWARDS & ANIMATIONS ---
+    function triggerReward(points) {
+        play('snd-success');
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
         
-        const pop = document.getElementById('score-popup');
-        pop.style.display = 'block';
-        setTimeout(() => { pop.style.display = 'none'; }, 2000);
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.3 } });
+        const popup = document.getElementById('score-popup');
+        popup.innerHTML = `<div class="score-anim">+${points}</div>`;
+        setTimeout(() => popup.innerHTML = '', 1500);
     }
 
-    // 💬 UI HELPERS
+    function showLevelUp(lvl) {
+        play('snd-levelup');
+        document.getElementById('new-level-display').innerText = lvl;
+        document.getElementById('level-up-modal').style.display = 'flex';
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+    }
+    
+    function closeLevelModal() { document.getElementById('level-up-modal').style.display = 'none'; }
+
+    // --- 💬 CHAT UI ---
     function addUserMsg(text) {
-        const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text;
-        const c = document.createElement('div'); c.className='bubble-container'; c.style.alignItems='flex-end'; c.appendChild(div);
-        document.getElementById('messages').appendChild(c);
+        const d = document.createElement('div'); d.className = 'bubble-group user-group';
+        d.innerHTML = `<div class="bubble user-bubble">${text}</div>`;
+        document.getElementById('messages').appendChild(d);
         scrollToBottom();
     }
 
     function addAiMsg(text, note) {
-        const div = document.createElement('div'); div.className = 'bubble ai'; div.innerText = text;
-        const c = document.createElement('div'); c.className='bubble-container'; c.appendChild(div);
-        
-        if (note) {
-            const n = document.createElement('div'); n.className='mentor-note'; 
-            n.innerHTML = `<strong>Mentor:</strong> ${note}`;
-            c.appendChild(n);
-        }
-        
-        document.getElementById('messages').appendChild(c);
+        const d = document.createElement('div'); d.className = 'bubble-group ai-group';
+        let html = `<div class="bubble ai-bubble">${text}</div>`;
+        if (note) html += `<div class="mentor-note">${note}</div>`;
+        d.innerHTML = html;
+        document.getElementById('messages').appendChild(d);
         scrollToBottom();
         
         // Auto Speak
         const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9;
         window.speechSynthesis.speak(u);
     }
 
     function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
     function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
 
-    // 🎤 MIC LOGIC (Chrome Only for Stability)
+    // --- 🎤 ROBUST MIC (CHROME) ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
     function toggleMic() {
-        if (!recognition) return alert("Please use Chrome or Edge for Voice.");
+        if (!recognition) return alert("For voice features, please use Google Chrome.");
         recognition.lang = 'en-US';
         recognition.start();
+        document.getElementById('userInput').placeholder = "Listening...";
+        
         recognition.onresult = (e) => {
             const txt = e.results[0][0].transcript;
             document.getElementById('userInput').value = txt;
+            document.getElementById('userInput').placeholder = "Speak or Type...";
             sendToAI(txt);
         };
+        recognition.onerror = () => document.getElementById('userInput').placeholder = "Mic Error. Try Typing.";
     }
 </script>
 </body>
