@@ -3,452 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Master English</title>
+    <title>Talk24AI | Practice English Fearlessly</title>
     <link rel="manifest" href="/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Fredoka:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- 🎨 PREMIUM VARIABLES --- */
-        :root { 
-            --bg-gradient: linear-gradient(135deg, #0f3428 0%, #051a15 100%);
-            --card-glass: rgba(255, 255, 255, 0.03);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --neon-accent: #00b894; 
-            --magic-gradient: linear-gradient(135deg, #FF9F43, #FF6B6B); 
-            --text-main: #ffffff;
-            --text-muted: #b2bec3;
-            --font-main: 'Inter', sans-serif;
-        }
+        /* CORE STYLES (UNCHANGED) */
+        :root { --green: #58cc02; --green-shade: #46a302; --blue: #1cb0f6; --blue-shade: #1899d6; --yellow: #ffc800; --yellow-shade: #e5b400; --bg: #ffffff; --font: 'Nunito', sans-serif; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font); margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #3c3c3c; position: relative; }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
-        body { 
-            font-family: var(--font-main); margin: 0; 
-            background: var(--bg-gradient); color: var(--text-main);
-            display: flex; flex-direction: column; 
-            height: 100vh; overflow: hidden;
-            justify-content: center; align-items: center;
-        }
+        /* ANIMATED BACKGROUND */
+        .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 20s infinite linear; }
+        .shape1 { width: 100px; height: 100px; background: var(--green); top: 10%; left: 10%; animation-duration: 25s; }
+        .shape2 { width: 150px; height: 150px; background: var(--blue); bottom: 20%; right: 10%; animation-duration: 30s; }
+        .shape3 { width: 80px; height: 80px; background: var(--yellow); top: 40%; left: 50%; animation-duration: 20s; }
+        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, 40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
 
-        /* --- 🏠 HOME SCREEN --- */
-        #home-screen { 
-            width: 100%; max-width: 500px; padding: 15px; 
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-            z-index: 10;
-        }
+        /* HOME SCREEN */
+        #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); }
+        .logo { font-family: 'Fredoka', sans-serif; font-size: 48px; color: var(--green); margin-bottom: 5px; letter-spacing: -1px; text-shadow: 2px 2px 0px #daf5ce; animation: bounce 2s infinite; }
+        .user-id-badge { background: #eee; color: #555; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: 800; margin-bottom: 20px; font-family: monospace; border: 2px solid #ddd; display: flex; gap: 10px; align-items: center; }
+        .live-dot { height: 8px; width: 8px; background: #25d366; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        .hero-card { width: 100%; max-width: 600px; background: #fff; border: 3px solid #e5e5e5; border-radius: 30px; padding: 25px; text-align: center; box-shadow: 0 10px 0 #e5e5e5; margin-bottom: 20px; transition: 0.3s; }
         
-        .logo { 
-            font-family: 'Fredoka', sans-serif; font-size: 42px; 
-            background: linear-gradient(to right, #fff, #00b894); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 2px; letter-spacing: -0.5px; filter: drop-shadow(0 0 15px rgba(0,184,148,0.3));
-        }
-        
-        .user-id-badge {
-            background: rgba(0, 184, 148, 0.1); color: var(--neon-accent); 
-            padding: 4px 12px; border-radius: 20px; font-size: 11px; 
-            font-weight: 700; font-family: monospace; border: 1px solid rgba(0, 184, 148, 0.2);
-            display: flex; gap: 6px; align-items: center; margin-bottom: 5px;
-        }
-        .live-dot { height: 6px; width: 6px; background: var(--neon-accent); border-radius: 50%; box-shadow: 0 0 8px var(--neon-accent); animation: blink 1.5s infinite; }
+        /* SKILL SELECTION STYLES (NEW) */
+        .skill-title { font-size: 16px; font-weight: 800; color: #4b4b4b; margin-bottom: 15px; text-align: left; }
+        .skill-option { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #e5e5e5; border-radius: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; text-align: left; background: #fdfdfd; }
+        .skill-option:hover { background: #f5f5f5; }
+        .skill-option.selected { border-color: var(--blue); background: #e3f2fd; box-shadow: 0 4px 0 var(--blue-shade); transform: translateY(-2px); }
+        .radio-circle { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .selected .radio-circle { border-color: var(--blue); background: var(--blue); }
+        .radio-inner { width: 8px; height: 8px; background: white; border-radius: 50%; display: none; }
+        .selected .radio-inner { display: block; }
+        .skill-text { font-size: 14px; font-weight: 700; color: #555; line-height: 1.4; }
 
-        /* 🔥 NEW LEVEL CARD STYLE */
-        .level-card {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-glass);
-            border-radius: 16px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            margin-bottom: 5px;
-        }
-        .level-info { display: flex; flex-direction: column; gap: 2px; text-align: left; }
-        .level-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .level-value { font-size: 18px; font-weight: 900; color: white; text-transform: uppercase; }
+        .btn-main { width: 100%; padding: 16px; background: var(--green); color: white; font-size: 18px; font-weight: 900; border: none; border-radius: 20px; box-shadow: 0 5px 0 var(--green-shade); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.1s; margin-top: 15px; }
+        .btn-main:active { transform: translateY(5px); box-shadow: 0 0 0; }
         
-        .score-box { text-align: right; }
-        .score-val { font-size: 24px; font-weight: 900; color: var(--neon-accent); text-shadow: 0 0 15px rgba(0, 184, 148, 0.3); }
-
-        /* 💎 PREMIUM GLASS CARD */
-        .hero-card { 
-            width: 100%; 
-            background: var(--card-glass); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            border-radius: 24px; padding: 22px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4); 
-            display: flex; flex-direction: column; gap: 15px;
-        }
-
-        /* 🧠 NEUROMARKETING HOOK */
-        .pain-point-msg { 
-            background: linear-gradient(90deg, rgba(255, 159, 67, 0.1), rgba(255, 107, 107, 0.1));
-            border-left: 3px solid #FF9F43;
-            padding: 12px; border-radius: 8px;
-            font-size: 13px; line-height: 1.5; color: #ffeaa7; text-align: left;
-        }
-        .highlight { color: #fff; font-weight: 800; text-decoration: underline; text-decoration-color: #FF9F43; }
-
-        /* INPUTS */
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .label-text { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        /* CHAT SCREEN */
+        #chat-screen { display: none; flex-direction: column; height: 100%; z-index: 100; max-width: 900px; margin: 0 auto; width: 100%; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        .top-nav { padding: 10px 25px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
+        #messages { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 160px; scroll-behavior: smooth; }
         
-        .input-duo { 
-            width: 100%; padding: 12px 15px; 
-            background: rgba(0, 0, 0, 0.3); 
-            border: 1px solid var(--border-glass); border-radius: 10px; 
-            color: white; font-weight: 600; font-size: 14px; 
-            font-family: var(--font-main); transition: 0.3s;
-        }
-        .input-duo:focus { border-color: var(--neon-accent); background: rgba(0,0,0,0.5); }
-
-        .chip-container { display: flex; gap: 6px; overflow-x: auto; padding-top: 8px; scrollbar-width: none; }
-        .chip { 
-            background: rgba(255,255,255,0.05); color: var(--text-muted); 
-            padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; 
-            cursor: pointer; border: 1px solid transparent; transition: 0.2s; white-space: nowrap;
-        }
-        .chip:active { background: var(--neon-accent); color: #000; transform: scale(0.95); }
-
-        /* 🎮 ACTION BUTTONS */
-        .action-row { display: flex; gap: 10px; margin-top: 5px; }
+        /* BUBBLES */
+        .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .bubble { padding: 15px 20px; border-radius: 22px; font-size: 17px; line-height: 1.6; font-weight: 600; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .ai { background: #f5f5f5; color: #4b4b4b; border-bottom-left-radius: 4px; border: 2px solid #eeeeee; }
+        .user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 0 var(--blue-shade); margin-bottom: 5px; }
         
-        .btn-3d {
-            border: none; border-radius: 12px; color: white; cursor: pointer;
-            font-weight: 700; transition: 0.1s; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
+        /* MENTOR NOTE */
+        .mentor-note { margin-top: 10px; background: #fffde7; color: #5d4037; padding: 12px 16px; border-radius: 18px; font-size: 15px; font-weight: 600; border: 2px dashed #fbc02d; width: 100%; line-height: 1.6; position: relative; animation: slideUp 0.5s ease; }
+        .mentor-note::before { content: '💡'; margin-right: 5px; }
         
-        .btn-sec {
-            flex: 1; font-size: 12px; padding: 12px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass);
-            color: var(--text-muted);
-        }
-        .btn-sec:active { background: rgba(255,255,255,0.1); transform: scale(0.95); }
-
-        .btn-magic {
-            flex: 2; font-size: 15px; padding: 12px;
-            background: var(--magic-gradient);
-            color: white; font-weight: 800; letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-            animation: pulse 2s infinite;
-        }
-        .btn-magic:active { transform: scale(0.96); }
-
-        #install-btn { 
-            background: #ffffff; color: #0f3428; 
-            border: none; padding: 14px; border-radius: 12px; 
-            font-weight: 800; font-size: 13px; cursor: pointer; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-top: 10px; transition: 0.2s;
-        }
-        #install-btn:active { transform: scale(0.98); background: #eee; }
-
-        /* --- 💬 CHAT SCREEN --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; max-width: 600px; background: #051a15; }
+        /* BOTTOM AREA */
+        .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; background: transparent; padding: 0; display: flex; justify-content: center; pointer-events: none; }
+        .input-wrapper { width: 100%; max-width: 900px; background: white; padding: 15px 20px 25px 20px; border-top: 2px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; gap: 15px; pointer-events: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
+        .input-row { width: 100%; display: flex; gap: 10px; max-width: 800px; position: relative; }
         
-        .top-nav { padding: 15px 20px; background: rgba(5, 26, 21, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center; z-index: 20; }
-        
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 140px; }
-        
-        .bubble-container { display: flex; flex-direction: column; max-width: 85%; align-items: flex-start; animation: popIn 0.3s; }
-        .bubble { padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.5; font-weight: 500; color: white; }
-        .ai { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-bottom-left-radius: 4px; }
-        .user { background: var(--neon-accent); color: #00332a; font-weight: 700; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0, 184, 148, 0.2); }
-        
-        .mentor-note { margin-top: 8px; background: rgba(255, 159, 67, 0.1); color: #ffca28; padding: 10px 12px; border-radius: 10px; font-size: 13px; border-left: 2px solid #ffca28; width: 100%; line-height: 1.5; }
-        .replay-btn { margin-top: 5px; margin-left: 5px; font-size: 11px; color: var(--text-muted); cursor: pointer; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.05); display: inline-flex; align-items: center; gap: 4px; }
-        .typing { font-size: 12px; color: var(--text-muted); margin-left: 20px; margin-bottom: 10px; display: none; }
-
-        .bottom-area { position: fixed; bottom: 0; width: 100%; max-width: 600px; padding: 0; background: transparent; display: flex; justify-content: center; pointer-events: none; }
-        .input-wrapper { width: 100%; background: rgba(5, 26, 21, 0.95); padding: 15px 20px 25px; border-top: 1px solid var(--border-glass); display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: auto; backdrop-filter: blur(10px); }
-        .input-row { width: 100%; display: flex; position: relative; }
-        
-        #mic-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--neon-accent); border: 4px solid #051a15; color: #00332a; font-size: 26px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 184, 148, 0.4); position: absolute; top: -45px; left: 50%; transform: translateX(-50%); transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        /* MIC BUTTON */
+        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--green); border: 5px solid #fff; color: white; font-size: 32px; cursor: pointer; box-shadow: 0 6px 15px rgba(88, 204, 2, 0.4); display: flex; align-items: center; justify-content: center; transition: 0.1s; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); }
         #mic-btn:active { transform: translateX(-50%) scale(0.9); }
-        .listening { background: #ff4757 !important; animation: pulse 1s infinite; color: white !important; }
-        .processing { background: #ffa502 !important; font-size: 0 !important; } .processing::after { content: "⏳"; font-size: 24px; }
-
-        .stats-box { font-size: 11px; color: var(--text-muted); font-weight: 600; text-align: right; }
-        .note-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 3px 8px; border-radius: 6px; font-size: 10px; cursor: pointer; margin-top: 2px; }
-
-        #offer-modal, #tutorial-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 6000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); animation: fadeIn 0.3s; }
-        .offer-card, .tutorial-card { background: #0f3428; width: 100%; max-width: 350px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 0 50px rgba(0, 184, 148, 0.15); animation: popUp 0.3s; }
-        .offer-badge { background: #FFD700; color: black; font-weight: 900; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-size: 11px; }
-        .offer-title { font-size: 20px; font-weight: 800; color: white; margin-bottom: 8px; }
-        .offer-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
-        .offer-btn { width: 100%; background: var(--neon-accent); color: #00332a; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; }
-        .close-offer { position: absolute; top: 15px; right: 20px; font-size: 24px; color: rgba(255,255,255,0.3); cursor: pointer; }
-
-        .tutorial-card h3 { color: var(--neon-accent); margin-top: 0; font-weight: 800; }
-        .tutorial-list { list-style: none; padding: 0; margin: 20px 0; text-align: left; }
-        .tutorial-list li { margin-bottom: 12px; font-size: 14px; color: var(--text-muted); display: flex; gap: 12px; align-items: center; }
-        .tutorial-close-btn { background: rgba(255,255,255,0.1); color: white; width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); } }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        .listening { background: #ff4b4b !important; animation: pulse 1s infinite; }
         
-        .voice-loader { display: none; align-items: center; gap: 4px; margin-left: 20px; }
-        .voice-bar { width: 3px; height: 12px; background: var(--neon-accent); animation: wave 1s infinite; }
-        .voice-bar:nth-child(2) { animation-delay: 0.1s; } .voice-bar:nth-child(3) { animation-delay: 0.2s; }
-        @keyframes wave { 0%, 100% { height: 8px; } 50% { height: 16px; } }
+        /* INPUT FIELD */
+        .input-duo { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 16px; font-size: 16px; font-weight: 700; color: #4b4b4b; background: #fdfdfd; outline: none; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .input-duo:focus { border-color: var(--blue); background: #fff; transform: scale(1.01); }
+
+        /* SCORE POPUP */
+        #score-popup { display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 7000; text-align: center; border: 3px solid #58cc02; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .score-val { font-size: 32px; font-weight: 900; color: #58cc02; display: block; }
+        .score-msg { font-size: 14px; font-weight: 700; color: #555; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes popUp { from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 75, 75, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); } }
     </style>
 </head>
 <body>
 
-<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
-<audio id="snd-magic" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
-<audio id="snd-offer" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+<audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2346/2346-preview.mp3"></audio>
+<audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
-<div id="offer-modal">
-    <div class="offer-card">
-        <div class="close-offer" onclick="closeOffer()">×</div>
-        <div class="offer-badge">🚀 YOU ARE ON FIRE!</div>
-        <div class="offer-title">20 Minutes Streak!</div>
-        <div class="offer-desc">
-            Most people quit in 5 minutes. You are different. <br>
-            Take your English to the next level with our <b>Premium Mentor</b>.
-        </div>
-        <button class="offer-btn" onclick="buyPremium()">Unlock Premium 💎</button>
-    </div>
+<div class="bg-shape shape1"></div><div class="bg-shape shape2"></div><div class="bg-shape shape3"></div>
+
+<div id="score-popup">
+    <span class="score-val">+10</span>
+    <span class="score-msg">মাশাআল্লাহ!</span>
 </div>
-
-<div id="tutorial-modal">
-    <div class="tutorial-card">
-        <h3>⚡ Quick Guide</h3>
-        <ul class="tutorial-list">
-            <li><span>🎭</span> <b>Set Role:</b> Who are you? Who is AI?</li>
-            <li><span>🎲</span> <b>Dice:</b> Get random fun topics.</li>
-            <li><span>🚀</span> <b>Start:</b> Press the magic button.</li>
-            <li><span>🤖</span> <b>Chat:</b> Speak or type freely.</li>
-            <li><span>💡</span> <b>Learn:</b> Mentor will fix your mistakes.</li>
-        </ul>
-        <button class="tutorial-close-btn" onclick="closeTutorial()">Let's Start! 🚀</button>
-    </div>
-</div>
-
-<a href="https://wa.me/8801303680618?text=Need%20Help" target="_blank" style="position:fixed; bottom:20px; right:20px; background:rgba(255,255,255,0.1); color:var(--text-muted); padding:8px 15px; border-radius:30px; display:flex; align-items:center; gap:6px; text-decoration:none; font-weight:700; font-size:12px; backdrop-filter:blur(5px); z-index:500; border:1px solid rgba(255,255,255,0.1);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z"/></svg> Help
-</a>
 
 <div id="home-screen">
     <div class="logo">Talk24AI</div>
     <div id="user-badge" class="user-id-badge"><span class="live-dot"></span> ID: Generating...</div>
     
-    <div class="level-card">
-        <div class="level-info">
-            <div class="level-label">Current Level</div>
-            <div id="user-level-badge" class="level-value">🌱 ROOKIE</div>
-        </div>
-        <div class="score-box">
-            <div class="level-label">Accuracy</div>
-            <div id="user-accuracy" class="score-val">100%</div>
-        </div>
-    </div>
-
     <div class="hero-card">
-        <div class="pain-point-msg">
-            🗣️ ইংলিশে কথা বলার জড়তা কাটানোর <b>সবচেয়ে সহজ উপায়!</b><br>
-            <span class="highlight">Talk24AI</span>-এর সাথে প্রতিদিন ১০ মিনিট কথা বলুন, নিজের ক্যারিয়ার গড়ুন। 🚀
+        <h2 style="margin:0 0 10px 0; color:#333;">Select Your Level</h2>
+        <p style="color:#666; font-size:14px; margin-bottom:20px;">AI will create a custom plan for you.</p>
+
+        <div class="skill-title">Which one describes you best?</div>
+        
+        <div class="skill-option" onclick="selectSkill('A', this)">
+            <div class="radio-circle"><div class="radio-inner"></div></div>
+            <div class="skill-text">🐣 <b>Newbie:</b> Primary School / Just starting ABCs.</div>
         </div>
 
-        <div class="input-grid">
-            <div>
-                <div class="label-text">I am...</div>
-                <input type="text" id="user-role" class="input-duo" placeholder="e.g. Student">
-                <div class="chip-container"><div class="chip" onclick="selectChip('user-role', 'Student')">Student</div><div class="chip" onclick="selectChip('user-role', 'Job Seeker')">Job Seeker</div></div>
-            </div>
-            <div>
-                <div class="label-text">AI Partner...</div>
-                <input type="text" id="ai-role" class="input-duo" placeholder="e.g. Interviewer">
-                <div class="chip-container"><div class="chip" onclick="selectChip('ai-role', 'Teacher')">Teacher</div><div class="chip" onclick="selectChip('ai-role', 'Interviewer')">Interviewer</div></div>
-            </div>
-        </div>
-        
-        <div class="input-grid">
-            <div><div class="label-text">Mood</div><input type="text" id="chat-mood" class="input-duo" placeholder="e.g. Helpful"><div class="chip-container"><div class="chip" onclick="selectChip('chat-mood', 'Friendly')">Friendly</div><div class="chip" onclick="selectChip('chat-mood', 'Strict')">Strict</div></div></div>
-            <div><div class="label-text">Topic</div><input type="text" id="scene-context" class="input-duo" placeholder="e.g. Interview"><div class="chip-container"><div class="chip" onclick="selectChip('scene-context', 'Job Interview')">Interview</div><div class="chip" onclick="selectChip('scene-context', 'Visa')">Visa</div></div></div>
+        <div class="skill-option" onclick="selectSkill('B', this)">
+            <div class="radio-circle"><div class="radio-inner"></div></div>
+            <div class="skill-text">📚 <b>Learner:</b> Know Grammar but can't speak fluently.</div>
         </div>
 
-        <div class="action-row">
-            <button class="btn-3d btn-sec" onclick="openTutorial()">❓ How to</button>
-            <button class="btn-3d btn-sec" onclick="randomize()">🎲 Dice</button>
-            <button class="btn-3d btn-magic" onclick="startCustomChat()">🚀 START MAGIC</button>
+        <div class="skill-option" onclick="selectSkill('C', this)">
+            <div class="radio-circle"><div class="radio-inner"></div></div>
+            <div class="skill-text">🗣️ <b>Hesitant Speaker:</b> Good Grammar but get stuck while speaking.</div>
         </div>
-        
-        <button id="install-btn" onclick="installApp()">📲 Download App</button>
+
+        <div class="skill-option" onclick="selectSkill('D', this)">
+            <div class="radio-circle"><div class="radio-inner"></div></div>
+            <div class="skill-text">✈️ <b>Exam Prep:</b> Preparing for IELTS / GRE.</div>
+        </div>
+
+        <div class="skill-option" onclick="selectSkill('E', this)">
+            <div class="radio-circle"><div class="radio-inner"></div></div>
+            <div class="skill-text">💼 <b>Professional:</b> Need Business English fluency.</div>
+        </div>
+
+        <button class="btn-main" onclick="startSession()">Start My Session 🚀</button>
     </div>
+    
+    <div style="font-size:12px; color:#aaa; margin-top:20px;">Painpoint Hook: No Login Required. Fearless Practice.</div>
 </div>
 
 <div id="chat-screen">
     <div class="top-nav">
         <div style="display:flex; align-items:center; gap:10px;">
-            <div id="p-icon" style="font-size: 28px;">🎭</div>
+            <div style="font-size: 32px;">🎓</div>
             <div>
-                <div style="font-weight: 700; font-size: 14px;" id="p-name">AI Mate</div>
-                <div id="chat-level-display" style="font-size: 10px; color: #fab1a0; font-weight: 600;">LEVEL: ROOKIE</div>
+                <div style="font-weight: 800; font-size: 16px;">AI Mentor</div>
+                <div style="font-size: 11px; color: #58cc02; font-weight: 800;">● ONLINE</div>
             </div>
         </div>
-        <div class="stats-box">
-             <div>Acc: <span id="live-accuracy" style="color:var(--neon-accent)">100%</span></div>
-             <div>Time: <span id="time-display" style="color:white">0m</span></div>
-             <button class="note-btn" onclick="downloadNotes()">💾 Save</button>
+        
+        <div style="text-align:right;">
+             <div style="font-size:11px; color:#888; font-weight:700;">Score</div>
+             <div style="font-size:20px; font-weight:900; color:#58cc02;" id="score-display">0</div>
         </div>
     </div>
     
     <div id="messages"></div>
-    
-    <div id="voice-loader" class="voice-loader">
-        <span style="font-size:10px; font-weight:700; color:var(--neon-accent);">SPEAKING</span>
-        <div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div>
-    </div>
-    
-    <div id="typing-box" class="typing">Typing...</div>
-    
-    <div class="bottom-area">
+    <div style="height:100px;"></div> <div class="bottom-area">
         <div class="input-wrapper">
             <button id="mic-btn" onclick="toggleMic()">🎤</button>
-            <div class="input-row"><input type="text" id="userInput" class="input-duo" placeholder="Type a message..." onkeypress="handleEnter(event)"></div>
+            <div class="input-row"><input type="text" id="userInput" class="input-duo" placeholder="Type here (English Only)..." onkeypress="handleEnter(event)"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // 🚨 RENDER SERVER URL
+    // ⚙️ CONFIG
     const SERVER_URL = "https://talk24ai.onrender.com"; 
-    
-    function playSound(type) { 
-        try { 
-            let a;
-            if (type === 'pop') a = document.getElementById('snd-pop');
-            else if (type === 'magic') a = document.getElementById('snd-magic');
-            else if (type === 'offer') a = document.getElementById('snd-offer');
-            
-            if(a) { a.currentTime = 0; a.play().catch(e => console.log("Audio blocked")); } 
-        } catch(e){} 
-    }
-    
-    let state = { userRole: '', aiRole: '', scene: '', mood: 'Normal' }; 
-    let isMicOn = false; let chatHistory = []; let deferredPrompt; let mentorNotes = [];
-
-    // --- UTILS ---
-    function openTutorial() { playSound('pop'); document.getElementById('tutorial-modal').style.display = 'flex'; }
-    function closeTutorial() { document.getElementById('tutorial-modal').style.display = 'none'; }
-    function closeOffer() { document.getElementById('offer-modal').style.display = 'none'; }
-    function buyPremium() { window.open('https://wa.me/8801303680618?text=Premium%20Info', '_blank'); closeOffer(); }
-    
-    // --- STATS & TIMER ---
-    let sessionSeconds = 0; let lifetimeSeconds = 0; const THRESHOLD = 1200; 
-    let offerShown = localStorage.getItem('talk24_offer_shown') === "true";
+    let selectedSkill = '';
+    let currentScore = 0;
     let USER_ID = localStorage.getItem('talk24_uid');
-    
-    if (!USER_ID) { USER_ID = 'ID-' + Math.floor(10000 + Math.random() * 90000); localStorage.setItem('talk24_uid', USER_ID); }
+
+    if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
     document.getElementById('user-badge').innerHTML = `<span class="live-dot"></span> ID: ${USER_ID}`;
 
-    // 🔥 LEVEL UPDATE LOGIC
-    function updateLevelUI(acc) {
-        let lvlName = "🌱 ROOKIE";
-        let color = "#b2bec3"; 
-
-        if (acc >= 90) { lvlName = "💎 MASTER"; color = "#00b894"; } 
-        else if (acc >= 75) { lvlName = "🔥 FLUENT"; color = "#fdcb6e"; } 
-        else if (acc >= 50) { lvlName = "🦊 LEARNER"; color = "#0984e3"; } 
-
-        // Home
-        document.getElementById('user-level-badge').innerText = lvlName;
-        document.getElementById('user-level-badge').style.color = color;
-        document.getElementById('user-accuracy').innerText = acc + "%";
-        document.getElementById('user-accuracy').style.color = color;
-
-        // Chat Screen
-        document.getElementById('chat-level-display').innerText = "LEVEL: " + lvlName;
-        document.getElementById('live-accuracy').innerText = acc + "%";
-        document.getElementById('live-accuracy').style.color = color;
+    // 🔊 SOUNDS
+    function playSound(type) { 
+        const id = type === 'success' ? 'snd-success' : 'snd-pop';
+        const audio = document.getElementById(id);
+        if(audio) { audio.currentTime=0; audio.play().catch(()=>{}); }
     }
 
-    // Initial Fetch
-    fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID }) })
-    .then(res => res.json())
-    .then(data => { 
-        lifetimeSeconds = data.lifetime_seconds || 0; 
-        updateLevelUI(data.accuracy || 100); 
-    }).catch(e => {});
+    // 🎯 SKILL SELECTION
+    function selectSkill(code, el) {
+        playSound('pop');
+        document.querySelectorAll('.skill-option').forEach(d => d.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedSkill = code;
+    }
 
-    setInterval(() => {
-        if (!document.hidden && document.getElementById('chat-screen').style.display === 'flex') {
-            sessionSeconds++;
-            if (sessionSeconds % 60 === 0) syncTimeWithServer(60);
-            document.getElementById('time-display').innerText = `${Math.floor(sessionSeconds/60)}m`;
-            if ((lifetimeSeconds + sessionSeconds) >= THRESHOLD && !offerShown) { playSound('offer'); document.getElementById('offer-modal').style.display = 'flex'; confetti(); offerShown = true; localStorage.setItem('talk24_offer_shown', "true"); }
+    // 🚀 START SESSION
+    function startSession() {
+        if (!selectedSkill) return alert("Please select your level first!");
+        
+        playSound('success');
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('chat-screen').style.display = 'flex';
+        
+        // Define Persona based on Skill
+        let persona = "Teacher";
+        if(selectedSkill === 'D') persona = "IELTS Examiner";
+        if(selectedSkill === 'E') persona = "Business Client";
+
+        // Initial Trigger
+        const sys = `Skill Level: ${selectedSkill}. Role: ${persona}. Start a scenario relevant to this level.`;
+        callAPI({ message: "Action!", systemInstruction: sys, userId: USER_ID });
+    }
+
+    // 📨 SEND MESSAGE
+    async function sendToAI(text) {
+        if (!text.trim()) return;
+        
+        // STRICT ENGLISH CHECK (Client Side)
+        if (/[অ-ঔক-হ]/.test(text)) {
+            alert("⚠️ Only English allowed here! প্র্যাকটিস করতে হলে ইংরেজিতে চেষ্টা করুন।");
+            return;
         }
-    }, 1000);
 
-    function syncTimeWithServer(sec) { fetch(`${SERVER_URL}/api/update-time`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID, seconds: sec }) }).then(r=>r.json()).then(d=>{ lifetimeSeconds = d.total_time; }); }
-
-    // --- APP LOGIC ---
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else alert("Check browser menu."); }
-    function selectChip(id, value) { playSound('pop'); document.getElementById(id).value = value; }
-    function randomize() { playSound('pop'); const s=[{u:'Buyer',a:'Seller',s:'Price',m:'Fun'},{u:'Student',a:'Teacher',s:'Late',m:'Strict'}]; const r=s[Math.floor(Math.random()*s.length)]; document.getElementById('user-role').value=r.u; document.getElementById('ai-role').value=r.a; document.getElementById('scene-context').value=r.s; document.getElementById('chat-mood').value=r.m; }
-    
-    function startCustomChat() { 
-        const u=document.getElementById('user-role').value, a=document.getElementById('ai-role').value; 
-        if(!u||!a) return alert("Select roles!"); 
-        playSound('magic'); 
-        confetti({particleCount:100,spread:70,origin:{y:0.6}}); 
-        state.userRole=u; state.aiRole=a; state.scene=document.getElementById('scene-context').value||"Chat"; state.mood=document.getElementById('chat-mood').value||"Normal"; 
-        setTimeout(()=>{ document.getElementById('p-name').innerText=a; document.getElementById('home-screen').style.display='none'; document.getElementById('chat-screen').style.display='flex'; triggerAIStart(); }, 800); 
+        playSound('pop');
+        addUserMsg(text);
+        document.getElementById('userInput').value = '';
+        
+        callAPI({ message: text, systemInstruction: "Check grammar. If correct, give points.", userId: USER_ID });
     }
 
-    async function triggerAIStart() { toggleTyping(true); callAPI({ message: "Action!", systemInstruction: `Roleplay: ${state.aiRole} & ${state.userRole}. Scene: ${state.scene}. Mood: ${state.mood}.`, mood: state.mood, userId: USER_ID }); }
-    async function sendToAI(text) { if(!text.trim())return; playSound('pop'); addUserMsg(text); chatHistory.push(`User: ${text}`); document.getElementById('userInput').value=''; toggleTyping(true); callAPI({ message: text, systemInstruction: `Identity: ${state.aiRole}. User: ${state.userRole}. Scene: ${state.scene}.`, mood: state.mood, userId: USER_ID }); }
-    
+    // 🌐 API CALL
     async function callAPI(payload) {
         try {
-            document.getElementById('mic-btn').classList.add('processing');
-            const res = await fetch(`${SERVER_URL}/api/chat`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            document.getElementById('mic-btn').classList.add('listening'); // reusing class for visual
+            const res = await fetch(`${SERVER_URL}/api/chat`, { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(payload) 
+            });
             const data = await res.json();
-            document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false);
-            chatHistory.push(`AI: ${data.reply}`); addAiMsg(data.reply, data.instruction);
+            document.getElementById('mic-btn').classList.remove('listening');
             
-            // 🔥 RE-FETCH STATS FOR ACCURACY UPDATE
-            fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: USER_ID }) })
-            .then(r=>r.json()).then(d=>updateLevelUI(d.accuracy||100));
+            // SCORE LOGIC (From Server Judgment)
+            // Note: Server currently sends 'has_mistake'. 
+            // If has_mistake is false AND it's not the start message, give points.
+            if (payload.message !== "Action!" && data.instruction && !data.instruction.includes("ভুল")) {
+                showScorePopup(10);
+            }
 
-        } catch (e) { document.getElementById('mic-btn').classList.remove('processing'); toggleTyping(false); }
+            addAiMsg(data.reply, data.instruction);
+            
+        } catch (e) { console.error(e); }
     }
-    
-    function toggleTyping(show) { document.getElementById('typing-box').style.display = show ? 'block' : 'none'; }
-    function addAiMsg(text, instruction) {
-        const c=document.createElement('div'); c.className='bubble-container';
-        const b=document.createElement('div'); b.className='bubble ai'; b.innerText=text;
-        const r=document.createElement('div'); r.className='replay-btn'; r.innerHTML='🔊 Replay'; r.onclick=()=>speak(text);
-        c.appendChild(b); c.appendChild(r);
-        if(instruction) { const n=document.createElement('div'); n.className='mentor-note'; n.innerHTML=`<strong>Mentor:</strong> ${instruction}`; c.appendChild(n); mentorNotes.push(instruction); }
-        document.getElementById('messages').appendChild(c); playSound('pop'); 
-        const l=document.getElementById('voice-loader'); l.style.display='flex'; speak(text,()=>{l.style.display='none'}); setTimeout(()=>{l.style.display='none'},4000); 
-        document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
-    }
-    
-    function addUserMsg(t) { const d=document.createElement('div'); d.className='bubble user'; d.innerText=t; document.getElementById('messages').appendChild(d); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight; }
-    function handleEnter(e) { if(e.key==='Enter') sendToAI(e.target.value); }
-    function speak(t,cb) { window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.rate=1.0; u.onend=cb; u.onerror=cb; window.speechSynthesis.speak(u); }
-    function downloadNotes() { if(mentorNotes.length===0) return alert("Chat first!"); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["Notes:\n"+mentorNotes.join('\n')],{type:"text/plain"})); link.download="Notes.txt"; link.click(); }
 
+    // 🎉 SCORE POPUP
+    function showScorePopup(points) {
+        currentScore += points;
+        document.getElementById('score-display').innerText = currentScore;
+        playSound('success');
+        
+        const pop = document.getElementById('score-popup');
+        pop.style.display = 'block';
+        setTimeout(() => { pop.style.display = 'none'; }, 2000);
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.3 } });
+    }
+
+    // 💬 UI HELPERS
+    function addUserMsg(text) {
+        const div = document.createElement('div'); div.className = 'bubble user'; div.innerText = text;
+        const c = document.createElement('div'); c.className='bubble-container'; c.style.alignItems='flex-end'; c.appendChild(div);
+        document.getElementById('messages').appendChild(c);
+        scrollToBottom();
+    }
+
+    function addAiMsg(text, note) {
+        const div = document.createElement('div'); div.className = 'bubble ai'; div.innerText = text;
+        const c = document.createElement('div'); c.className='bubble-container'; c.appendChild(div);
+        
+        if (note) {
+            const n = document.createElement('div'); n.className='mentor-note'; 
+            n.innerHTML = `<strong>Mentor:</strong> ${note}`;
+            c.appendChild(n);
+        }
+        
+        document.getElementById('messages').appendChild(c);
+        scrollToBottom();
+        
+        // Auto Speak
+        const u = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(u);
+    }
+
+    function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
+    function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
+
+    // 🎤 MIC LOGIC (Chrome Only for Stability)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = SpeechRecognition ? new SpeechRecognition() : null;
-    if(recognition) {
-        recognition.lang = 'en-US'; recognition.onstart=()=>document.getElementById('mic-btn').classList.add('listening'); recognition.onend=()=>{isMicOn=false; document.getElementById('mic-btn').classList.remove('listening');};
-        recognition.onresult=(e)=>{ const t=e.results[0][0].transcript; document.getElementById('userInput').value=t; sendToAI(t); };
+
+    function toggleMic() {
+        if (!recognition) return alert("Please use Chrome or Edge for Voice.");
+        recognition.lang = 'en-US';
+        recognition.start();
+        recognition.onresult = (e) => {
+            const txt = e.results[0][0].transcript;
+            document.getElementById('userInput').value = txt;
+            sendToAI(txt);
+        };
     }
-    function toggleMic() { playSound('pop'); if(!recognition) return alert("Use Chrome"); if(isMicOn) recognition.stop(); else { try{recognition.start(); isMicOn=true;}catch(e){} } }
 </script>
 </body>
 </html>
