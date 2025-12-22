@@ -15,10 +15,9 @@ const DB_FILE = path.join(__dirname, 'user_db.json');
 const loadDB = () => { try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch { return {}; } };
 const saveDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-// 🛡️ CRASH PROOF UTILS
+// 🛡️ UTILS
 const safeString = (val) => {
     if (val === null || val === undefined) return "";
-    if (typeof val === 'object') return JSON.stringify(val);
     return String(val);
 };
 
@@ -32,7 +31,7 @@ const sanitizeInput = (text) => {
     return s.replace(/<[^>]*>?/gm, '').trim();
 };
 
-// ⏱️ API: UPDATE TIME (NO CHANGE)
+// ⏱️ API: UPDATE TIME (Time Tracking Logic maintained)
 app.post('/api/update-time', (req, res) => {
     const { userId, seconds } = req.body;
     const db = loadDB();
@@ -43,7 +42,7 @@ app.post('/api/update-time', (req, res) => {
     res.json({ success: true });
 });
 
-// 📊 API: STATS (CALCULATE ACCURACY)
+// 📊 API: STATS (Updated with Accuracy Calculation)
 app.post('/api/stats', (req, res) => {
     const { userId } = req.body;
     const db = loadDB();
@@ -54,7 +53,7 @@ app.post('/api/stats', (req, res) => {
     
     const total = db[userId].total_msgs || 0;
     const mistakes = db[userId].total_mistakes || 0;
-    // যদি একদম নতুন হয় (0 msg), তবে 100% দেখাবে উৎসাহ দিতে
+    // Calculate Accuracy: (Correct / Total) * 100
     const accuracy = total === 0 ? 100 : Math.round(((total - mistakes) / total) * 100);
 
     res.json({ 
@@ -64,87 +63,82 @@ app.post('/api/stats', (req, res) => {
     });
 });
 
-// 💬 API: CHAT (WITH JUDGE LOGIC)
+// 💬 API: CHAT (The New Brain)
 app.post('/api/chat', async (req, res) => {
-    let { message, systemInstruction, mood, userId } = req.body;
+    let { message, systemInstruction, userId } = req.body;
     
     message = sanitizeInput(message);
     systemInstruction = sanitizeInput(systemInstruction);
-    mood = sanitizeInput(mood) || 'Normal';
     userId = sanitizeInput(userId) || 'anonymous';
 
     const db = loadDB();
     if (!db[userId]) db[userId] = { total_msgs: 0, total_mistakes: 0, total_time: 0 };
     
-    // মেসেজ কাউন্ট বাড়াও (শুরুর মেসেজ বাদে)
     const isStart = message === "Action!";
     if (!isStart) db[userId].total_msgs += 1;
-    
     saveDB(db);
 
+    // Dynamic Temperature based on context
     let dynamicTemp = 0.6; 
 
     try {
         let finalPrompt = "";
 
-        // 🧠 PROMPT: AGENT A (Actor) + AGENT B (Mentor) + JUDGE (Mistake Counter)
+        // 🧠 SUPER PROMPT: ACTOR + MENTOR + JUDGE
         const guardRails = `
         [SYSTEM PROTOCOL]
         
         [AGENT A: ACTOR]
-        - Speak ENGLISH ONLY.
-        - Be friendly and natural.
-        - a master role-player who embodies Islamic Excellence across Belief, Manner and social dealings, using impeccable
-          character to silently invite hearts towards Islam.
-        - - Very much friendly,cordial, engaging, knows the art of talking which release dopamin of listeners.
-        - Whatever his role he has intention to ask a question which can increase liseners English listening skills.
-        - Pivot from NSFW topics.
+        - Role: Act strictly according to the 'systemInstruction'.
+        - Language: ENGLISH ONLY.
+        - Behavior: Natural, friendly, engaging.
+        - Safety: Redirect NSFW/Haram topics politely.
 
         [AGENT B: MENTOR & JUDGE]
-        - Must Speak BANGLA SCRIPT.
-        - Skilled Professional & Practicing Muslim English Mentor. uphold the highest standards of Islamic theology 
-         and practice. Represent Islam through actions, not just words.Tries to create subconscious love for Islam among 
-         his students when he teaches his students  
-         - Very much friendly,cordial, caring, engaging, knows the art of talking which release dopamin of listeners.
-        - **JUDGMENT TASK:** Did the user make a grammar/vocab mistake? 
-          - Set "has_mistake": true (if error found)
-          - Set "has_mistake": false (if correct)
-        - **Structure (Write by bullet point):** 1. Review, 2. Correction, 3. Next Step.
+        - Language: BANGLA SCRIPT (বাংলা).
+        - Persona: Skilled Professional & Practicing Muslim. Friendly, encouraging.
+        - **JUDGMENT TASK:** Check user's input for grammar/vocab errors.
+          - If error found: Set "has_mistake": true
+          - If correct: Set "has_mistake": false
+        - **FEEDBACK STRUCTURE:**
+          1. Review (Analyze the mistake or praise accuracy).
+          2. Correction (Show the right way).
+          3. Next Step (Suggest what to say next to keep conversation going).
         
-        [JSON OUTPUT ONLY]:
+        [OUTPUT FORMAT - JSON ONLY]:
         {
-            "conversation": "English reply...",
-            "learning_note": "Bangla feedback...",
+            "conversation": "English reply from Actor...",
+            "learning_note": "Bangla feedback from Mentor...",
             "has_mistake": true/false
         }
         `;
 
         if (isStart) {
-            finalPrompt = `${systemInstruction} ${guardRails} [TASK]: Start warmly. [JSON REQUIRED]`;
+            finalPrompt = `${systemInstruction} ${guardRails} [TASK]: Start the conversation warmly. [JSON REQUIRED]`;
         } else {
-            finalPrompt = `${systemInstruction} ${guardRails} [USER]: "${message}" [TASK]: Reply, Teach & Judge. [JSON REQUIRED]`;
+            finalPrompt = `${systemInstruction} ${guardRails} [USER SAID]: "${message}" [TASK]: Reply, Teach & Judge. [JSON REQUIRED]`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
-        // Call AI (Llama 3.1 8b Instant)
+        // AI Call
         const rawResponse = await callGroq(messages, dynamicTemp);
         
-        // Parsing
+        // Response Parsing
         let parsedData;
         try { 
             const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
             if (jsonMatch) parsedData = JSON.parse(jsonMatch[0]);
-            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান。", has_mistake: false };
+            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", has_mistake: false };
         } 
         catch (e) {
-            parsedData = { conversation: safeString(rawResponse).replace(/["{}]/g, ''), learning_note: "চালিয়ে যান।", has_mistake: false }; 
+            parsedData = { conversation: safeString(rawResponse).replace(/["{}]/g, ''), learning_note: "চালিয়ে যান।", has_mistake: false }; 
         }
 
         if (!parsedData.conversation) parsedData.conversation = "I am listening...";
-        if (!parsedData.learning_note) parsedData.learning_note = "চালিয়ে যান।";
+        if (!parsedData.learning_note) parsedData.learning_note = "চালিয়ে যান।";
 
-        // 🛑 UPDATE MISTAKE COUNT IN DB
+        // 🛑 SCORING LOGIC: Update Mistakes in DB
         if (!isStart && parsedData.has_mistake === true) {
             db[userId].total_mistakes += 1;
             saveDB(db);
@@ -152,21 +146,39 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ 
             reply: cleanUnicode(parsedData.conversation), 
-            instruction: cleanUnicode(parsedData.learning_note) 
+            instruction: cleanUnicode(parsedData.learning_note),
+            has_mistake: parsedData.has_mistake // Send to frontend for Popup Logic
         });
 
     } catch (err) {
-        console.error("Error:", err.message);
-        res.json({ reply: "Connection stabilized. Say again.", instruction: "কানেকশন ঠিক হয়েছে। আবার বলুন।" });
+        console.error("Server Error:", err.message);
+        res.json({ reply: "Connection stabilized. Say again.", instruction: "কানেকশন ঠিক হয়েছে। আবার বলুন।" });
     }
 });
 
-// ADMIN DASHBOARD
+// 👑 ADMIN DASHBOARD (Updated to show Mistakes & Time)
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => (b.total_time || 0) - (a.total_time || 0));
-    let html = `<html><body><h1>User Stats</h1><table border='1'><tr><th>ID</th><th>Msgs</th><th>Mistakes</th><th>Time</th></tr>`;
-    users.forEach(u => html += `<tr><td>${u.id}</td><td>${u.total_msgs}</td><td>${u.total_mistakes||0}</td><td>${Math.floor((u.total_time||0)/60)}m</td></tr>`);
+    
+    let html = `
+    <html>
+    <head><title>Admin Stats</title><style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#58cc02;color:white}</style></head>
+    <body>
+        <h1>User Statistics</h1>
+        <table>
+            <tr><th>User ID</th><th>Messages</th><th>Mistakes</th><th>Time (Mins)</th></tr>
+    `;
+    
+    users.forEach(u => {
+        html += `<tr>
+            <td>${u.id}</td>
+            <td>${u.total_msgs}</td>
+            <td>${u.total_mistakes || 0}</td>
+            <td>${Math.floor((u.total_time || 0) / 60)}</td>
+        </tr>`;
+    });
+    
     res.send(html + `</table></body></html>`);
 });
 
