@@ -74,7 +74,7 @@ app.post('/api/stats', (req, res) => {
     });
 });
 
-// 💬 API: CHAT (STRICT CONTEXT ENGINE)
+// 💬 API: CHAT (FLUENT BANGLA ENGINE)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     message = sanitizeInput(message);
@@ -85,13 +85,12 @@ app.post('/api/chat', async (req, res) => {
     userId = sanitizeInput(userId) || 'anonymous';
 
     const db = loadDB();
-    // Ensure history exists
     if (!db[userId]) db[userId] = { total_msgs: 0, lifetime_score: 0, total_time: 0, current_skill: userSkill, history: [] };
     if (!Array.isArray(db[userId].history)) db[userId].history = [];
 
     const isStart = message === "Action!";
     if (!isStart) db[userId].total_msgs += 1;
-    if (isStart) db[userId].history = []; // Reset history on new start
+    if (isStart) db[userId].history = []; 
 
     const currentScore = db[userId].lifetime_score || 0;
     const currentLevel = Math.floor(currentScore / 1000) + 1;
@@ -103,23 +102,40 @@ app.post('/api/chat', async (req, res) => {
     let generatedScenario = "";
     if (isStart) {
         generatedScenario = `
-        [NEW SCENARIO START]
-        - Location: ${pick(world.locations)}
-        - Character: ${pick(world.characters)}
-        - Conflict/Topic: ${pick(world.crises)}
+        [SCENARIO]
+        - Place: ${pick(world.locations)}
+        - Person: ${pick(world.characters)}
+        - Situation: ${pick(world.crises)}
         `;
     }
 
-    // 🔥 3. DEFINE STRICT RULES
-    let toneInstruction = "";
-    if (userSkill === 'A' || userSkill === 'B') {
-        toneInstruction = "MENTOR: Treat user as a CHILD. Use 'Tumi' (তুমি). Be affectionate but correct them like a teacher.";
-    } else {
-        toneInstruction = "MENTOR: Treat user as an ADULT. Use 'Apni' (আপনি). Be professional.";
+    // 🔥 3. DEFINE TONE (LINGUISTIC FIX)
+    let complexityRules = "";
+    let mentorTone = "";
+
+    switch(userSkill) {
+        case 'A': // Kid
+            complexityRules = "English: Max 4 simple words. Playful.";
+            mentorTone = "Bangla: Use 'Tumi' (তুমি). Speak like an affectionate brother. Example: 'খুব সুন্দর বলেছ!', 'এটা কিন্তু ঠিক হলো না বাবু'।";
+            break;
+        case 'B': // Learner
+            complexityRules = "English: Simple daily sentences.";
+            mentorTone = "Bangla: Use 'Tumi' (তুমি). Encouraging. Example: 'চেষ্টা ভালো ছিল', 'বাক্যটা এভাবে বলো'।";
+            break;
+        case 'C': // Hesitant
+            complexityRules = "English: Intermediate.";
+            mentorTone = "Bangla: Use 'Apni' (আপনি). Supportive. Example: 'ভয় পাবেন না, আরেকবার চেষ্টা করুন'।";
+            break;
+        case 'D': // IELTS
+            complexityRules = "English: Formal/Academic.";
+            mentorTone = "Bangla: Use 'Apni' (আপনি). Professional. Example: 'গ্রামার ঠিক আছে, তবে শব্দচয়ন আরও ভালো হতে পারত'।";
+            break;
+        case 'E': // Pro
+            complexityRules = "English: Business Professional.";
+            mentorTone = "Bangla: Use 'Apni' (আপনি). Direct. Example: 'কর্পেোরেট পরিবেশে এভাবে বলাটা উপযুক্ত নয়'।";
+            break;
     }
 
-    // 🔥 4. CONTEXT HISTORY (CRITICAL FOR RELEVANCE)
-    // We send the last 4 exchanges to the AI so it knows what was just asked.
     const contextLog = db[userId].history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
 
     try {
@@ -127,86 +143,67 @@ app.post('/api/chat', async (req, res) => {
         
         const masterPrompt = `
         [SYSTEM ROLE]
-        You are "Talk24AI", a Strict English Training Simulator.
+        You are "Talk24AI".
         
-        [CURRENT STATUS]
-        - Skill Level: ${userSkill}
-        - Current Context: ${generatedScenario || "Ongoing Conversation"}
+        [CURRENT SETTINGS]
+        - Skill: ${userSkill}
+        - XP: ${currentLevel}
+        - Context: ${generatedScenario || "Ongoing"}
         
-        [RECENT HISTORY]
+        [HISTORY]
         ${contextLog}
 
-        [PROTOCOL: TWO AGENTS]
+        [AGENTS]
         
-        1. AGENT A (THE ACTOR):
-           - Language: ENGLISH ONLY.
-           - Role: Stay 100% in character.
-           - Logic: If the user replies appropriately, move the story forward. If irrelevant, express confusion (e.g., "Why are you talking about that?").
+        1. ACTOR (English Only):
+           - Roleplay the character. Be natural. Move story forward.
+           - Complexity: ${complexityRules}
         
-        2. AGENT B (THE MENTOR & JUDGE):
-           - Language: BANGLA SCRIPT (বাংলা).
-           - Rule: ${toneInstruction}
-           
-           🚨 [JUDGMENT ALGORITHM - STRICT]:
-           step 1: Check RELEVANCE. Does the User's reply answer the Actor's last question?
-                   - Example: Actor asked "Do you like the drawing?", User said "He plays football".
-                   - Result: IRRELEVANT. Score = 0.
-           step 2: Check GRAMMAR/MEANING.
-                   - Example: User said "I rice eat".
-                   - Result: BROKEN. Score = 0.
-           step 3: SCORING.
-                   - Only give +10 if BOTH Relevance and Meaning are correct.
-                   - Otherwise, Score = 0.
-           
-           [FEEDBACK INSTRUCTION]:
-           - If Score is 0 (Irrelevant): Mentor MUST say in Bangla: "আমরা এখন [Topic] নিয়ে কথা বলছি, অন্য বিষয়ে নয়। (We are talking about X, not Y)."
-           - If Score is 0 (Grammar): Mentor MUST correct the sentence.
+        2. MENTOR (Bangla Only):
+           - **CRITICAL**: Speak STANDARD BANGLA (প্রমিত বাংলা). No dialects. No broken sentences.
+           - **Tone**: ${mentorTone}
+           - **Task**:
+             1. RELEVANCE CHECK: Is the user answering the Actor's last question?
+             2. GRAMMAR CHECK: Is the English correct?
+             3. FEEDBACK: 
+                - If Correct: Give +10 score. Say "মাশাআল্লাহ" or "চমৎকার".
+                - If Irrelevant: Score 0. Say: "আমরা এখন [Topic] নিয়ে কথা বলছি। দয়া করে প্রসঙ্গ বজায় রাখুন।"
+                - If Grammar Wrong: Score 0. Correct the sentence gently in Bangla.
         
-        [OUTPUT JSON FORMAT]:
+        [OUTPUT JSON]:
         {
-            "conversation": "Actor's reply (English)...",
-            "learning_note": "Mentor's feedback (Bangla)...",
+            "conversation": "Actor's reply...",
+            "learning_note": "Mentor's clear Bangla feedback...",
             "score_added": 10 or 0
         }
         `;
 
         if (isStart) {
-            finalPrompt = `
-            ${masterPrompt}
-            [TASK]: Start the scenario based on the location.
-            [JSON REQUIRED]`;
+            finalPrompt = `${masterPrompt} [TASK]: Start scenario. Mentor explains context in clear Bangla. [JSON REQUIRED]`;
         } else {
-            finalPrompt = `
-            ${masterPrompt}
-            [USER INPUT]: "${message}"
-            [TASK]: STRICTLY judge relevance and grammar. Reply accordingly.
-            [JSON REQUIRED]`;
+            finalPrompt = `${masterPrompt} [USER SAID]: "${message}" [TASK]: Judge strict relevance & grammar. Reply clearly. [JSON REQUIRED]`;
         }
 
         const messages = [{ role: "system", content: finalPrompt }, { role: "user", content: isStart ? "Start" : message }];
         
-        // Lower temperature for stricter logic
-        const rawResponse = await callGroq(messages, 0.5);
+        const rawResponse = await callGroq(messages, 0.6);
         
         let parsedData;
         try { 
             const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
             if (jsonMatch) parsedData = JSON.parse(jsonMatch[0]);
-            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", score_added: 0 };
+            else parsedData = { conversation: safeString(rawResponse), learning_note: "চালিয়ে যান।", score_added: 5 };
         } 
         catch (e) {
-            parsedData = { conversation: "I didn't catch that.", learning_note: "বুঝতে পারিনি, আবার বলুন।", score_added: 0 }; 
+            parsedData = { conversation: "Say that again?", learning_note: "দুঃখিত, বুঝতে পারিনি। আবার বলুন।", score_added: 0 }; 
         }
 
-        // 🛑 SAVE HISTORY
         db[userId].history.push({ role: 'Actor', content: parsedData.conversation });
-        // Keep history limited to last 10 turns
         if (db[userId].history.length > 10) db[userId].history = db[userId].history.slice(-10);
 
         if (!isStart && parsedData.score_added > 0) {
             db[userId].lifetime_score = (db[userId].lifetime_score || 0) + parsedData.score_added;
         }
-        
         saveDB(db);
 
         res.json({ 
@@ -218,11 +215,10 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (err) {
         console.error("Server Error:", err.message);
-        res.json({ reply: "Connection error.", instruction: "নেটওয়ার্ক সমস্যা।" });
+        res.json({ reply: "Network error.", instruction: "নেটওয়ার্ক সমস্যা।" });
     }
 });
 
-// ADMIN DASHBOARD
 app.get('/admin/dashboard', (req, res) => {
     const db = loadDB();
     const users = Object.entries(db).map(([id, data]) => ({ id, ...data })).sort((a, b) => (b.lifetime_score || 0) - (a.lifetime_score || 0));
@@ -240,13 +236,10 @@ async function callGroq(messages, temp) {
             max_tokens: 1024,
             temperature: temp,
             response_format: { type: "json_object" }
-        }, { 
-            headers: { "Authorization": `Bearer ${apiKey}` },
-            timeout: 20000 
-        });
+        }, { headers: { "Authorization": `Bearer ${apiKey}` }, timeout: 20000 });
         return response.data.choices[0].message.content;
     } catch (err) { throw new Error("AI Service Failed"); }
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Strict Context Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Fluent Bangla Engine running on port ${PORT}`));
