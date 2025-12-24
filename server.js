@@ -9,13 +9,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🌍 PERSISTENT DB CONNECTION
+// 🌍 OPTIMIZED PERSISTENT DB CONNECTION
 const MONGO_URI = process.env.MONGO_URI; 
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("🚀 Persistent Database Connected!"))
-    .catch(err => console.error("❌ DB Connection Error:", err));
+mongoose.connect(MONGO_URI, {
+    maxPoolSize: 10, // Maintain a pool of connections for speed
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+})
+.then(() => console.log("🚀 Talk24AI DB Connected & Pooled!"))
+.catch(err => console.error("❌ DB Connection Error:", err));
 
-// 📂 USER DATA SCHEMA
+// 📂 USER SCHEMA
 const userSchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
     total_msgs: { type: Number, default: 0 },
@@ -31,25 +35,16 @@ const User = mongoose.model('User', userSchema);
 const cleanUnicode = (str) => String(str).replace(/\\u[\dA-F]{4}/gi, (match) => String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16)));
 const sanitizeInput = (text) => String(text).replace(/<[^>]*>?/gm, '').trim();
 
-// 📊 API: STATS
-app.post('/api/stats', async (req, res) => {
-    const { userId } = req.body;
-    try {
-        let user = await User.findOne({ userId });
-        if (!user) { user = new User({ userId }); await user.save(); }
-        const level = Math.floor(user.lifetime_score / 1000) + 1;
-        res.json({ total: user.total_msgs, score: user.lifetime_score, level, lifetime_seconds: user.total_time });
-    } catch (err) { res.status(500).json({ error: "DB Error" }); }
-});
+// 📘 PRE-DETERMINED CURRICULUM
+const CURRICULUM = {
+    'A': { title: 'Nouns & Greetings', focus: 'Naming objects and initial social greetings.' },
+    'B': { title: 'Action Verbs & Articles', focus: 'Using common verbs and a, an, the correctly.' },
+    'C': { title: 'Adjectives & Pronouns', focus: 'Describing attributes and replacing nouns.' },
+    'D': { title: 'Tenses & Connectors', focus: 'Mastering time flow and logical sentence linkers.' },
+    'E': { title: 'Idioms & Phrasal Verbs', focus: 'Natural professional expressions and native idioms.' }
+};
 
-// ⏱️ API: UPDATE TIME
-app.post('/api/update-time', async (req, res) => {
-    const { userId, seconds } = req.body;
-    try { await User.findOneAndUpdate({ userId }, { $inc: { total_time: seconds } }); res.json({ success: true }); }
-    catch (err) { res.status(500).json({ error: "Update failed" }); }
-});
-
-// 💬 API: CHAT (PRE-DETERMINED CURRICULUM ENGINE)
+// 💬 API: CHAT (HIGH-SPEED ENGINE)
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     message = sanitizeInput(message);
@@ -64,47 +59,38 @@ app.post('/api/chat', async (req, res) => {
         if (isStart) user.history = [];
         else user.total_msgs += 1;
 
-        // 📘 PRE-DETERMINED CURRICULUM CONTENT
-        const CURRICULUM = {
-            'A': { title: 'Nouns & Greetings', description: 'Naming people, objects, and basic social greetings.' },
-            'B': { title: 'Action Verbs & Articles', description: 'Using common verbs and a, an, the correctly.' },
-            'C': { title: 'Adjectives & Pronouns', description: 'Describing attributes and replacing nouns.' },
-            'D': { title: 'Tenses & Connectors', description: 'Mastering time flow and sentence linkers.' },
-            'E': { title: 'Idioms & Phrasal Verbs', description: 'Natural professional expressions and idioms.' }
-        };
-
         const currentSyllabus = CURRICULUM[userLevel];
         const contextHistory = user.history.slice(-6).map(h => `${h.role}: "${h.content}"`).join("\n");
 
         const masteryPrompt = `
-        [MASTER ROLE] World-class English Specialist & practicing Muslim. Speak ONLY English.
-        [FIXED CURRICULUM] Level ${userLevel} Focus: **${currentSyllabus.title}**.
-        [GOAL] Subconsciously teach ${currentSyllabus.description} through the roleplay.
-
-        [PROTOCOLS]
-        1. NO ECHOING: Never repeat what the user said.
-        2. INFINITE SCENARIO: Generate a unique scenario suitable for this skill level at start.
-        3. STRICT SCORING: Give 10 XP ONLY if the reply is Relevant AND uses "${currentSyllabus.title}" correctly.
-        4. ISLAMIC AKHLAQ: Use polite manners and Islamic greetings naturally.
-
-        [MENTOR STRUCTURE - 3 BULLETS ONLY]
-        • Review: Feedback on your grammar and specifically your use of **${currentSyllabus.title}**.
-        • Skill Tip: A professional insight into why "${currentSyllabus.title}" is important here.
-        • Next Step: Guidance for your next move without giving the answer.
-
-        [SESSION DATA]
-        - Level: ${userLevel} | Skill Focus: ${currentSyllabus.title}
-        - History: ${contextHistory}`;
+        [IDENTITY] World-class English Specialist & practicing Muslim. Speak ONLY English.
+        [GOAL] Teach ${currentSyllabus.title} via roleplay.
+        [RULES]
+        1. NO ECHO: Do not repeat user input.
+        2. DYNAMIC SCENARIO: Create a unique roleplay for Level ${userLevel} at start.
+        3. SCORE: Give 10 XP ONLY if relevant and uses ${currentSyllabus.title} correctly.
+        4. STRUCTURE (3 Bullets):
+           • Review: Feedback on ${currentSyllabus.title}.
+           • Tip: Insight on current skill.
+           • Instruction: Next move guide.
+        [CONTEXT] Focus: ${currentSyllabus.title}. History: ${contextHistory}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masteryPrompt }, { role: "user", content: isStart ? "Start simulation now. Introduce the scenario and my goal." : message }],
-            model: "llama-3.1-8b-instant",
-            temperature: 0.7,
+            messages: [
+                { role: "system", content: masteryPrompt },
+                { role: "user", content: isStart ? "Action! Begin scenario." : message }
+            ],
+            model: "llama-3.1-8b-instant", // High-speed model to prevent hangs
+            temperature: 0.6,
             response_format: { type: "json_object" }
-        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 25000 });
+        }, { 
+            headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` },
+            timeout: 22000 // Internal timeout before Render's 30s limit
+        });
 
         let result = JSON.parse(response.data.choices[0].message.content);
 
+        // Update Persistence
         user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
         if (user.history.length > 10) user.history = user.history.slice(-10);
@@ -119,8 +105,25 @@ app.post('/api/chat', async (req, res) => {
             new_total_score: user.lifetime_score
         });
 
-    } catch (err) { res.json({ reply: "I'm sorry, I missed that. Please repeat.", instruction: "• Review: Connection timeout. \\n• Tip: Be brief. \\n• Next Step: Repeat your last input." }); }
+    } catch (err) { 
+        console.error("Mastery Hang Fix Error:", err.message);
+        res.json({ 
+            reply: "I'm sorry, the connection is slow. Could you try again?", 
+            instruction: "• Review: Connection timeout.\\n• Tip: Be brief.\\n• Next Step: Repeat your last input." 
+        }); 
+    }
+});
+
+// 📊 API: STATS
+app.post('/api/stats', async (req, res) => {
+    const { userId } = req.body;
+    try {
+        let user = await User.findOne({ userId });
+        if (!user) { user = new User({ userId }); await user.save(); }
+        const level = Math.floor(user.lifetime_score / 1000) + 1;
+        res.json({ total: user.total_msgs, score: user.lifetime_score, level, lifetime_seconds: user.total_time });
+    } catch (err) { res.status(500).json({ error: "DB Error" }); }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Persistent Curriculum Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 High-Speed persistent Engine running on port ${PORT}`));
