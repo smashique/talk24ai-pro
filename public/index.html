@@ -3,367 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Master English</title>
-    <link rel="manifest" href="/manifest.json">
+    <title>Talk24AI | 400 Topics Mastery</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <style>
-        /* --- 🎨 THEME: DARK CYBER ISLAMIC --- */
-        :root { 
-            --bg-color: #002b20;   
-            --card-bg: #001e17;    
-            --input-bg: #00382e;   
-            --text-white: #ffffff;
-            --text-gray: #aabeb8;
-            --accent-cyan: #00ffcc; 
-            --btn-grad: linear-gradient(90deg, #ff8c00, #ff2e63); 
-            --font: 'Nunito', sans-serif;
-        }
-
+        :root { --bg-color: #002b20; --card-bg: #001e17; --input-bg: #00382e; --accent-cyan: #00ffcc; --text-white: #ffffff; --text-gray: #aabeb8; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: var(--font); margin: 0; background: var(--bg-color); display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--text-white); user-select: none; }
+        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg-color); color: var(--text-white); height: 100vh; overflow: hidden; }
 
-        /* --- 🌀 BACKGROUND --- */
-        .bg-shape { position: absolute; border-radius: 50%; opacity: 0.1; z-index: -1; animation: float 30s infinite linear; filter: blur(80px); }
-        .shape1 { width: 300px; height: 300px; background: #00ffcc; top: -10%; left: -10%; }
-        .shape2 { width: 250px; height: 250px; background: #ff8c00; bottom: -10%; right: -10%; }
-        @keyframes float { 0% { transform: translate(0, 0); } 50% { transform: translate(20px, 40px); } 100% { transform: translate(0, 0); } }
+        /* SCREENS */
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 15px; z-index: 5000; }
+        .active-screen { display: flex; }
 
-        /* --- 🏠 HOME SCREEN --- */
-        #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
-        .logo { font-family: 'Fredoka', sans-serif; font-size: 36px; color: var(--text-white); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; }
+        .logo { font-family: 'Fredoka', sans-serif; font-size: 32px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .hero-card { width: 100%; max-width: 500px; background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 15px; max-height: 90vh; }
 
-        .trial-badge {
-            background: rgba(0, 56, 46, 0.6); border: 1px dashed var(--accent-cyan); padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--text-gray); margin-bottom: 20px; backdrop-filter: blur(4px); animation: pulse-border 2s infinite;
-        }
-        .feedback-link { color: #ff8c00; text-decoration: underline; cursor: pointer; margin-left: 5px; }
-
-        .stats-bar { display: flex; justify-content: space-between; width: 100%; max-width: 420px; margin-bottom: 10px; padding: 0 10px; }
-        .stat-label { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { font-size: 16px; font-weight: 900; color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0, 255, 204, 0.4); }
-
-        .hero-card { width: 100%; max-width: 420px; background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 15px; }
-        .hook-box { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 18px; text-align: center; border: 1px dashed #004d40; margin-bottom: 5px; }
-        .pain-point { font-size: 14px; color: #ffab91; font-weight: 800; line-height: 1.5; margin-bottom: 8px; text-transform: uppercase; }
-        .achievement-hook { font-size: 13px; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.5px; }
-
-        .section-label { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; margin-bottom: -8px; margin-left: 5px; margin-top: 5px;}
-
-        /* SKILL GRID */
+        /* GRID FOR MODULES */
         .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 12px; padding: 15px 10px; cursor: pointer; transition: 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .skill-option:active { transform: scale(0.98); background: #004d40; }
-        .skill-option.selected { border-color: var(--accent-cyan); background: rgba(0, 255, 204, 0.1); box-shadow: 0 0 15px rgba(0, 255, 204, 0.2); }
-        .skill-option.selected .skill-head { color: var(--accent-cyan); }
-        .skill-option:last-child { grid-column: span 2; flex-direction: row; gap: 10px; padding: 12px; }
-        
-        .skill-head { font-weight: 700; font-size: 14px; color: var(--text-white); }
-        .skill-sub { font-size: 10px; color: var(--text-gray); font-weight: 600; margin-top: 2px; }
+        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 15px; padding: 20px 10px; cursor: pointer; text-align: center; }
+        .skill-option:active { transform: scale(0.95); background: #004d40; }
+        .skill-head { font-weight: 800; font-size: 16px; color: var(--accent-cyan); }
+        .skill-sub { font-size: 10px; color: var(--text-gray); margin-top: 4px; }
 
-        .btn-curriculum { background: transparent; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.2s; }
-        .btn-curriculum:active { transform: scale(0.95); }
+        /* TOPIC SELECTION UI */
+        .topic-scroll { overflow-y: auto; padding-right: 5px; margin-top: 10px; }
+        .topic-group-header { background: #00382e; color: var(--accent-cyan); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 900; margin: 15px 0 8px 0; text-transform: uppercase; border-left: 3px solid var(--accent-cyan); }
+        .topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .topic-btn { background: rgba(255,255,255,0.05); border: 1px solid #004d40; padding: 12px 8px; border-radius: 10px; color: white; cursor: pointer; font-size: 13px; font-weight: 600; text-align: left; transition: 0.2s; }
+        .topic-btn:hover { background: #004d40; border-color: var(--accent-cyan); }
 
-        .btn-start { width: 100%; padding: 16px; background: var(--btn-grad); color: white; font-size: 16px; font-weight: 900; border: none; border-radius: 15px; box-shadow: 0 10px 20px rgba(255, 46, 99, 0.3); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: 0.2s; }
-        .btn-start:active { transform: translateY(3px); box-shadow: none; }
+        .btn-back { background: transparent; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 6px 12px; border-radius: 8px; cursor: pointer; align-self: flex-start; font-size: 12px; }
 
-        /* --- 💬 CHAT SCREEN --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; background: var(--card-bg); }
-        .top-nav { padding: 10px 20px; background: var(--bg-color); border-bottom: 1px solid #004d40; display: flex; align-items: center; gap: 12px; height: 65px; color: white; }
-        .level-badge { background: var(--input-bg); color: var(--accent-cyan); padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; border: 1px solid var(--accent-cyan); }
-        
-        /* 💾 DOWNLOAD BUTTON STYLE */
-        .btn-download { background: #00ffcc; color: #002b20; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
-        .btn-download:active { transform: scale(0.95); }
+        /* CHAT UI */
+        .top-nav { padding: 12px 20px; background: var(--bg-color); border-bottom: 1px solid #004d40; display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 600px; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 600px; padding-bottom: 100px; }
+        .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; line-height: 1.4; }
+        .ai-bubble { background: var(--input-bg); align-self: flex-start; }
+        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
+        .mentor-note { margin-top: 8px; font-size: 12px; color: var(--text-gray); border-left: 2px solid var(--accent-cyan); padding-left: 10px; font-style: italic; }
 
-        .progress-container { flex: 1; } .progress-track { height: 6px; background: #00382e; border-radius: 5px; } .progress-fill { height: 100%; background: var(--accent-cyan); width: 0%; border-radius: 5px; box-shadow: 0 0 10px var(--accent-cyan); transition: width 0.5s; }
-        
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
-        .bubble { padding: 12px 16px; border-radius: 12px; font-size: 15px; font-weight: 600; width: fit-content; max-width: 85%; line-height: 1.5; }
-        .ai-bubble { background: var(--input-bg); color: var(--text-white); border: 1px solid #004d40; border-bottom-left-radius: 2px; }
-        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 4px 10px rgba(0, 131, 176, 0.3); }
-        .mentor-note { margin-top: 8px; background: #002b20; padding: 10px; border-radius: 8px; font-size: 13px; border-left: 2px solid var(--accent-cyan); color: #aabeb8; }
-
-        .bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; padding: 15px; display: flex; justify-content: center; background: rgba(0, 30, 23, 0.9); backdrop-filter: blur(10px); }
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: rgba(0, 30, 23, 0.95); display: flex; justify-content: center; }
         .input-deck { width: 100%; max-width: 600px; display: flex; gap: 10px; }
-        #mic-btn { width: 50px; height: 50px; border-radius: 12px; background: var(--input-bg); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        #mic-btn.listening { background: #ff2e63; border-color: #ff2e63; color: white; animation: pulse 1s infinite; }
-        .input-box { flex: 1; border: 1px solid #004d40; background: var(--input-bg); border-radius: 12px; padding: 0 15px; font-size: 16px; outline: none; color: white; }
-        
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 46, 99, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 46, 99, 0); } }
-        @keyframes pulse-border { 0% { border-color: rgba(0, 255, 204, 0.3); } 50% { border-color: rgba(0, 255, 204, 1); } 100% { border-color: rgba(0, 255, 204, 0.3); } }
-
-        /* MODALS */
-        #level-up-modal, #curriculum-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 7000; align-items: center; justify-content: center; padding: 20px; }
-        .levelup-card, .curriculum-card { background: var(--card-bg); padding: 30px; border-radius: 20px; text-align: center; border: 2px solid var(--accent-cyan); box-shadow: 0 0 50px rgba(0, 255, 204, 0.3); }
-        .curriculum-card { text-align: left; width: 100%; max-width: 450px; max-height: 80vh; overflow-y: auto; }
-        .curriculum-item { margin-bottom: 15px; border-bottom: 1px dashed #004d40; padding-bottom: 10px; }
-        .curr-lvl { color: var(--accent-cyan); font-weight: 900; font-size: 14px; text-transform: uppercase; }
-        .curr-skill { font-weight: 700; color: white; margin-top: 2px; font-size: 13px; }
-        .curr-desc { font-size: 11px; color: var(--text-gray); line-height: 1.4; margin-top: 4px; }
+        .input-box { flex: 1; background: var(--input-bg); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; }
+        #mic-btn { width: 50px; height: 50px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 22px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-<audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
-<audio id="snd-levelup" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
-
-<div class="bg-shape shape1"></div><div class="bg-shape shape2"></div>
-
-<div id="level-up-modal">
-    <div class="levelup-card">
-        <div style="font-size:50px;">💎</div>
-        <h2 style="color:var(--accent-cyan); margin:10px 0;">LEVEL UP!</h2>
-        <p style="color:white;">Welcome to Level <span id="new-level-display">2</span></p>
-        <button class="btn-start" style="padding:10px; font-size:14px;" onclick="closeLevelModal()">CONTINUE</button>
-    </div>
-</div>
-
-<div id="curriculum-modal">
-    <div class="curriculum-card">
-        <h3 style="color:var(--accent-cyan); text-align:center; margin-top:0; border-bottom: 2px solid var(--accent-cyan); padding-bottom:10px;">🎓 MASTER ROADMAP</h3>
-        
-        <div class="curriculum-item">
-            <div class="curr-lvl">Track A: Beginner (6-10 Years)</div>
-            <div class="curr-skill">Magic Spoken & Functional Grammar</div>
-            <div class="curr-desc">Build foundational confidence through naming objects and simple sentence structures.</div>
-        </div>
-
-        <div class="curriculum-item">
-            <div class="curr-lvl">Track B: Learner (10-16 Years)</div>
-            <div class="curr-skill">Dynamic Actions & Articles</div>
-            <div class="curr-desc">Master daily routines, school life, and hobbies with correct article usage.</div>
-        </div>
-
-        <div class="curriculum-item">
-            <div class="curr-lvl">Track C: Hesitant (17-24 Years)</div>
-            <div class="curr-skill">Logic, Flow & Confidence</div>
-            <div class="curr-desc">Overcome speaking anxiety and learn to build natural opinions in social settings.</div>
-        </div>
-
-        <div class="curriculum-item">
-            <div class="curr-lvl">Track D: IELTS / GRE (17-24 Years)</div>
-            <div class="curr-skill">Academic Excellence & Connectors</div>
-            <div class="curr-desc">Target High Band scores through complex tenses and logical connectors.</div>
-        </div>
-
-        <div class="curriculum-item" style="border:none;">
-            <div class="curr-lvl">Track E: Professional (24-34 Years)</div>
-            <div class="curr-skill">Corporate Power & Idioms</div>
-            <div class="curr-desc">Master formal business communication, idioms, and global leadership tone.</div>
-        </div>
-
-        <button class="btn-start" style="padding:10px; font-size:14px; margin-top:10px;" onclick="closeCurriculum()">GOT IT!</button>
-    </div>
-</div>
-
-<div id="home-screen">
+<div id="home-screen" class="screen active-screen">
     <div class="logo">Talk24AI</div>
-    
-    <div class="trial-badge">
-        🚧 Trial Version • <span class="feedback-link" onclick="window.open('mailto:support@talk24ai.xyz')">Give Your Feedback</span>
-    </div>
-
-    <div class="stats-bar">
-        <div>
-            <div class="stat-label">CURRENT LEVEL</div>
-            <div class="stat-value">LEVEL <span id="home-lvl">1</span></div>
-        </div>
-        <div style="text-align:right;">
-            <div class="stat-label">TOTAL XP</div>
-            <div class="stat-value"><span id="home-score">0</span> XP</div>
-        </div>
-    </div>
-
     <div class="hero-card">
-        <div class="hook-box">
-            <div class="pain-point">Tired of "Freezing" during English Conversations?</div>
-            <div class="achievement-hook">🚀 Break the silence, build global confidence, and speak like a Pro!</div>
-        </div>
-
-        <div class="section-label">SELECT YOUR TRACK</div>
-
+        <div style="font-weight:900; color:var(--text-gray); font-size:11px; text-transform:uppercase;">Step 1: Select Module</div>
         <div class="skill-grid">
-            <div class="skill-option" onclick="selectSkill('A', this)">
-                <div class="skill-head">Beginner</div>
-                <div class="skill-sub">Magic Spoken (6-10 yrs)</div>
-            </div>
-            <div class="skill-option" onclick="selectSkill('B', this)">
-                <div class="skill-head">Learner</div>
-                <div class="skill-sub">Dynamic Action (10-16 yrs)</div>
-            </div>
-            <div class="skill-option" onclick="selectSkill('C', this)">
-                <div class="skill-head">Hesitant</div>
-                <div class="skill-sub">Logic & Flow (17-24 yrs)</div>
-            </div>
-            <div class="skill-option" onclick="selectSkill('D', this)">
-                <div class="skill-head">IELTS / GRE</div>
-                <div class="skill-sub">Academic (17-24 yrs)</div>
-            </div>
-            <div class="skill-option" onclick="selectSkill('E', this)">
-                <div class="skill-head">Professional</div>
-                <div class="skill-sub">Corporate (24-34 yrs)</div>
-            </div>
+            <div class="skill-option" onclick="loadTopics('A')"><div class="skill-head">Beginner</div><div class="skill-sub">Kids (6-10 yrs)</div></div>
+            <div class="skill-option" onclick="loadTopics('B')"><div class="skill-head">Learner</div><div class="skill-sub">Teens (10-16 yrs)</div></div>
+            <div class="skill-option" onclick="loadTopics('C')"><div class="skill-head">Hesitant</div><div class="skill-sub">IELTS (17-24 yrs)</div></div>
+            <div class="skill-option" onclick="loadTopics('D')"><div class="skill-head">Pro</div><div class="skill-sub">Adults (24-34 yrs)</div></div>
         </div>
-
-        <button class="btn-curriculum" onclick="openCurriculum()">📚 View Syllabus</button>
-        <button class="btn-start" onclick="startSession()">🚀 START MAGIC</button>
-        <button id="install-btn" onclick="installApp()">📲 Download App</button>
     </div>
 </div>
 
-<div id="chat-screen">
+<div id="topic-screen" class="screen">
+    <div class="hero-card">
+        <button class="btn-back" onclick="changeScreen('home-screen')">← Back</button>
+        <div style="font-weight:900; color:var(--accent-cyan); font-size:13px;">Step 2: Choose Your Mission Topic</div>
+        <div id="topic-container" class="topic-scroll">
+            </div>
+    </div>
+</div>
+
+<div id="chat-screen" class="screen" style="padding:0;">
     <div class="top-nav">
-        <div class="level-badge" id="chat-lvl-badge">LVL 1</div>
-        <div class="progress-container">
-            <div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div>
-        </div>
-        <button class="btn-download" onclick="downloadSessionNotes()">💾 Save Notes</button>
+        <div><div id="active-topic" style="font-weight:900; color:var(--accent-cyan); font-size:14px;">Topic</div><div id="active-mod" style="font-size:10px; color:var(--text-gray);">Module</div></div>
+        <button onclick="location.reload()" style="background:transparent; border:1px solid #444; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Exit</button>
     </div>
     <div id="messages"></div>
     <div class="bottom-area">
         <div class="input-deck">
             <button id="mic-btn" onclick="toggleMic()">🎙️</button>
-            <input type="text" id="userInput" class="input-box" placeholder="Type or Speak..." onkeypress="handleEnter(event)">
+            <input type="text" id="userInput" class="input-box" placeholder="Start speaking..." onkeypress="if(event.key==='Enter')sendToAI(this.value)">
         </div>
     </div>
 </div>
 
 <script>
     const SERVER_URL = "https://talk24ai.onrender.com"; 
-    let USER_ID = localStorage.getItem('talk24_uid');
-    if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
-    
-    // 💾 STATE WITH NOTES ARRAY
-    let state = { skill: null, level: 1, score: 0, notes: [] };
-    
-    const play = (id) => { const a = document.getElementById(id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } };
+    let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
+    localStorage.setItem('talk24_uid', USER_ID);
 
-    window.onload = async () => {
-        try {
-            const res = await fetch(`${SERVER_URL}/api/stats`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({userId: USER_ID}) });
-            const data = await res.json();
-            updateStatsUI(data.score, data.level);
-        } catch(e) {}
+    let state = { module: null, topic: null };
+
+    // 📘 FULL 400-TOPIC DATA STRUCTURE
+    const FULL_SYLLABUS = {
+        'A': {
+            name: "Beginner",
+            groups: [
+                { title: "1-10: Greetings & Self", items: ["Hello & Hi", "Good Morning", "Good Night", "My Name", "My Age", "Boy or Girl?", "How are you?", "I am Fine", "Goodbye", "Thank You"] },
+                { title: "11-20: Family", items: ["Mother", "Father", "Brother", "Sister", "Baby", "Grandfather", "Grandmother", "Uncle", "Aunt", "Cousin"] },
+                { title: "21-30: Colors", items: ["Red Apple", "Blue Sky", "Green Grass", "Yellow Sun", "Orange Fruit", "Black Hair", "White Teeth", "Pink Flower", "Brown Bear", "Purple Dress"] },
+                { title: "31-40: Counting & Sizes", items: ["One to Five", "Six to Ten", "Phone Number", "How Many Fingers?", "Count the Chairs", "First & Second", "Big & Small", "Tall & Short", "Heavy & Light", "Fast & Slow"] },
+                { title: "41-50: Body Parts", items: ["My Head", "My Eyes", "My Nose", "My Mouth", "My Ears", "My Hands", "My Legs", "My Stomach", "My Hair", "My Teeth"] },
+                { title: "51-60: Animals", items: ["Cat (Meow)", "Dog (Bark)", "Cow (Moo)", "Lion (Roar)", "Tiger", "Elephant", "Monkey", "Bird", "Fish", "Snake"] },
+                { title: "61-70: Food & Drink", items: ["Drinking Water", "Milk", "Egg", "Bread", "Rice", "Chicken", "Apple", "Banana", "Mango", "Chocolate"] },
+                { title: "71-80: House", items: ["My Room", "Bed", "Chair", "Table", "Door", "Window", "Fan", "Light", "TV", "Kitchen"] },
+                { title: "81-90: School", items: ["School Bag", "Pencil", "Pen", "Book", "Eraser", "Ruler", "Sharpener", "Tiffin Box", "Water Bottle", "Blackboard"] },
+                { title: "91-100: Actions", items: ["Run", "Jump", "Eat", "Sleep", "Drink", "Play", "Walk", "Sit Down", "Stand Up", "Clap Hands"] }
+            ]
+        },
+        'B': {
+            name: "Learner",
+            groups: [
+                { title: "1-10: School Life", items: ["My School", "Favorite Teacher", "Best Friend", "Homework", "Exam Fear", "Lunch Break", "School Bus", "Library", "Sports Day", "Late for Class"] },
+                { title: "11-20: Hobbies", items: ["Cricket", "Football", "Mobile Games", "Drawing", "Singing", "Dancing", "Storybooks", "Cycling", "Swimming", "Gardening"] },
+                { title: "21-30: Technology", items: ["Smartphone", "YouTube", "Selfies", "Facebook", "Online Games", "WiFi Issues", "Charging Phone", "Cartoons", "Action Movies", "Listening to Music"] },
+                { title: "31-40: Food & Restaurants", items: ["Pizza", "Burger", "Ice Cream", "Biryani", "Noodles", "Spicy Food", "Ordering Food", "Street Food", "Favorite Drink", "Simple Cooking"] },
+                { title: "41-50: Daily Routine", items: ["Waking Up", "Brushing Teeth", "Taking Bath", "Getting Dressed", "Breakfast", "Going to School", "Afternoon Nap", "Evening Study", "Dinner Time", "Going to Sleep"] },
+                { title: "51-60: Emotions", items: ["Happy", "Sad", "Angry", "Scared", "Bored", "Excited", "Nervous", "Hungry", "Thirsty", "Surprised"] },
+                { title: "61-70: Shopping", items: ["Buying Toys", "Buying Clothes", "Shoe Shop", "Grocery Store", "Asking Price", "Pocket Money", "Saving Money", "Buying Gift", "Supermarket", "Bargaining"] },
+                { title: "71-80: Travel", items: ["Zoo Visit", "Park", "Picnic", "Village Home", "Train Journey", "Bus Ride", "Boat Ride", "Family Trip", "Museum", "Holiday Plan"] },
+                { title: "81-90: Weather", items: ["Hot Summer", "Rainy Day", "Cold Winter", "Stormy Night", "Rainbow", "Flowers", "Trees", "River", "Moon & Stars", "Clouds"] },
+                { title: "91-100: Social", items: ["Saying Sorry", "Asking Help", "Greeting Elders", "Making Friends", "Sharing Food", "Helping Mom", "Guests", "Phone Call", "Birthday Party", "Festivals"] }
+            ]
+        },
+        'C': {
+            name: "Hesitant",
+            groups: [
+                { title: "1-10: IELTS Prep", items: ["Hometown", "Work or Study", "Accommodation", "Neighbors", "Transport", "Weather Choice", "Gift Giving", "Mirrors", "Robots", "Leisure Time"] },
+                { title: "11-20: Social Issues", items: ["Traffic Jams", "Pollution", "Global Warming", "Unemployment", "Poverty", "Corruption", "Gender Equality", "Mental Health", "Fast Fashion", "Plastic Ban"] },
+                { title: "21-30: University", items: ["Choosing Major", "Campus Life", "Roommates", "Assignments", "Group Study", "Part-time Job", "Student Loans", "Studying Abroad", "Graduation", "Ragging"] },
+                { title: "31-40: Ethics", items: ["AI vs Humans", "Social Media", "Data Privacy", "Cyberbullying", "Online Learning", "Space Travel", "Automation", "Gadgets", "Video Games", "Inventions"] },
+                { title: "41-50: Travel & Culture", items: ["Solo Travel", "Adventure Sports", "Cultural Shock", "Traditional Food", "Historical Places", "Visa Process", "Hotel Booking", "Lost Luggage", "Languages", "Festivals"] },
+                { title: "51-60: Relationships", items: ["Friendship", "Long Distance", "Generation Gap", "Marriage Views", "Nuclear Family", "Trust Issues", "Breakups", "Networking", "Intro vs Extro", "Peer Pressure"] },
+                { title: "61-70: Health", items: ["Gym & Fitness", "Healthy Diet", "Meditation", "Yoga", "Fast Food", "Sleep Habits", "Hospitals", "Insurance", "Cleanliness", "Organic Food"] },
+                { title: "71-80: Abstract", items: ["Success", "Money/Happiness", "Leadership", "Patience", "Luck vs Work", "Discipline", "Creativity", "Honesty", "Freedom", "Regret"] },
+                { title: "81-90: Entertainment", items: ["Movie Reviews", "Binge Watching", "Reading Habits", "Music Genres", "Celebrity", "Reality TV", "Art Galleries", "Concerts", "Theater", "Photography"] },
+                { title: "91-100: Practical", items: ["Bank Account", "Renting", "Complaining", "Directions", "Graph Description", "Making Plans", "Convincing", "Interview Prep", "CV Writing", "Public Speaking"] }
+            ]
+        },
+        'D': {
+            name: "Professional",
+            groups: [
+                { title: "1-10: Interview", items: ["Self Intro", "Strengths", "Why Hire?", "Salary", "5-Year Plan", "Failure", "Leadership", "Resume Gap", "Interview Questions", "Negotiation"] },
+                { title: "11-20: Meetings", items: ["Agenda Setting", "Opening", "Brainstorming", "Taking Minutes", "Status Updates", "Problem Solving", "Asking Opinion", "Agreeing", "Closing", "Zoom Etiquette"] },
+                { title: "21-30: Communication", items: ["Email Writing", "Phone Etiquette", "Small Talk", "Persuasion", "Active Listening", "Feedback", "Criticism", "Presentation", "Report Writing", "Networking"] },
+                { title: "31-40: Office", items: ["Teamwork", "Office Politics", "Work-Life", "Remote Work", "Commuting", "Lunch Breaks", "Desk Org", "Office Attire", "Coffee Chat", "Holiday Leave"] },
+                { title: "41-50: Leadership", items: ["Motivating Team", "Delegating", "Mentoring", "Decision Making", "Time Management", "Strategic", "Conflict", "Team Building", "Hiring", "Firing"] },
+                { title: "51-60: Concepts", items: ["Marketing", "Sales Pitch", "Profit & Loss", "ROI", "KPIs", "Startups", "Investments", "Customer Service", "Branding", "Supply Chain"] },
+                { title: "61-70: Clients", items: ["Pitching", "Closing Deals", "Complaints", "Satisfaction", "Follow-ups", "CRM Systems", "Business Lunch", "Contracting", "Business Cards", "Events"] },
+                { title: "71-80: HR", items: ["Resignation", "Promotion", "Sick Leave", "Performance", "LinkedIn", "Cover Letter", "References", "Harassment", "Inclusion", "Culture"] },
+                { title: "81-90: Tech", items: ["Data Analysis", "PM Tools", "Cybersecurity", "Cloud Computing", "Automation", "AI in Biz", "E-commerce", "Digital Marketing", "Support", "Updates"] },
+                { title: "91-100: Global", items: ["Culture Gaps", "Time Zones", "Travel", "Currency", "Global Markets", "Export/Import", "Translation", "Manners", "Gifts", "Ethics"] }
+            ]
+        }
     };
 
-    function updateStatsUI(score, level) {
-        state.score = score; state.level = level;
-        document.getElementById('home-score').innerText = score;
-        document.getElementById('home-lvl').innerText = level;
-        document.getElementById('chat-lvl-badge').innerText = `LVL ${level}`;
-        document.getElementById('xp-bar').style.width = `${(score % 1000 / 1000) * 100}%`;
+    function changeScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(id).classList.add('active-screen');
     }
 
-    function openCurriculum() { play('snd-click'); document.getElementById('curriculum-modal').style.display = 'flex'; }
-    function closeCurriculum() { document.getElementById('curriculum-modal').style.display = 'none'; }
+    function loadTopics(modCode) {
+        state.module = modCode;
+        const container = document.getElementById('topic-container');
+        container.innerHTML = "";
+        
+        FULL_SYLLABUS[modCode].groups.forEach(group => {
+            const header = document.createElement('div');
+            header.className = "topic-group-header";
+            header.innerText = group.title;
+            container.appendChild(header);
 
-    function selectSkill(code, el) {
-        play('snd-click');
-        document.querySelectorAll('.skill-option').forEach(d => d.classList.remove('selected'));
-        el.classList.add('selected');
-        state.skill = code;
+            const grid = document.createElement('div');
+            grid.className = "topic-grid";
+            group.items.forEach(topic => {
+                const btn = document.createElement('button');
+                btn.className = "topic-btn";
+                btn.innerText = topic;
+                btn.onclick = () => startMission(topic);
+                grid.appendChild(btn);
+            });
+            container.appendChild(grid);
+        });
+        changeScreen('topic-screen');
     }
 
-    function startSession() {
-        if (!state.skill) return alert("Select a Track!");
-        play('snd-click');
-        document.getElementById('home-screen').style.display = 'none';
-        document.getElementById('chat-screen').style.display = 'flex';
-        callAPI({ message: "Action!", systemInstruction: `Skill Level: ${state.skill}`, userId: USER_ID });
+    function startMission(topicName) {
+        state.topic = topicName;
+        document.getElementById('active-topic').innerText = topicName;
+        document.getElementById('active-mod').innerText = FULL_SYLLABUS[state.module].name;
+        changeScreen('chat-screen');
+        callAPI({ message: `Action! Mission Start: ${topicName}`, systemInstruction: `Skill Level: ${state.module}`, userId: USER_ID });
     }
 
     async function sendToAI(text) {
-        if (!text.trim()) return;
-        if (/[অ-ঔক-হ]/.test(text)) { alert("Only English allowed!"); return; }
-        play('snd-click');
-        addUserMsg(text);
+        if(!text.trim()) return;
+        addMsg(text, 'user');
         document.getElementById('userInput').value = '';
-        callAPI({ message: text, systemInstruction: `Skill Level: ${state.skill}`, userId: USER_ID });
+        callAPI({ message: text, systemInstruction: `Skill Level: ${state.module}`, userId: USER_ID });
     }
 
     async function callAPI(payload) {
         try {
-            document.getElementById('mic-btn').classList.add('listening');
-            const res = await fetch(`${SERVER_URL}/api/chat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             const data = await res.json();
-            document.getElementById('mic-btn').classList.remove('listening');
-            
-            if (data.score_added > 0) {
-                play('snd-success');
-                confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 }, colors: ['#00ffcc', '#ff2e63'] });
-                const newLvl = Math.floor(data.new_total_score / 1000) + 1;
-                if (newLvl > state.level) showLevelUp(newLvl);
-                updateStatsUI(data.new_total_score, newLvl);
-            }
-
-            // 💾 SAVE INSTRUCTION TO NOTES
-            if(data.instruction) {
-                const cleanNote = data.instruction.replace(/\\n/g, '\n');
-                state.notes.push(`\n[LEARNING NOTE - Level ${state.level}]:\n${cleanNote}\n`);
-            }
-
-            addAiMsg(data.reply, data.instruction);
-        } catch (e) { document.getElementById('mic-btn').classList.remove('listening'); }
+            addMsg(data.reply, 'ai', data.instruction);
+        } catch(e) {}
     }
 
-    function addUserMsg(text) {
-        const d = document.createElement('div'); d.innerHTML = `<div class="bubble user-bubble">${text}</div>`;
-        d.style.display='flex'; d.style.justifyContent='flex-end';
-        document.getElementById('messages').appendChild(d);
-        scrollToBottom();
-    }
-
-    function addAiMsg(text, note) {
+    function addMsg(t, sender, note) {
+        const box = document.getElementById('messages');
         const d = document.createElement('div');
-        let html = `<div class="bubble ai-bubble">${text}</div>`;
-        if (note) html += `<div class="mentor-note">${note}</div>`;
-        d.innerHTML = html;
-        document.getElementById('messages').appendChild(d);
-        scrollToBottom();
-        const u = new SpeechSynthesisUtterance(text); u.rate = 0.9; window.speechSynthesis.speak(u);
+        d.className = `bubble ${sender}-bubble`;
+        d.innerHTML = sender === 'ai' && note ? `${t}<div class="mentor-note">${note}</div>` : t;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+        if(sender === 'ai') { const u = new SpeechSynthesisUtterance(t); u.rate = 0.95; window.speechSynthesis.speak(u); }
     }
-
-    // 💾 DOWNLOAD FUNCTION
-    function downloadSessionNotes() {
-        if(state.notes.length === 0) return alert("No learning notes collected yet!");
-        const header = `Talk24AI Learning Session - ${new Date().toLocaleDateString()}\n`;
-        const footer = `\n---------------------------------------\nKeep practicing! InshaAllah you will master English soon.`;
-        const blob = new Blob([header + state.notes.join('\n') + footer], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Talk24AI_Notes_${Date.now()}.txt`;
-        a.click();
-    }
-
-    function showLevelUp(lvl) {
-        play('snd-levelup');
-        document.getElementById('new-level-display').innerText = lvl;
-        document.getElementById('level-up-modal').style.display = 'flex';
-        confetti({ particleCount: 100, spread: 90, origin: { y: 0.6 } });
-    }
-    
-    function closeLevelModal() { document.getElementById('level-up-modal').style.display = 'none'; }
-    function scrollToBottom() { const b = document.getElementById('messages'); b.scrollTop = b.scrollHeight; }
-    function handleEnter(e) { if(e.key === 'Enter') sendToAI(e.target.value); }
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else alert("Check browser menu to install."); }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = SpeechRecognition ? new SpeechRecognition() : null;
+    let rec = SpeechRecognition ? new SpeechRecognition() : null;
     function toggleMic() {
-        if (!recognition) return alert("Use Chrome for voice.");
-        recognition.lang = 'en-US';
-        recognition.start();
-        recognition.onresult = (e) => {
-            const txt = e.results[0][0].transcript;
-            document.getElementById('userInput').value = txt;
-            sendToAI(txt);
-        };
+        if(!rec) return alert("Mic not supported.");
+        rec.start();
+        rec.onresult = (e) => sendToAI(e.results[0][0].transcript);
     }
 </script>
 </body>
