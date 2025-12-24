@@ -35,16 +35,7 @@
         .logo { font-family: 'Fredoka', sans-serif; font-size: 36px; color: var(--text-white); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; }
 
         .trial-badge {
-            background: rgba(0, 56, 46, 0.6);
-            border: 1px dashed var(--accent-cyan);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-gray);
-            margin-bottom: 20px;
-            backdrop-filter: blur(4px);
-            animation: pulse-border 2s infinite;
+            background: rgba(0, 56, 46, 0.6); border: 1px dashed var(--accent-cyan); padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--text-gray); margin-bottom: 20px; backdrop-filter: blur(4px); animation: pulse-border 2s infinite;
         }
         .feedback-link { color: #ff8c00; text-decoration: underline; cursor: pointer; margin-left: 5px; }
 
@@ -52,22 +43,8 @@
         .stat-label { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
         .stat-value { font-size: 16px; font-weight: 900; color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0, 255, 204, 0.4); }
 
-        .hero-card { 
-            width: 100%; max-width: 420px; 
-            background: var(--card-bg); 
-            border: 2px solid #004d40;
-            border-radius: 25px; 
-            padding: 25px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
-            display: flex; flex-direction: column; gap: 15px; 
-        }
-        
-        .hook-box { 
-            background: rgba(255, 255, 255, 0.05); 
-            border-radius: 15px; padding: 18px; 
-            text-align: center; border: 1px dashed #004d40;
-            margin-bottom: 5px;
-        }
+        .hero-card { width: 100%; max-width: 420px; background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 15px; }
+        .hook-box { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 18px; text-align: center; border: 1px dashed #004d40; margin-bottom: 5px; }
         .pain-point { font-size: 14px; color: #ffab91; font-weight: 800; line-height: 1.5; margin-bottom: 8px; text-transform: uppercase; }
         .achievement-hook { font-size: 13px; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.5px; }
 
@@ -75,67 +52,30 @@
 
         /* SKILL GRID */
         .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .skill-option { 
-            background: var(--input-bg); 
-            border: 1px solid transparent; 
-            border-radius: 12px; 
-            padding: 15px 10px; cursor: pointer; transition: 0.2s; 
-            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
+        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 12px; padding: 15px 10px; cursor: pointer; transition: 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .skill-option:active { transform: scale(0.98); background: #004d40; }
-        .skill-option.selected { 
-            border-color: var(--accent-cyan); 
-            background: rgba(0, 255, 204, 0.1);
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2); 
-        }
+        .skill-option.selected { border-color: var(--accent-cyan); background: rgba(0, 255, 204, 0.1); box-shadow: 0 0 15px rgba(0, 255, 204, 0.2); }
         .skill-option.selected .skill-head { color: var(--accent-cyan); }
         .skill-option:last-child { grid-column: span 2; flex-direction: row; gap: 10px; padding: 12px; }
         
         .skill-head { font-weight: 700; font-size: 14px; color: var(--text-white); }
         .skill-sub { font-size: 10px; color: var(--text-gray); font-weight: 600; margin-top: 2px; }
 
-        .btn-curriculum {
-            background: transparent;
-            color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan);
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-            margin-top: 5px;
-            transition: 0.2s;
-        }
+        .btn-curriculum { background: transparent; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: 0.2s; }
         .btn-curriculum:active { transform: scale(0.95); }
 
-        .btn-start { 
-            width: 100%; padding: 16px; 
-            background: var(--btn-grad); 
-            color: white; 
-            font-size: 16px; font-weight: 900; 
-            border: none; border-radius: 15px; 
-            box-shadow: 0 10px 20px rgba(255, 46, 99, 0.3); 
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; 
-            margin-top: 10px; transition: 0.2s;
-        }
+        .btn-start { width: 100%; padding: 16px; background: var(--btn-grad); color: white; font-size: 16px; font-weight: 900; border: none; border-radius: 15px; box-shadow: 0 10px 20px rgba(255, 46, 99, 0.3); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: 0.2s; }
         .btn-start:active { transform: translateY(3px); box-shadow: none; }
-
-        #install-btn { 
-            width: 100%; 
-            background: white; 
-            color: #002b20; 
-            border: none; 
-            padding: 12px; border-radius: 15px; 
-            font-weight: 800; font-size: 14px; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
 
         /* --- 💬 CHAT SCREEN --- */
         #chat-screen { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; background: var(--card-bg); }
-        .top-nav { padding: 10px 20px; background: var(--bg-color); border-bottom: 1px solid #004d40; display: flex; align-items: center; gap: 10px; height: 65px; color: white; }
+        .top-nav { padding: 10px 20px; background: var(--bg-color); border-bottom: 1px solid #004d40; display: flex; align-items: center; gap: 12px; height: 65px; color: white; }
         .level-badge { background: var(--input-bg); color: var(--accent-cyan); padding: 5px 10px; border-radius: 8px; font-weight: 800; font-size: 11px; border: 1px solid var(--accent-cyan); }
+        
+        /* 💾 DOWNLOAD BUTTON STYLE */
+        .btn-download { background: #00ffcc; color: #002b20; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .btn-download:active { transform: scale(0.95); }
+
         .progress-container { flex: 1; } .progress-track { height: 6px; background: #00382e; border-radius: 5px; } .progress-fill { height: 100%; background: var(--accent-cyan); width: 0%; border-radius: 5px; box-shadow: 0 0 10px var(--accent-cyan); transition: width 0.5s; }
         
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
@@ -279,6 +219,7 @@
         <div class="progress-container">
             <div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div>
         </div>
+        <button class="btn-download" onclick="downloadSessionNotes()">💾 Save Notes</button>
     </div>
     <div id="messages"></div>
     <div class="bottom-area">
@@ -293,7 +234,10 @@
     const SERVER_URL = "https://talk24ai.onrender.com"; 
     let USER_ID = localStorage.getItem('talk24_uid');
     if (!USER_ID) { USER_ID = 'ID-' + Math.floor(100000 + Math.random() * 900000); localStorage.setItem('talk24_uid', USER_ID); }
-    let state = { skill: null, level: 1, score: 0 };
+    
+    // 💾 STATE WITH NOTES ARRAY
+    let state = { skill: null, level: 1, score: 0, notes: [] };
+    
     const play = (id) => { const a = document.getElementById(id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } };
 
     window.onload = async () => {
@@ -345,6 +289,7 @@
             const res = await fetch(`${SERVER_URL}/api/chat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
             document.getElementById('mic-btn').classList.remove('listening');
+            
             if (data.score_added > 0) {
                 play('snd-success');
                 confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 }, colors: ['#00ffcc', '#ff2e63'] });
@@ -352,6 +297,13 @@
                 if (newLvl > state.level) showLevelUp(newLvl);
                 updateStatsUI(data.new_total_score, newLvl);
             }
+
+            // 💾 SAVE INSTRUCTION TO NOTES
+            if(data.instruction) {
+                const cleanNote = data.instruction.replace(/\\n/g, '\n');
+                state.notes.push(`\n[LEARNING NOTE - Level ${state.level}]:\n${cleanNote}\n`);
+            }
+
             addAiMsg(data.reply, data.instruction);
         } catch (e) { document.getElementById('mic-btn').classList.remove('listening'); }
     }
@@ -371,6 +323,19 @@
         document.getElementById('messages').appendChild(d);
         scrollToBottom();
         const u = new SpeechSynthesisUtterance(text); u.rate = 0.9; window.speechSynthesis.speak(u);
+    }
+
+    // 💾 DOWNLOAD FUNCTION
+    function downloadSessionNotes() {
+        if(state.notes.length === 0) return alert("No learning notes collected yet!");
+        const header = `Talk24AI Learning Session - ${new Date().toLocaleDateString()}\n`;
+        const footer = `\n---------------------------------------\nKeep practicing! InshaAllah you will master English soon.`;
+        const blob = new Blob([header + state.notes.join('\n') + footer], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Talk24AI_Notes_${Date.now()}.txt`;
+        a.click();
     }
 
     function showLevelUp(lvl) {
