@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 // 🌍 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Addiction Engine Synced!"))
+.then(() => console.log("🚀 Talk24AI 400-Topic Engine Synced!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const userSchema = new mongoose.Schema({
@@ -21,60 +21,94 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-const ACADEMY_METADATA = {
-    'A': { age: "6-10", name: "Beginner", focus: "TPR & Imagination", tone: "Magic, Exciting, Cheerful" },
-    'B': { age: "10-16", name: "Learner", focus: "Routines & Action", tone: "Cool, High-energy, Friendly" },
-    'C': { age: "17-24", name: "Hesitant", focus: "Opinion & Logic", tone: "Empathetic, Chill, Supportive" },
-    'D': { age: "17-24", name: "IELTS/GRE", focus: "Structure & Academic Flow", tone: "Strict, Sophisticated, Formal" },
-    'E': { age: "24-34", name: "Professional", focus: "Authority & Leadership", tone: "Executive, Assertive, Sharp" }
+// 📘 NEW 4-MODULE SYLLABUS DATA (Mapped exactly to user request)
+const SYLLABUS = {
+    'A': { 
+        name: "Beginner", age: "6-10", goal: "Basic Vocabulary & Simple Needs",
+        topics: {
+            1: "Greetings & Self", 11: "Family", 21: "Colors", 31: "Numbers & Counting",
+            41: "Body Parts", 51: "Animals", 61: "Food & Drink", 71: "House & Home",
+            81: "School Objects", 91: "Actions (Verbs)"
+        }
+    },
+    'B': { 
+        name: "Learner", age: "10-16", goal: "Likes/Dislikes & Daily Routine",
+        topics: {
+            1: "School Life", 11: "Hobbies", 21: "Technology", 31: "Food & Restaurants",
+            41: "Daily Routine", 51: "Emotions", 61: "Shopping", 71: "Travel & Outing",
+            81: "Weather & Nature", 91: "Social Skills"
+        }
+    },
+    'C': { 
+        name: "Hesitant", age: "17-24", goal: "IELTS Prep & Abstract Ideas",
+        topics: {
+            1: "IELTS Speaking Topics", 11: "Social Issues", 21: "University Life", 31: "Technology & Ethics",
+            41: "Travel & Culture", 51: "Relationships", 61: "Health & Lifestyle", 71: "Abstract Concepts",
+            81: "Entertainment", 91: "Practical Situations"
+        }
+    },
+    'D': { 
+        name: "Professional", age: "24-34", goal: "Corporate Communication & Leadership",
+        topics: {
+            1: "Interview Skills", 11: "Meetings", 21: "Communication", 31: "Office Dynamics",
+            41: "Leadership", 51: "Business Concepts", 61: "Client Handling", 71: "HR & Career",
+            81: "Tech in Business", 91: "Global Business"
+        }
+    }
 };
+
+// Helper function to get the current topic category name
+function getTopicCategory(track, level) {
+    const categories = SYLLABUS[track].topics;
+    const sortedKeys = Object.keys(categories).map(Number).sort((a, b) => b - a);
+    const key = sortedKeys.find(k => level >= k) || 1;
+    return categories[key];
+}
 
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
-    const trackCode = systemInstruction.match(/Skill Level: ([A-E])/) ? systemInstruction.match(/Skill Level: ([A-E])/)[1] : 'A';
+    const trackCode = systemInstruction.match(/Skill Level: ([A-D])/) ? systemInstruction.match(/Skill Level: ([A-D])/)[1] : 'A';
     const isStart = message === "Action!";
 
     try {
         let user = await User.findOne({ userId });
         if (!user) user = new User({ userId });
 
-        const trackInfo = ACADEMY_METADATA[trackCode];
+        const trackInfo = SYLLABUS[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
-        
-        // 💾 PERSISTENCE LOGIC: Fetch context even if "Action!" is clicked
-        const lastTurn = user.history.length > 0 ? user.history[user.history.length - 1].content : "First time starting.";
-        const contextHistory = user.history.slice(-8).map(h => `${h.role}: ${h.content}`).join("\n");
+        const currentTopic = getTopicCategory(trackCode, currentLevel > 100 ? 100 : currentLevel);
 
-        // 🧠 HYPER-ENGAGEMENT & ADDICTION PROMPT
+        if (isStart) user.history = [];
+        const lastTurn = user.history.length > 0 ? user.history[user.history.length - 1].content : "Session initialized.";
+
         const masterPrompt = `
         [IDENTITY] World-class Proactive English Specialist & Practicing Muslim.
-        [VALUES] Use Islamic Akhlaq (Salam/JazakAllah) naturally.
-        [STRICT RULE] Speak ONLY in English. NO HALLUCINATIONS: Never mention pictures or looking at a screen. Use imagination.
+        [VALUES] Use Islamic Akhlaq (Salam/JazakAllah) naturally. Speak ONLY English.
 
-        [ADDICTION & ENGAGEMENT ALGORITHM]
-        1. THE SOCRATIC HOOK: Never finish a sentence without a question. Every reply MUST end with ONE high-engagement question.
-        2. HERO'S JOURNEY: Every level (${currentLevel}) is a mission. (e.g., Track A: "Lost in a candy forest", Track E: "Saving a global company").
-        3. SCAFFOLDING: Build on the user's last message: "${lastTurn}". Acknowledge their effort before moving to the next mission step.
-        4. VARIABLE REWARDS: Grant points (5-20) in "score_added" based on sentence complexity and grammar usage.
-        5. NO ECHO: Move the plot forward. Do not repeat what the user said.
+        [NEW SYLLABUS LOGIC]
+        - Track: ${trackInfo.name} (Age: ${trackInfo.age})
+        - Level: ${currentLevel} of 100
+        - Current Topic Category: ${currentTopic}
+        - Mission Goal: ${trackInfo.goal}
 
-        [MISSION DETAILS]
-        - Track: ${trackInfo.name} (${trackInfo.age} yrs) | Focus: ${trackInfo.focus}.
-        - Roleplay Tone: ${trackInfo.tone}.
+        [ADDICTION & ENGAGEMENT]
+        1. SOCRATIC LOOP: Every reply MUST end with ONE engaging question related to the topic: "${currentTopic}".
+        2. STORY MISSION: Create a scenario for Level ${currentLevel} based on "${currentTopic}". 
+        3. SCAFFOLDING: Build on the user's last input: "${lastTurn}".
+        4. VARIABLE REWARDS: Grant points (5-20) in "score_added" based on effort.
+        5. IMAGINATION ONLY: Never mention pictures or looking at a screen.
 
         [JSON OUTPUT]
         {
-          "conversation": "Proactive character response + Mission Progress + Engaging Question",
-          "learning_note": "• Review: Feedback on grammar\\n• Tip: A quick English hack\\n• Next: Hidden milestone",
+          "conversation": "Proactive character response + Topic Scenario + One Engaging Question",
+          "learning_note": "• Review: Feedback on ${currentTopic}\\n• Tip: Quick shortcut for Level ${currentLevel}\\n• Next: Milestone unlocked",
           "score_added": 5-20
-        }
-        
-        History Context:\n${contextHistory}`;
+        }`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: [
                 { role: "system", content: masterPrompt }, 
-                { role: "user", content: isStart ? "Action! Resume or start my adventure mission." : message }
+                { role: "user", content: isStart ? "Action! Start my mission." : message }
             ],
             model: "llama-3.1-8b-instant",
             temperature: 0.8,
@@ -83,31 +117,19 @@ app.post('/api/chat', async (req, res) => {
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // 💾 PERSISTENT HISTORY UPDATE
-        if (isStart && user.history.length === 0) {
-            user.history.push({ role: 'User', content: "Started Adventure" });
-        } else {
-            user.history.push({ role: 'User', content: message });
-        }
+        user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
-        
-        // Keep 12 messages for deep context
         if (user.history.length > 12) user.history = user.history.slice(-12);
         
         if (!isStart) user.lifetime_score += (result.score_added || 10);
         await user.save();
 
         res.json({ 
-            reply: result.conversation, 
-            instruction: result.learning_note, 
-            score_added: result.score_added || 10, 
-            new_total_score: user.lifetime_score 
+            reply: result.conversation, instruction: result.learning_note, 
+            score_added: result.score_added || 10, new_total_score: user.lifetime_score 
         });
 
-    } catch (err) { 
-        console.error("Mastery Engine Error:", err.message);
-        res.json({ reply: "My connection is blinking. Let's stay in the mission! Try again?", instruction: "• Note: System sync in progress." }); 
-    }
+    } catch (err) { res.json({ reply: "My magic book is refreshing! Let's continue. Try again?", instruction: "• Note: System sync." }); }
 });
 
 app.post('/api/stats', async (req, res) => {
@@ -119,4 +141,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Addiction Engine v4 (Engaging Mode) running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 400-Topic Mastery Engine running on ${PORT}`));
