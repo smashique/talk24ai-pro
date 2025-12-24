@@ -9,9 +9,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🌍 DATABASE CONNECTION
+// 🌍 DATABASE CONNECTION (Persistent Mastery Storage)
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Master Academy DB Connected!"))
+.then(() => console.log("🚀 Talk24AI Global Academy DB Connected!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const userSchema = new mongoose.Schema({
@@ -21,13 +21,13 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// 📘 THE GRAND SYLLABUS METADATA (Cross-checked with GB Experts)
+// 📘 THE UNIVERSAL SYLLABUS METADATA (Cross-checked with Global Methodologists)
 const ACADEMY_METADATA = {
-    'A': { age: "6-10", name: "Beginner", focus: "Basic Nouns & Fun Functional Grammar", tone: "Magic, Fun, Simple", goal: "Social Confidence" },
-    'B': { age: "10-16", name: "Learner", focus: "Action Verbs, Articles, Daily Routines", tone: "Energetic, Teen-friendly", goal: "Fluent Description" },
-    'C': { age: "17-24", name: "Hesitant", focus: "Description, Pronouns, Confidence Building", tone: "Supportive, Adult-casual", goal: "Social Conversationalist" },
-    'D': { age: "17-24", name: "IELTS/GRE", focus: "Tenses, Connectors, Logic, High-level Vocabulary", tone: "Academic, Formal, Strict", goal: "High Band Achievement" },
-    'E': { age: "24-34", name: "Professional", focus: "Idioms, Phrasal Verbs, Business Ethics", tone: "Corporate, Polished, Leader-like", goal: "Career Mastery" }
+    'A': { age: "6-10", name: "Beginner", focus: "TPR & Functional Naming", tone: "Magic, Encouraging, Fun", goal: "Foundation & Confidence" },
+    'B': { age: "10-16", name: "Learner", focus: "Communicative Competence & Routines", tone: "Dynamic, Youthful, Engaging", goal: "Daily Fluency" },
+    'C': { age: "17-24", name: "Hesitant", focus: "Cognitive Confidence & Opinion Flow", tone: "Empathetic, Supportive, Relaxed", goal: "Social Conversationalist" },
+    'D': { age: "17-24", name: "IELTS/GRE", focus: "Rubric-based Logic & Connectors", tone: "Analytical, Formal, Structured", goal: "Academic Excellence" },
+    'E': { age: "24-34", name: "Professional", focus: "ESP (Specific Purposes) & Leadership Tone", tone: "Corporate, Assertive, Polished", goal: "Career Authority" }
 };
 
 app.post('/api/chat', async (req, res) => {
@@ -40,40 +40,41 @@ app.post('/api/chat', async (req, res) => {
         if (!user) user = new User({ userId });
 
         const trackInfo = ACADEMY_METADATA[trackCode];
-        const currentLevel = Math.floor(user.lifetime_score / 1000) + 1; // 1 to 100
+        const currentLevel = Math.floor(user.lifetime_score / 1000) + 1; // Logic: 1000 XP per level
         
         if (isStart) user.history = [];
         const context = user.history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 SAIFUR SIR + GB EXPERTS INTELLIGENT PROMPT
+        // 🧠 GLOBAL EXPERTS + PSYCHOLOGY DRIVEN PROMPT
         const masterPrompt = `
-        [IDENTITY] World-class English Mentor (Saifur Sir Style) & Practicing Muslim. 
+        [IDENTITY] World-class Global English Specialist (Methodology Focus).
+        [VALUES] Practicing Muslim. Use polite manners (Akhlaq) naturally.
         [ALL ENGLISH] Speak ONLY English.
 
-        [TRACK DETAILS]
-        - Track: ${trackInfo.name} | Target Age: ${trackInfo.age} years old.
-        - Current Level: ${currentLevel} of 100.
-        - Academic Focus: ${trackInfo.focus}.
-        - Required Tone: ${trackInfo.tone}.
+        [TRACK ARCHITECTURE]
+        - Current Track: ${trackInfo.name} | Target Age: ${trackInfo.age}.
+        - Mastery Level: ${currentLevel} of 100.
+        - Pedagogy Focus: ${trackInfo.focus}.
+        - Psychology Tone: ${trackInfo.tone}.
         
-        [SPECIFIC INSTRUCTIONS]
-        1. IF STARTING: Mentor greets, states the Achievement Badge name for Level ${currentLevel}, and explains the Mission Goal clearly based on age ${trackInfo.age}.
-        2. ROLEPLAY: Create a realistic scenario suitable for a ${trackInfo.age} year old. 
-        3. NO ECHO: Actor must move the story forward and NOT repeat user words.
-        4. SCORING: Give +10 XP ONLY if the user uses grammar/vocabulary relevant to "${trackInfo.focus}" correctly.
-        5. ISLAMIC AKHLAQ: Teach polite manners and Islamic values naturally in English.
+        [STRICT INSTRUCTIONS]
+        1. START PROTOCOL: Greet warmly (Salam), state the Level ${currentLevel} "Achievement Badge" name, and briefly explain the mission goal based on age ${trackInfo.age}.
+        2. ROLEPLAY: Create a task-based scenario suitable for age ${trackInfo.age}.
+        3. NO ECHO: Never repeat user's words. Move the conversation forward humanly.
+        4. MENTOR FEEDBACK: Use "Sandwich Feedback" (Praise -> Correction -> Next Step). Focus on "${trackInfo.focus}".
+        5. SCORING: Award +10 XP ONLY if the response shows context relevance and growth in ${trackInfo.focus}.
 
-        [JSON OUTPUT]
+        [JSON OUTPUT FORMAT]
         {
-          "conversation": "Actor's age-appropriate reply",
-          "learning_note": "• Review: Feedback on ${trackInfo.focus}\\n• Tip: Saifur Sir's practical shortcut\\n• Next Step: Strategy guide",
+          "conversation": "Actor's age-appropriate response",
+          "learning_note": "• Review: Feedback on ${trackInfo.focus}\\n• Tip: Global methodology insight\\n• Next Step: Strategic move",
           "score_added": 10 or 0
         }
         
         History: ${context}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? "Action! Start my mission." : message }],
+            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? "Action! Begin simulation." : message }],
             model: "llama-3.1-8b-instant",
             temperature: 0.7,
             response_format: { type: "json_object" }
@@ -81,8 +82,8 @@ app.post('/api/chat', async (req, res) => {
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // Persistent Save
-        user.history.push({ role: 'User', content: isStart ? "Started" : message });
+        // Persistent Progress Save
+        user.history.push({ role: 'User', content: isStart ? "Session Started" : message });
         user.history.push({ role: 'Actor', content: result.conversation });
         if (user.history.length > 8) user.history = user.history.slice(-8);
         if (!isStart && result.score_added > 0) user.lifetime_score += result.score_added;
@@ -96,14 +97,16 @@ app.post('/api/chat', async (req, res) => {
             new_total_score: user.lifetime_score 
         });
 
-    } catch (err) { res.json({ reply: "Our Magic Server is busy. Try again, hero!", instruction: "• Connection error." }); }
+    } catch (err) { res.json({ reply: "Connection is stabilizing. Please try again.", instruction: "• Note: System sync in progress." }); }
 });
 
 app.post('/api/stats', async (req, res) => {
-    const user = await User.findOne({ userId: req.body.userId });
-    if (user) res.json({ score: user.lifetime_score, level: Math.floor(user.lifetime_score/1000)+1 });
-    else res.json({ score: 0, level: 1 });
+    try {
+        const user = await User.findOne({ userId: req.body.userId });
+        if (user) res.json({ score: user.lifetime_score, level: Math.floor(user.lifetime_score/1000)+1 });
+        else res.json({ score: 0, level: 1 });
+    } catch(e) { res.json({ score: 0, level: 1 }); }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Multi-Track Mastery Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Global Multi-Track Academy running on port ${PORT}`));
