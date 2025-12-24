@@ -1,62 +1,56 @@
-<style>
-    /* ... (অন্যান্য স্টাইল ঠিক থাকবে) ... */
+// index.html এর স্ক্রিপ্ট সেকশনে এই ফাংশনটি আপডেট করুন
 
-    /* 🧑‍🏫 AI TEACHER VIEW - FIX */
-    #ai-viewport { 
-        flex: 1; 
-        position: relative; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        overflow: hidden;
-        background: linear-gradient(135deg, #00382e, #001e17); /* Fallback background color */
-    }
+async function callAPI(payload) {
+    const mic = document.getElementById('mic-btn');
+    mic.classList.add('active');
+    try {
+        const res = await fetch(`${SERVER_URL}/api/chat`, { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify(payload) 
+        });
+        const data = await res.json();
+        mic.classList.remove('active');
 
-    #ai-avatar { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
-        opacity: 0.9; 
-        transition: transform 0.3s;
-        /* Image fallback logic */
-        background-color: #002b20; 
-    }
+        // 💾 নতুন ফরম্যাটে নোট সেভ করা হচ্ছে
+        if(data.instruction) {
+            const levelInfo = `LEVEL: ${state.level} | TRACK: ${state.skill}`;
+            const timestamp = new Date().toLocaleTimeString();
+            
+            // নোটটিকে একটি সুন্দর অবজেক্ট হিসেবে সেভ করা
+            state.notes.push({
+                time: timestamp,
+                lvl: levelInfo,
+                content: data.instruction.replace(/\\n/g, '\n')
+            });
+        }
 
-    /* ... (অন্যান্য স্টাইল ঠিক থাকবে) ... */
-</style>
+        addMsg(data.reply, 'ai', data.instruction);
+    } catch(e) { mic.classList.remove('active'); }
+}
 
-<script>
-    /* ... (অন্যান্য কোড ঠিক থাকবে) ... */
+// 📂 উন্নত ডাউনলোড ফাংশন
+function downloadNotes() {
+    if(state.notes.length === 0) return alert("No learning notes collected yet!");
+    
+    let fileContent = `==========================================\n`;
+    fileContent += `   TALK24AI PERSONAL LEARNING JOURNAL    \n`;
+    fileContent += `   Date: ${new Date().toLocaleDateString()}              \n`;
+    fileContent += `==========================================\n\n`;
 
-    // 🚀 NEW ROBUST ASSETS (Using more reliable links)
-    const TRACK_THEMES = {
-        'A': { img: "https://images.unsplash.com/photo-1544717305-27a734ef4164?q=80&w=1000&auto=format&fit=crop", label: "Magic Teacher" },
-        'B': { img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop", label: "Dynamic Coach" },
-        'C': { img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1000&auto=format&fit=crop", label: "Partner" },
-        'D': { img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop", label: "Examiner" },
-        'E': { img: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1000&auto=format&fit=crop", label: "Executive" }
-    };
+    state.notes.forEach((note, index) => {
+        fileContent += `[SESSION NOTE #${index + 1}]\n`;
+        fileContent += `Time: ${note.time} | ${note.lvl}\n`;
+        fileContent += `------------------------------------------\n`;
+        fileContent += `${note.content}\n`;
+        fileContent += `==========================================\n\n`;
+    });
 
-    async function startVideoSession() {
-        if (!state.skill) return alert("Please select a Track first!");
-        
-        const avatarImg = document.getElementById('ai-avatar');
-        avatarImg.src = TRACK_THEMES[state.skill].img;
+    fileContent += `\nKeep practicing! InshaAllah, you are becoming a Global Pro.`;
 
-        // 🛡️ ERROR HANDLER: If image fails, show a placeholder color
-        avatarImg.onerror = function() {
-            this.style.display = 'none'; // Hide broken image icon
-            document.getElementById('ai-viewport').style.background = "linear-gradient(45deg, #004d40, #002b20)";
-        };
-        
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            document.getElementById('user-preview').srcObject = stream;
-        } catch (e) { console.log("Camera blocked, continuing with AI only."); }
-
-        document.getElementById('home-screen').style.display = 'none';
-        document.getElementById('video-screen').style.display = 'flex';
-        callAcademyAPI("Action!");
-    }
-    /* ... (বাকি ফাংশনগুলো আগের মতোই থাকবে) ... */
-</script>
+    const blob = new Blob([fileContent], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `Talk24AI_Mastery_Notes_${Date.now()}.txt`;
+    a.click();
+}
