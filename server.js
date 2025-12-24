@@ -9,9 +9,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🌍 OPTIMIZED PERSISTENT DB
+// 🌍 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Persistent Academy DB Connected!"))
+.then(() => console.log("🚀 Kids Academy DB Connected!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const userSchema = new mongoose.Schema({
@@ -21,88 +21,33 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// 📘 TRACK A: PRE-DETERMINED LEVELS (1-75)
+// 📘 TRACK A: KIDS' MAGIC SPOKEN ENGLISH (1-100)
+// Age Group: 6-10 Years | Style: Practical & Fun
 const TRACK_A_CURRICULUM = {
-    // Phase 1 (1-25)
-    1: { name: "The First Hello", goal: "Master greetings like Salam, Hi, and Hello.", user: "New Neighbor", actor: "Friendly Resident", skill: "Greetings" },
-    2: { name: "Meet My Family", goal: "Name your family members (Father, Mother, Brother).", user: "Photo Sharer", actor: "Curious Friend", skill: "Family Nouns" },
-    3: { name: "Bag Check", goal: "Identify items like Phone, Pen, and Keys.", user: "Traveler", actor: "Security Guard", skill: "Object Nouns" },
-    4: { name: "Yummy Fruits", goal: "Identify and name common fruits correctly.", user: "Customer", actor: "Fruit Seller", skill: "Food Nouns" },
-    5: { name: "Colorful World", goal: "Describe objects using basic color names.", user: "Art Student", actor: "Art Teacher", skill: "Colors" },
-    6: { name: "My Cozy Room", goal: "Name furniture like Chair, Table, and Bed.", user: "Guest", actor: "Host", skill: "Furniture Nouns" },
-    7: { name: "Pet Paradise", goal: "Name animals like Cat, Dog, and Bird.", user: "Kid", actor: "Pet Shop Owner", skill: "Animal Nouns" },
-    8: { name: "Body Map", goal: "Name basic body parts like Hand, Eye, and Nose.", user: "Patient", actor: "Nurse", skill: "Body Nouns" },
-    9: { name: "Dress Up", goal: "Name clothing items like Shirt, Pant, and Shoes.", user: "Shopper", actor: "Sales Assistant", skill: "Clothing Nouns" },
-    10: { name: "Number Fun", goal: "Use numbers 1 to 10 in a conversation.", user: "Small Buyer", actor: "Shopkeeper", skill: "Numbers" },
-    11: { name: "My Study Table", goal: "Name stationery like Pen, Pencil, and Notebook.", user: "Student", actor: "Teacher", skill: "Stationery Nouns" },
-    12: { name: "Nature's Map", goal: "Identify Sun, Moon, Sky, and Cloud.", user: "Grandchild", actor: "Grandpa", skill: "Nature Nouns" },
-    13: { name: "Weather Watch", goal: "Use nouns like Rain, Wind, and Heat.", user: "Radio Host", actor: "Listener", skill: "Weather Nouns" },
-    14: { name: "The Safe City", goal: "Name Mosque, Hospital, and School correctly.", user: "Tourist", actor: "Local Guide", skill: "Place Nouns" },
-    15: { name: "Vehicle Parade", goal: "Name Bus, Train, Rickshaw, and Boat.", user: "Passenger", actor: "Driver", skill: "Vehicle Nouns" },
-    16: { name: "Healthy Veggies", goal: "Identify Potato, Tomato, and Onion.", user: "Chef", actor: "Kitchen Helper", skill: "Vegetable Nouns" },
-    17: { name: "Morning Snacks", goal: "Name Milk, Egg, Bread, and Biscuit.", user: "Hungry Kid", actor: "Mother", skill: "Food Nouns" },
-    18: { name: "The Clock Nouns", goal: "Use Morning, Evening, Hour, and Minute.", user: "Traveler", actor: "Station Guard", skill: "Time Nouns" },
-    19: { name: "The Planner", goal: "Name Days of the week and Months correctly.", user: "Planner", actor: "Colleague", skill: "Calendar Nouns" },
-    20: { name: "Season Cycle", goal: "Name Summer, Winter, and Rain seasons.", user: "Kid", actor: "Wise Uncle", skill: "Seasons" },
-    21: { name: "Living Room", goal: "Identify Sofa, TV, Mirror, and Fan.", user: "Guest", actor: "Host", skill: "Furniture Nouns" },
-    22: { name: "Tech World", goal: "Name Laptop, Mobile, and AC.", user: "Customer", actor: "IT Staff", skill: "Technology Nouns" },
-    23: { name: "Stationery Fun", goal: "Identify Glue, Scissors, and Paper.", user: "Small Artist", actor: "Shopkeeper", skill: "Art Nouns" },
-    24: { name: "Green Garden", goal: "Name Tree, Flower, Leaf, and Grass.", user: "Nature Lover", actor: "Gardener", skill: "Nature Nouns" },
-    25: { name: "Shopping Hero", goal: "Use nouns like Lift, Trolley, and Counter.", user: "Shopper", actor: "Floor Manager", skill: "Supermarket Nouns" },
-    
-    // Phase 2 (26-50)
-    26: { name: "Park Fun", goal: "Name objects like Slide, Swing, and Bench.", user: "Playful Child", actor: "Parent", skill: "Park Nouns" },
-    27: { name: "Hospital Visit", goal: "Use nouns like Nurse, Medicine, and Doctor.", user: "Patient", actor: "Medical Assistant", skill: "Medical Nouns" },
-    28: { name: "Bank Matters", goal: "Identify Cash, Counter, and Form.", user: "Client", actor: "Bank Teller", skill: "Bank Nouns" },
-    29: { name: "Post Office", goal: "Name Stamp, Letter, and Envelope.", user: "Sender", actor: "Postmaster", skill: "Postal Nouns" },
-    30: { name: "Classroom Tools", goal: "Identify Board, Duster, and Chalk.", user: "New Student", actor: "Class Teacher", skill: "Classroom Nouns" },
-    31: { name: "Bakery Shop", goal: "Name Cake, Bread, and Biscuit.", user: "Sweet Lover", actor: "Baker", skill: "Bakery Nouns" },
-    32: { name: "Toy Store", goal: "Name Doll, Car, and Teddy Bear.", user: "Gift Buyer", actor: "Shop Assistant", skill: "Toy Nouns" },
-    33: { name: "Hardware Store", goal: "Identify Hammer, Nail, and Tool.", user: "Handyman", actor: "Store Keeper", skill: "Tool Nouns" },
-    34: { name: "Electronics Shop", goal: "Name Laptop, Mouse, and Monitor.", user: "Tech Buyer", actor: "Sales Executive", skill: "Digital Nouns" },
-    35: { name: "Hair Salon", goal: "Use nouns like Mirror, Scissors, and Comb.", user: "Customer", actor: "Barber", skill: "Salon Nouns" },
-    36: { name: "Gym Items", goal: "Identify Mat, Dumbbell, and Bottle.", user: "Fitness Learner", actor: "Gym Trainer", skill: "Gym Nouns" },
-    37: { name: "Library", goal: "Name Book, Shelf, and Card.", user: "Reader", actor: "Librarian", skill: "Library Nouns" },
-    38: { name: "Beach Day", goal: "Identify Sand, Sea, and Umbrella.", user: "Tourist", actor: "Beach Guard", skill: "Beach Nouns" },
-    39: { name: "Forest Trip", goal: "Name Tree, Path, and Bird.", user: "Hiker", actor: "Forest Guide", skill: "Wilderness Nouns" },
-    40: { name: "Sky View", goal: "Identify Star, Cloud, and Rainbow.", user: "Sky Watcher", actor: "Astronomy Fan", skill: "Sky Nouns" },
-    41: { name: "Road Safety", goal: "Name Signal, Zebra Crossing, and Sign.", user: "Pedestrian", actor: "Traffic Police", skill: "Safety Nouns" },
-    42: { name: "Railway Station", goal: "Identify Platform, Ticket, and Train.", user: "Traveler", actor: "Ticket Master", skill: "Railway Nouns" },
-    43: { name: "Airport Items", goal: "Name Plane, Gate, and Luggage.", user: "Flyer", actor: "Check-in Staff", skill: "Airport Nouns" },
-    44: { name: "Hotel Stay", goal: "Identify Room, Key, and Lobby.", user: "Guest", actor: "Receptionist", skill: "Hotel Nouns" },
-    45: { name: "Coffee Shop", goal: "Name Cup, Menu, and Sugar.", user: "Customer", actor: "Barista", skill: "Cafe Nouns" },
-    46: { name: "Laundry", goal: "Identify Soap, Water, and Cloth.", user: "Customer", actor: "Laundry Staff", skill: "Laundry Nouns" },
-    47: { name: "Repair Shop", goal: "Name Wrench, Screw, and Driver.", user: "Customer", actor: "Mechanic", skill: "Repair Nouns" },
-    48: { name: "Playground", goal: "Identify Ball, Net, and Whistle.", user: "Player", actor: "Coach", skill: "Sports Nouns" },
-    49: { name: "Music Class", goal: "Name Piano, Guitar, and Mic.", user: "Learner", actor: "Music Teacher", skill: "Music Nouns" },
-    50: { name: "Mid-Term Review", goal: "Review all environment nouns learned so far.", user: "Successful Student", actor: "Global Mentor", skill: "General Nouns" },
-
-    // Phase 3 (51-75)
-    51: { name: "Shopping Mall", goal: "Identify Escalator, Boutique, and Receipt.", user: "Shopper", actor: "Security Guard", skill: "Mall Nouns" },
-    52: { name: "Cinema Hall", goal: "Name Screen, Ticket, and Popcorn.", user: "Movie Fan", actor: "Ticket Counter", skill: "Cinema Nouns" },
-    53: { name: "Pharmacy", goal: "Identify Prescription, Bandage, and Syrup.", user: "Buyer", actor: "Pharmacist", skill: "Medical Nouns" },
-    54: { name: "Police Station", goal: "Name Complaint, Officer, and Cell.", user: "Reporter", actor: "Duty Officer", skill: "Legal Nouns" },
-    55: { name: "Fire Station", goal: "Identify Truck, Hose, and Fireman.", user: "School Kid", actor: "Fire Fighter", skill: "Emergency Nouns" },
-    56: { name: "Sweet Shop", goal: "Name Pastry, Oven, and Flour.", user: "Customer", actor: "Baker", skill: "Bakery Nouns" },
-    57: { name: "Tailor Shop", goal: "Identify Thread, Needle, and Measurement.", user: "Customer", actor: "Tailor", skill: "Stitching Nouns" },
-    58: { name: "Barber Shop 2", goal: "Name Shampoo, Chair, and Razor.", user: "Client", actor: "Barber", skill: "Grooming Nouns" },
-    59: { name: "Elite Gym", goal: "Identify Treadmill, Coach, and Dumbbell.", user: "Member", actor: "Trainer", skill: "Fitness Nouns" },
-    60: { name: "Old Library", goal: "Name Section, Encyclopedia, and Shelf.", user: "Researcher", actor: "Librarian", skill: "Study Nouns" },
-    61: { name: "History Museum", goal: "Identify Statue, Artifact, and Guide.", user: "Tourist", actor: "Curator", skill: "Museum Nouns" },
-    62: { name: "Art Gallery", goal: "Name Painting, Brush, and Artist.", user: "Art Critic", actor: "Exhibitor", skill: "Art Nouns" },
-    63: { name: "Concert Stage", goal: "Identify Stage, Mic, and Instrument.", user: "Music Fan", actor: "Stage Manager", skill: "Event Nouns" },
-    64: { name: "Soccer Stadium", goal: "Name Goal, Whistle, and Jersey.", user: "Striker", actor: "Referee", skill: "Sports Nouns" },
-    65: { name: "Swimming Pool", goal: "Identify Goggles, Life-jacket, and Lane.", user: "Learner", actor: "Lifeguard", skill: "Water Nouns" },
-    66: { name: "Airport Gate", goal: "Identify Passport, Visa, and Boarding Pass.", user: "Passenger", actor: "Gate Agent", skill: "Travel Nouns" },
-    67: { name: "Train Coach", goal: "Name Platform, Coach, and Berth.", user: "Traveler", actor: "Ticket TTE", skill: "Railway Nouns" },
-    68: { name: "Bus Terminal", goal: "Identify Route, Schedule, and Driver.", user: "Passenger", actor: "Counter Clerk", skill: "Transit Nouns" },
-    69: { name: "Luxury Hotel", goal: "Name Room Service, Menu, and Elevator.", user: "Guest", actor: "Concierge", skill: "Hotel Nouns" },
-    70: { name: "Bank ATM", goal: "Identify Check, ATM, and Balance.", user: "Client", actor: "Security", skill: "Financial Nouns" },
-    71: { name: "Corporate Meeting", goal: "Name Meeting, File, and Laptop.", user: "Intern", actor: "Senior Manager", skill: "Office Nouns" },
-    72: { name: "Principal Office", goal: "Identify Principal, Bench, and Blackboard.", user: "Parent", actor: "Admin Staff", skill: "School Nouns" },
-    73: { name: "Holy Mosque", goal: "Name Prayer, Imam, and Peace.", user: "Worshiper", actor: "Friend", skill: "Spiritual Nouns" },
-    74: { name: "City Fountain", goal: "Identify Fountain, Flowers, and Jogger.", user: "Visitor", actor: "Park Keeper", skill: "Urban Nouns" },
-    75: { name: "Phase 3 Graduation", goal: "Final review of complex environment nouns.", user: "Top Graduate", actor: "Global Mentor", skill: "Advanced Nouns" }
+    // Mission 1: My Tiny World (Level 1-25)
+    1: { name: "Magic Hello", goal: "Say 'Assalamu Alaikum' and 'How are you?'.", user: "New Friend", actor: "Friendly Neighbor", skill: "Greetings" },
+    2: { name: "Super Me!", goal: "Say 'I am [Name]' and 'I am a boy/girl'.", user: "Student", actor: "Teacher", skill: "Self Intro" },
+    3: { name: "Abbu & Ammu", goal: "Say 'This is my Abbu/Ammu' to introduce parents.", user: "Kid", actor: "Guest", skill: "Family Intro" },
+    4: { name: "My Toy Box", goal: "Say 'I have a ball' or 'I have a doll'.", user: "Playmate", actor: "Friend", skill: "I have..." },
+    5: { name: "Rainbow Fun", goal: "Say 'It is a red apple' using colors.", user: "Small Artist", actor: "Art Mentor", skill: "It is [Color]" },
+    // Mission 2: Action & Fun (Level 26-50)
+    26: { name: "I Can Jump!", goal: "Say 'I can jump' or 'I can run'.", user: "Active Kid", actor: "Coach", skill: "I can [Action]" },
+    27: { name: "Yummy Tummy", goal: "Say 'I like mango' or 'I like milk'.", user: "Hungry Child", actor: "Mother", skill: "I like [Food]" },
+    28: { name: "Birdy Fly", goal: "Say 'The bird can fly' using animals.", user: "Nature Lover", actor: "Grandpa", skill: "Animals + Can" },
+    29: { name: "Brushy Brush", goal: "Say 'I brush my teeth' for daily habits.", user: "Good Child", actor: "Dentist", skill: "Daily Actions" },
+    30: { name: "Counting Stars", goal: "Say 'There are five stars' using numbers.", user: "Star Gazer", actor: "Wise Owl", skill: "There are..." },
+    // Mission 3: Feelings (Level 51-75)
+    51: { name: "Happy Heart", goal: "Say 'I am happy' or 'I am sleepy'.", user: "Little One", actor: "Grandma", skill: "Feelings" },
+    52: { name: "Big & Small", goal: "Say 'The elephant is big' using adjectives.", user: "Zoo Visitor", actor: "Guide", skill: "Descriptions" },
+    53: { name: "Cold Ice Cream", goal: "Say 'The ice cream is cold' for touch senses.", user: "Customer", actor: "Ice Cream Man", skill: "Sense Nouns" },
+    54: { name: "Sweet Candy", goal: "Say 'The candy is sweet' for taste senses.", user: "Sweet Lover", actor: "Shopkeeper", skill: "Taste Nouns" },
+    55: { name: "Quiet Mouse", goal: "Say 'Please be quiet' using polite words.", user: "Student", actor: "Librarian", skill: "Politeness" },
+    // Mission 4: Little Storyteller (Level 76-100)
+    76: { name: "Where is Kitty?", goal: "Ask 'Where is my cat?' to find things.", user: "Pet Owner", actor: "Brother", skill: "Where is...?" },
+    77: { name: "Can I Play?", goal: "Ask 'Can I play with you?' politely.", user: "Kid at Park", actor: "New Friend", skill: "Can I...?" },
+    78: { name: "Good Manners", goal: "Say 'Thank you' and 'JazakAllah' after help.", user: "Polite Kid", actor: "Elder Person", skill: "Islamic Manners" },
+    99: { name: "My Big Story", goal: "Say three simple sentences about your day.", user: "Storyteller", actor: "Whole Family", skill: "Storytelling" },
+    100: { name: "The Grand Star", goal: "Celebrate your 100-level journey!", user: "Winner", actor: "Saifur Sir", skill: "Track A Graduation" }
 };
 
 app.post('/api/chat', async (req, res) => {
@@ -114,47 +59,51 @@ app.post('/api/chat', async (req, res) => {
         if (!user) user = new User({ userId });
 
         const currentLvl = Math.floor(user.lifetime_score / 1000) + 1;
-        const config = TRACK_A_CURRICULUM[currentLvl] || TRACK_A_CURRICULUM[1];
+        // Logic to handle 100 levels mapping
+        let config = TRACK_A_CURRICULUM[currentLvl];
+        if (!config) {
+             // Fallback for levels not explicitly defined in the map (dynamic scaling)
+             config = { name: `Step ${currentLvl}`, goal: "Practice simple English sentences.", user: "Learner", actor: "Mentor", skill: "Functional English" };
+        }
 
         if (isStart) user.history = [];
-
         const context = user.history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
 
+        // 🧠 KIDS' SPECIAL LOGIC PROMPT
         const masterPrompt = `
-        [IDENTITY] World-class English Mentor (Saifur Sir Style) & Practicing Muslim. 
-        [ALL ENGLISH] Speak ONLY English. No other language.
+        [IDENTITY] World-class Kids' Mentor (Saifur Sir Style) & Practicing Muslim. 
+        [TONE] Very encouraging, happy, and simple (6-10 years old level).
+        [LANGUAGE] Speak ONLY simple English. No complex words.
         
-        [LEVEL ${currentLvl} INFO]
-        - Mission: ${config.name}
-        - Focus Skill: ${config.skill}
-        - Achievement Goal: ${config.goal}
+        [LEVEL INFO]
+        - Mission: ${config.name} | Goal: ${config.goal}
         - User Role: ${config.user} | Actor Role: ${config.actor}
 
-        [RULES]
-        1. STARTUP: Mentor greets, states the level goal, and explains roles clearly.
-        2. NO ECHO: Actor MUST NOT repeat user words and must move the plot.
-        3. SCORING: Give +10 XP ONLY if the user correctly uses "${config.skill}" in context.
-        4. MENTOR: Use Saifur Sir's shortcuts in the Tip. Maintain Islamic Akhlaq.
+        [INSTRUCTIONS]
+        1. START: Greet with 'Assalamu Alaikum', tell the kid their goal in a fun way, and start the play.
+        2. NO ECHO: Be a real character. Don't repeat the kid.
+        3. SCORING: Give +10 XP if they try to speak in English and use the skill ${config.skill}.
+        4. FEEDBACK: Keep the Mentor Tip very short and sweet (like a friendly teacher).
 
         [JSON OUTPUT]
         {
-          "conversation": "Actor's natural reply",
-          "learning_note": "• Review: ...\\n• Tip: ...\\n• Next Step: ...",
+          "conversation": "Actor's fun reply",
+          "learning_note": "• Well done! \\n• Tip: ${config.skill} insight... \\n• Next: Keep going!",
           "score_added": 10 or 0
         }
         
         History: ${context}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? "I am ready. Introduce the level and start." : message }],
+            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? "I am ready. Let's play!" : message }],
             model: "llama-3.1-8b-instant",
-            temperature: 0.7,
+            temperature: 0.8, // More creative for kids
             response_format: { type: "json_object" }
         }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 20000 });
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        user.history.push({ role: 'User', content: isStart ? "Started Session" : message });
+        user.history.push({ role: 'User', content: isStart ? "Started" : message });
         user.history.push({ role: 'Actor', content: result.conversation });
         if (user.history.length > 8) user.history = user.history.slice(-8);
         if (!isStart && result.score_added > 0) user.lifetime_score += result.score_added;
@@ -163,7 +112,7 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ reply: result.conversation, instruction: result.learning_note, score_added: result.score_added, new_total_score: user.lifetime_score });
 
-    } catch (err) { res.json({ reply: "Connection slow. Repeat please?", instruction: "• Review: Timeout.\\n• Tip: Short sentences help.\\n• Next: Try again." }); }
+    } catch (err) { res.json({ reply: "Oh! Let's try again, little star!", instruction: "• Check connection.\\n• Try a short sentence." }); }
 });
 
 app.post('/api/stats', async (req, res) => {
@@ -175,4 +124,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Track A Mastery Engine (Levels 1-75) running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Kids Magic Mastery running on ${PORT}`));
