@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 // 🌍 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Global Academy DB Connected!"))
+.then(() => console.log("🚀 Talk24AI Addiction Engine Synced!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const userSchema = new mongoose.Schema({
@@ -22,11 +22,11 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const ACADEMY_METADATA = {
-    'A': { age: "6-10", name: "Beginner", focus: "TPR & Functional Naming", tone: "Magic, Encouraging, Fun", goal: "Foundation & Confidence" },
-    'B': { age: "10-16", name: "Learner", focus: "Communicative Competence & Routines", tone: "Dynamic, Youthful, Engaging", goal: "Daily Fluency" },
-    'C': { age: "17-24", name: "Hesitant", focus: "Cognitive Confidence & Opinion Flow", tone: "Empathetic, Supportive, Relaxed", goal: "Social Conversationalist" },
-    'D': { age: "17-24", name: "IELTS/GRE", focus: "Rubric-based Logic & Connectors", tone: "Analytical, Formal, Structured", goal: "Academic Excellence" },
-    'E': { age: "24-34", name: "Professional", focus: "ESP (Specific Purposes) & Leadership Tone", tone: "Corporate, Assertive, Polished", goal: "Career Authority" }
+    'A': { age: "6-10", name: "Beginner", focus: "TPR & Imagination", tone: "Exciting, Magic, Cheerful" },
+    'B': { age: "10-16", name: "Learner", focus: "Routines & Action", tone: "Cool, High-energy, Friendly" },
+    'C': { age: "17-24", name: "Hesitant", focus: "Opinion & Logic", tone: "Empathetic, Chill, Supportive" },
+    'D': { age: "17-24", name: "IELTS/GRE", focus: "Structure & Academic Flow", tone: "Strict, Sophisticated, Formal" },
+    'E': { age: "24-34", name: "Professional", focus: "Authority & Leadership", tone: "Executive, Assertive, Sharp" }
 };
 
 app.post('/api/chat', async (req, res) => {
@@ -41,65 +41,63 @@ app.post('/api/chat', async (req, res) => {
         const trackInfo = ACADEMY_METADATA[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
         
+        // 💾 SERVER-SIDE PERSISTENCE (Last message logic)
         if (isStart) user.history = [];
-        const contextHistory = user.history.slice(-6).map(h => `${h.role}: ${h.content}`).join("\n");
+        const lastMsgContext = user.history.length > 0 ? user.history[user.history.length-1].content : "No previous data.";
 
-        // 🧠 UPDATED MASTER PROMPT WITH HALLUCINATION FIX
+        // 🧠 META-ADDICTION + CHATGPT EXPERT PROMPT
         const masterPrompt = `
-        [IDENTITY] World-class Global English Specialist & Practicing Muslim.
-        [TONE] ${trackInfo.tone}. Use Islamic Akhlaq (Salam/JazakAllah) naturally.
-        [STRICT RULE] Speak ONLY in English. Never mention "seeing pictures" or "looking at a screen" because this is a voice/text only interface.
-
-        [ENGAGEMENT & IMAGINATION PROTOCOL]
-        1. NO VISUAL HALLUCINATION: Instead of "You will see a picture", say "Imagine we are at..." or "Let's use our imagination to visit...".
-        2. SENSITIVITY: If the user says "I can't see it," kindly explain: "This is a magic game of imagination! Close your eyes and think of...".
-        3. SOCRATIC LOOP: Always end with a direct, age-appropriate question. For Kids (Track A), use choices (e.g., "Is it a cat or a dog?").
-        4. ROLEPLAY: Act as a character based on Level ${currentLevel} for age ${trackInfo.age}.
-        5. PERSISTENCE: Acknowledge the context of the previous turn: "${user.history.length > 0 ? user.history[user.history.length-1].content : ''}".
-
-        [ACADEMIC DETAILS]
-        - Track: ${trackInfo.name} | Focus: ${trackInfo.focus}
+        [IDENTITY] World-class Proactive English Mentor & Muslim.
+        [TONE] ${trackInfo.tone}. Use Akhlaq (Salam/JazakAllah) naturally.
         
+        [ADDICTION PROTOCOL - TOP SECRET]
+        1. VARIABLE XP: Based on user effort, recommend points between 5-20 in "score_added".
+        2. DYNAMIC STORYTELLING: Don't just talk. Turn the session into a MISSION for level ${currentLevel}. (e.g., "We are astronauts landing on Mars...").
+        3. MULTI-LAYERED QUESTIONS: Ask an engaging question that connects to their LAST message: "${lastMsgContext}".
+        4. NEVER FREEZE: If user is stuck, offer a "Magic Clue" (A or B choice).
+        5. STRICT: ONLY English. No pictures. Use imagination.
+
+        [ACADEMIC MISSION]
+        Track: ${trackInfo.name} | Target Age: ${trackInfo.age} | Focus: ${trackInfo.focus}.
+
         [JSON FORMAT]
         {
-          "conversation": "Actor's response + ONE engaging direct question",
-          "learning_note": "• Review: Feedback\\n• Tip: Imagine-based shortcut\\n• Next: Mission",
-          "score_added": 10 or 0
+          "conversation": "Proactive character reply + New Mission Step + One High-Engagement Question",
+          "learning_note": "• Review: Feedback\\n• Tip: Meta-learning shortcut\\n• Next: Hidden Achievement",
+          "score_added": 5-20
         }
         
-        History:\n${contextHistory}`;
+        History Context (Keep it flowing):\n${user.history.slice(-6).map(h => `${h.role}: ${h.content}`).join("\n")}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: [
                 { role: "system", content: masterPrompt }, 
-                { role: "user", content: isStart ? "Action! Let's use our imagination to start." : message }
+                { role: "user", content: isStart ? "Action! Start my adventure." : message }
             ],
             model: "llama-3.1-8b-instant",
-            temperature: 0.8,
+            temperature: 0.85, // Meta-expert recommended higher creativity
             response_format: { type: "json_object" }
-        }, { 
-            headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, 
-            timeout: 25000 
-        });
+        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 25000 });
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
+        // 💾 SAVE HISTORY ON SERVER (Strictly maintained)
         user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
-        if (user.history.length > 10) user.history = user.history.slice(-10);
+        if (user.history.length > 12) user.history = user.history.slice(-12);
         
-        if (!isStart && result.score_added > 0) user.lifetime_score += result.score_added;
+        if (!isStart) user.lifetime_score += (result.score_added || 10);
         await user.save();
 
         res.json({ 
             reply: result.conversation, 
             instruction: result.learning_note, 
-            score_added: result.score_added, 
+            score_added: result.score_added || 10, 
             new_total_score: user.lifetime_score 
         });
 
     } catch (err) { 
-        res.json({ reply: "My connection is refreshing. Let's try again, my friend!", instruction: "• Note: System sync." }); 
+        res.json({ reply: "Our Magic Connection is blinking! Let's try again.", instruction: "• Note: Server Sync." }); 
     }
 });
 
@@ -112,4 +110,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Mastery Engine v3 (Imagination Mode) running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Addiction Engine v4 (Meta Logic) running on ${PORT}`));
