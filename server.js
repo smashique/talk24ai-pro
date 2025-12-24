@@ -9,14 +9,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🌍 OPTIMIZED DB CONNECTION
+// 🌍 DATABASE CONNECTION (Optimized)
 mongoose.connect(process.env.MONGO_URI, {
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
 })
-.then(() => console.log("✅ Database Synced & Ready for Speed!"))
-.catch(err => console.error("❌ DB Sync Failed:", err));
+.then(() => console.log("✅ DB Connected & Ready!"))
+.catch(err => console.error("❌ DB Connection Failed:", err));
 
 const userSchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
@@ -36,8 +35,7 @@ const CURRICULUM = {
 
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
-    const skillMatch = systemInstruction.match(/Skill Level: ([A-E])/);
-    const userLevel = skillMatch ? skillMatch[1] : 'A';
+    const userLevel = systemInstruction.match(/Skill Level: ([A-E])/) ? systemInstruction.match(/Skill Level: ([A-E])/)[1] : 'A';
     
     try {
         let user = await User.findOne({ userId });
@@ -48,51 +46,67 @@ app.post('/api/chat', async (req, res) => {
         else user.total_msgs += 1;
 
         const currentFocus = CURRICULUM[userLevel];
-        const historyText = user.history.slice(-4).map(h => `${h.role}:${h.content}`).join("\n");
+        const historyText = user.history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // ⚡ STREAMLINED TURBO PROMPT
-        const turboPrompt = `Role:World-class English Mentor & Muslim. Use ONLY English.
-        Focus:${currentFocus}. 
-        Rules:1. No echo user. 2. Start unique roleplay if NEW. 3. +10 XP ONLY if relevant & uses ${currentFocus}.
-        Mentor Format(3 bullets):
-        • Review: Feedback on ${currentFocus}.
-        • Tip: Grammar insight.
-        • Next Step: Strategy.
-        History:${historyText}`;
+        // 🧠 STABLE EXPERT PROMPT (JSON Optimized)
+        const masterPrompt = `You are a World-class English Mentor and a practicing Muslim.
+        Role: Act as a human character in a unique scenario for Level ${userLevel}.
+        Focus: Evaluate the user's use of "${currentFocus}". 
+        Preach Islamic values (Akhlaq) in your tone.
+        Strict: Speak ONLY English. NO other language.
+
+        [JSON STRUCTURE REQUIRED]
+        {
+          "conversation": "Actor's human-like reply. Never repeat the user.",
+          "learning_note": "• Review of ${currentFocus}\\n• Tip on ${currentFocus}\\n• Next Step guide",
+          "score_added": 10 or 0
+        }
+        
+        History: ${historyText}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: turboPrompt }, { role: "user", content: isStart ? "Start scenario." : message }],
-            model: "llama-3.1-8b-instant", // Fastest model available
-            temperature: 0.6,
+            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? "Action! Start scenario." : message }],
+            model: "llama-3.1-8b-instant",
+            temperature: 0.7,
             response_format: { type: "json_object" }
         }, { 
             headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` },
-            timeout: 22000 // Cut off before Render's 30s limit
+            timeout: 20000 
         });
 
-        let result = JSON.parse(response.data.choices[0].message.content);
+        const result = JSON.parse(response.data.choices[0].message.content);
 
+        // Update Persistence in Background
         user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
         if (user.history.length > 8) user.history = user.history.slice(-8);
         if (!isStart && result.score_added > 0) user.lifetime_score += result.score_added;
-        await user.save();
+        
+        user.save(); // Save without blocking response for speed
 
-        res.json({ reply: cleanUnicode(result.conversation), instruction: cleanUnicode(result.learning_note), score_added: result.score_added || 0, new_total_score: user.lifetime_score });
+        res.json({ 
+            reply: cleanUnicode(result.conversation), 
+            instruction: cleanUnicode(result.learning_note), 
+            score_added: result.score_added || 0, 
+            new_total_score: user.lifetime_score 
+        });
 
     } catch (err) {
+        console.error("Critical Hang Error:", err.message);
         res.json({ 
-            reply: "The connection is a bit slow. Could you please repeat that?", 
-            instruction: "• Review: System latency detected.\\n• Tip: Use short sentences during high traffic.\\n• Next Step: Try repeating your input." 
+            reply: "The connection is stabilizing. Please try again.", 
+            instruction: "• Review: Minor sync delay.\\n• Tip: Keep your sentence clear.\\n• Next Step: Repeat your last input." 
         });
     }
 });
 
 app.post('/api/stats', async (req, res) => {
-    const user = await User.findOne({ userId: req.body.userId });
-    if (user) res.json({ total: user.total_msgs, score: user.lifetime_score, level: Math.floor(user.lifetime_score/1000)+1, lifetime_seconds: user.total_time });
-    else res.json({ total:0, score:0, level:1, lifetime_seconds:0 });
+    try {
+        const user = await User.findOne({ userId: req.body.userId });
+        if (user) res.json({ total: user.total_msgs, score: user.lifetime_score, level: Math.floor(user.lifetime_score/1000)+1, lifetime_seconds: user.total_time });
+        else res.json({ total:0, score:0, level:1, lifetime_seconds:0 });
+    } catch (e) { res.json({ total:0, score:0, level:1 }); }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Turbo Engine running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Stable Mastery Engine running on port ${PORT}`));
