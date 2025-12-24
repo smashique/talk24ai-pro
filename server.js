@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🌍 DATABASE CONNECTION (Persistent Mastery Storage)
+// 🌍 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
 .then(() => console.log("🚀 Talk24AI Global Academy DB Connected!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
@@ -41,43 +41,41 @@ app.post('/api/chat', async (req, res) => {
         const trackInfo = ACADEMY_METADATA[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
         
-        // 🔄 RESUME LOGIC: Fetch last 6 turns from history
         if (isStart) user.history = [];
         const contextHistory = user.history.slice(-6).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 UPGRADED ENGAGING PROMPT
+        // 🧠 UPDATED MASTER PROMPT WITH HALLUCINATION FIX
         const masterPrompt = `
         [IDENTITY] World-class Global English Specialist & Practicing Muslim.
         [TONE] ${trackInfo.tone}. Use Islamic Akhlaq (Salam/JazakAllah) naturally.
-        [STRICT RULE] ALWAYS speak ONLY in English. Never use any other language.
+        [STRICT RULE] Speak ONLY in English. Never mention "seeing pictures" or "looking at a screen" because this is a voice/text only interface.
 
-        [ENGAGEMENT PROTOCOL - CRITICAL]
-        1. NO PASSIVE REPLIES: Never just say "Okay" or "Good job". 
-        2. ACTIVE SOCRATIC LOOP: Every single reply MUST end with an engaging question that forces the user to speak or think about "${trackInfo.focus}".
-        3. ROLEPLAY: Act as a specific character based on Level ${currentLevel} for age ${trackInfo.age}.
-        4. RESUMPTION: If the history exists, briefly acknowledge the last message: "${user.history.length > 0 ? user.history[user.history.length-1].content : ''}" and then continue the scenario.
-        5. NO ECHO: Do not repeat user words.
-        
+        [ENGAGEMENT & IMAGINATION PROTOCOL]
+        1. NO VISUAL HALLUCINATION: Instead of "You will see a picture", say "Imagine we are at..." or "Let's use our imagination to visit...".
+        2. SENSITIVITY: If the user says "I can't see it," kindly explain: "This is a magic game of imagination! Close your eyes and think of...".
+        3. SOCRATIC LOOP: Always end with a direct, age-appropriate question. For Kids (Track A), use choices (e.g., "Is it a cat or a dog?").
+        4. ROLEPLAY: Act as a character based on Level ${currentLevel} for age ${trackInfo.age}.
+        5. PERSISTENCE: Acknowledge the context of the previous turn: "${user.history.length > 0 ? user.history[user.history.length-1].content : ''}".
+
         [ACADEMIC DETAILS]
-        - Track: ${trackInfo.name} | Level: ${currentLevel}
-        - Current Focus: ${trackInfo.focus}
+        - Track: ${trackInfo.name} | Focus: ${trackInfo.focus}
         
         [JSON FORMAT]
         {
-          "conversation": "Actor's response + ONE engaging question",
-          "learning_note": "• Review: Feedback\\n• Tip: Quick Shortcut\\n• Next: Goal",
+          "conversation": "Actor's response + ONE engaging direct question",
+          "learning_note": "• Review: Feedback\\n• Tip: Imagine-based shortcut\\n• Next: Mission",
           "score_added": 10 or 0
         }
         
-        History Context:\n${contextHistory}`;
+        History:\n${contextHistory}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: [
                 { role: "system", content: masterPrompt }, 
-                { role: "user", content: isStart ? "Action! Resume or start my lesson." : message }
+                { role: "user", content: isStart ? "Action! Let's use our imagination to start." : message }
             ],
             model: "llama-3.1-8b-instant",
-            temperature: 0.8, // Slightly higher for more creative questions
+            temperature: 0.8,
             response_format: { type: "json_object" }
         }, { 
             headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, 
@@ -86,13 +84,11 @@ app.post('/api/chat', async (req, res) => {
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // 💾 PERSISTENT SAVE ON SERVER
         user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
-        if (user.history.length > 10) user.history = user.history.slice(-10); // Keep last 10 messages for server-side context
+        if (user.history.length > 10) user.history = user.history.slice(-10);
         
         if (!isStart && result.score_added > 0) user.lifetime_score += result.score_added;
-        
         await user.save();
 
         res.json({ 
@@ -103,8 +99,7 @@ app.post('/api/chat', async (req, res) => {
         });
 
     } catch (err) { 
-        console.error("Mastery Engine Error:", err.message);
-        res.json({ reply: "My connection is refreshing. Could you please repeat that?", instruction: "• Note: System sync." }); 
+        res.json({ reply: "My connection is refreshing. Let's try again, my friend!", instruction: "• Note: System sync." }); 
     }
 });
 
@@ -117,4 +112,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Mastery Engine v2 (Engaging Mode) running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Mastery Engine v3 (Imagination Mode) running on ${PORT}`));
