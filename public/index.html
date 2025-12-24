@@ -1,56 +1,114 @@
-// index.html এর স্ক্রিপ্ট সেকশনে এই ফাংশনটি আপডেট করুন
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Talk24AI | Master English</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* CSS Styles */
+        :root { --bg-color: #002b20; --card-bg: #001e17; --accent-cyan: #00ffcc; --text-white: #ffffff; }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg-color); color: var(--text-white); margin: 0; overflow: hidden; height: 100vh; }
+        #home-screen, #chat-screen { display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center; padding: 20px; }
+        .hero-card { background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; width: 100%; max-width: 400px; text-align: center; }
+        .btn-start { width: 100%; padding: 15px; background: linear-gradient(90deg, #ff8c00, #ff2e63); border: none; border-radius: 15px; color: white; font-weight: 900; cursor: pointer; margin-top: 15px; }
+        #messages { flex: 1; overflow-y: auto; width: 100%; max-width: 600px; padding: 20px; }
+        .bubble { padding: 12px; border-radius: 10px; margin-bottom: 10px; max-width: 80%; }
+        .ai-bubble { background: #00382e; align-self: flex-start; }
+        .user-bubble { background: #0083b0; align-self: flex-end; margin-left: auto; }
+        .bottom-area { padding: 20px; width: 100%; max-width: 600px; display: flex; gap: 10px; }
+        .input-box { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #004d40; background: #00382e; color: white; }
+    </style>
+</head>
+<body>
 
-async function callAPI(payload) {
-    const mic = document.getElementById('mic-btn');
-    mic.classList.add('active');
-    try {
-        const res = await fetch(`${SERVER_URL}/api/chat`, { 
-            method: 'POST', 
-            headers: {'Content-Type':'application/json'}, 
-            body: JSON.stringify(payload) 
+<div id="home-screen">
+    <div class="hero-card">
+        <h1>Talk24AI</h1>
+        <p>Select Track & Start Learning</p>
+        <select id="trackSelect" style="width:100%; padding:10px; border-radius:10px;">
+            <option value="A">Beginner (6-10 yrs)</option>
+            <option value="B">Learner (10-16 yrs)</option>
+            <option value="C">Hesitant (17-24 yrs)</option>
+            <option value="D">IELTS (17-24 yrs)</option>
+            <option value="E">Professional (24-34 yrs)</option>
+        </select>
+        <button class="btn-start" onclick="startSession()">🚀 START MAGIC</button>
+    </div>
+</div>
+
+<div id="chat-screen" style="display:none;">
+    <div style="padding:10px; width:100%; display:flex; justify-content:space-between; background:#001e17;">
+        <span>Level: <span id="lvl-display">1</span></span>
+        <button onclick="downloadNotes()" style="background:#00ffcc; color:#000; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;">💾 Save Notes</button>
+    </div>
+    <div id="messages"></div>
+    <div class="bottom-area">
+        <input type="text" id="userInput" class="input-box" placeholder="Type here..." onkeypress="if(event.key==='Enter')sendToAI(this.value)">
+        <button onclick="sendToAI(document.getElementById('userInput').value)" style="padding:10px; border-radius:10px; background:#00ffcc; border:none; cursor:pointer;">Send</button>
+    </div>
+</div>
+
+<script>
+    const SERVER_URL = "https://talk24ai.onrender.com"; 
+    let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
+    localStorage.setItem('talk24_uid', USER_ID);
+    let state = { skill: 'A', level: 1, score: 0, notes: [] };
+
+    function startSession() {
+        state.skill = document.getElementById('trackSelect').value;
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('chat-screen').style.display = 'flex';
+        callAPI({ message: "Action!", systemInstruction: `Skill Level: ${state.skill}`, userId: USER_ID });
+    }
+
+    async function sendToAI(text) {
+        if(!text.trim()) return;
+        addMsg(text, 'user');
+        document.getElementById('userInput').value = '';
+        callAPI({ message: text, systemInstruction: `Skill Level: ${state.skill}`, userId: USER_ID });
+    }
+
+    async function callAPI(payload) {
+        try {
+            const res = await fetch(`${SERVER_URL}/api/chat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            if(data.instruction) {
+                const timestamp = new Date().toLocaleTimeString();
+                state.notes.push({ time: timestamp, content: data.instruction.replace(/\\n/g, '\n') });
+            }
+            if(data.new_total_score) {
+                state.score = data.new_total_score;
+                state.level = Math.floor(state.score / 1000) + 1;
+                document.getElementById('lvl-display').innerText = state.level;
+            }
+            addMsg(data.reply, 'ai', data.instruction);
+        } catch(e) { console.error(e); }
+    }
+
+    function addMsg(t, sender, note) {
+        const box = document.getElementById('messages');
+        const d = document.createElement('div');
+        d.className = `bubble ${sender}-bubble`;
+        d.innerHTML = sender === 'ai' && note ? `${t}<br><small style="color:#aabeb8"><i>${note}</i></small>` : t;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+        if(sender === 'ai') { const u = new SpeechSynthesisUtterance(t); window.speechSynthesis.speak(u); }
+    }
+
+    function downloadNotes() {
+        if(state.notes.length === 0) return alert("No notes collected yet!");
+        let fileContent = `TALK24AI LEARNING JOURNAL\nDate: ${new Date().toLocaleDateString()}\n==========================================\n`;
+        state.notes.forEach((note, index) => {
+            fileContent += `[NOTE #${index + 1}] Time: ${note.time}\n${note.content}\n------------------------------------------\n`;
         });
-        const data = await res.json();
-        mic.classList.remove('active');
-
-        // 💾 নতুন ফরম্যাটে নোট সেভ করা হচ্ছে
-        if(data.instruction) {
-            const levelInfo = `LEVEL: ${state.level} | TRACK: ${state.skill}`;
-            const timestamp = new Date().toLocaleTimeString();
-            
-            // নোটটিকে একটি সুন্দর অবজেক্ট হিসেবে সেভ করা
-            state.notes.push({
-                time: timestamp,
-                lvl: levelInfo,
-                content: data.instruction.replace(/\\n/g, '\n')
-            });
-        }
-
-        addMsg(data.reply, 'ai', data.instruction);
-    } catch(e) { mic.classList.remove('active'); }
-}
-
-// 📂 উন্নত ডাউনলোড ফাংশন
-function downloadNotes() {
-    if(state.notes.length === 0) return alert("No learning notes collected yet!");
-    
-    let fileContent = `==========================================\n`;
-    fileContent += `   TALK24AI PERSONAL LEARNING JOURNAL    \n`;
-    fileContent += `   Date: ${new Date().toLocaleDateString()}              \n`;
-    fileContent += `==========================================\n\n`;
-
-    state.notes.forEach((note, index) => {
-        fileContent += `[SESSION NOTE #${index + 1}]\n`;
-        fileContent += `Time: ${note.time} | ${note.lvl}\n`;
-        fileContent += `------------------------------------------\n`;
-        fileContent += `${note.content}\n`;
-        fileContent += `==========================================\n\n`;
-    });
-
-    fileContent += `\nKeep practicing! InshaAllah, you are becoming a Global Pro.`;
-
-    const blob = new Blob([fileContent], {type: 'text/plain'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `Talk24AI_Mastery_Notes_${Date.now()}.txt`;
-    a.click();
-}
+        const blob = new Blob([fileContent], {type: 'text/plain'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Talk24AI_Notes_${Date.now()}.txt`;
+        a.click();
+    }
+</script>
+</body>
+</html>
