@@ -3,50 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Master English</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Talk24AI | Animated Mastery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* CSS Styles */
-        :root { --bg-color: #002b20; --card-bg: #001e17; --accent-cyan: #00ffcc; --text-white: #ffffff; }
-        body { font-family: 'Nunito', sans-serif; background: var(--bg-color); color: var(--text-white); margin: 0; overflow: hidden; height: 100vh; }
-        #home-screen, #chat-screen { display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center; padding: 20px; }
-        .hero-card { background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; width: 100%; max-width: 400px; text-align: center; }
-        .btn-start { width: 100%; padding: 15px; background: linear-gradient(90deg, #ff8c00, #ff2e63); border: none; border-radius: 15px; color: white; font-weight: 900; cursor: pointer; margin-top: 15px; }
-        #messages { flex: 1; overflow-y: auto; width: 100%; max-width: 600px; padding: 20px; }
-        .bubble { padding: 12px; border-radius: 10px; margin-bottom: 10px; max-width: 80%; }
-        .ai-bubble { background: #00382e; align-self: flex-start; }
-        .user-bubble { background: #0083b0; align-self: flex-end; margin-left: auto; }
-        .bottom-area { padding: 20px; width: 100%; max-width: 600px; display: flex; gap: 10px; }
-        .input-box { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #004d40; background: #00382e; color: white; }
+        :root { 
+            --bg-color: #002b20; --card-bg: #001e17; --input-bg: #00382e;
+            --text-white: #ffffff; --text-gray: #aabeb8; --accent-cyan: #00ffcc; 
+            --btn-grad: linear-gradient(90deg, #ff8c00, #ff2e63); 
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg-color); color: var(--text-white); height: 100vh; overflow: hidden; }
+
+        /* --- 🏠 HOME SCREEN --- */
+        #home-screen { position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
+        .hero-card { width: 100%; max-width: 420px; background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .skill-option { background: var(--input-bg); padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; border: 1px solid transparent; }
+        .skill-option.selected { border-color: var(--accent-cyan); background: rgba(0, 255, 204, 0.1); }
+        .btn-start { width: 100%; padding: 16px; background: var(--btn-grad); color: white; border: none; border-radius: 15px; font-weight: 900; cursor: pointer; }
+
+        /* --- 🧑‍🏫 AVATAR & LIP-SYNC --- */
+        .avatar-box { height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); border-bottom: 1px solid #004d40; position: relative; }
+        .face { width: 70px; height: 70px; background: #ffdbac; border-radius: 50%; position: relative; border: 3px solid var(--accent-cyan); }
+        .eye { width: 8px; height: 8px; background: #333; border-radius: 50%; position: absolute; top: 25px; }
+        .eye.left { left: 18px; } .eye.right { right: 18px; }
+        .mouth { width: 20px; height: 4px; background: #c0392b; border-radius: 10px; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); transition: 0.2s; }
+        
+        .talking .mouth { animation: lip-sync 0.3s infinite alternate; }
+        @keyframes lip-sync { from { height: 4px; } to { height: 15px; border-radius: 50%; } }
+
+        /* --- 💬 MESSAGES --- */
+        #chat-screen { display: none; flex-direction: column; height: 100vh; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 120px; }
+        .bubble { padding: 12px 16px; border-radius: 15px; max-width: 85%; }
+        .ai-bubble { background: var(--input-bg); align-self: flex-start; }
+        .user-bubble { background: #0083b0; align-self: flex-end; }
+        .mentor-note { font-size: 12px; color: var(--text-gray); border-left: 2px solid var(--accent-cyan); padding-left: 10px; margin-top: 5px; }
+
+        /* --- 🎙️ INPUT AREA --- */
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: rgba(0, 30, 23, 0.9); display: flex; justify-content: center; }
+        .input-deck { width: 100%; max-width: 600px; display: flex; gap: 10px; }
+        .input-box { flex: 1; background: var(--input-bg); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; }
+        #mic-btn { width: 50px; height: 50px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #mic-btn.active { background: #ff2e63; color: white; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,46,99,0); } }
     </style>
 </head>
 <body>
 
 <div id="home-screen">
     <div class="hero-card">
-        <h1>Talk24AI</h1>
-        <p>Select Track & Start Learning</p>
-        <select id="trackSelect" style="width:100%; padding:10px; border-radius:10px;">
-            <option value="A">Beginner (6-10 yrs)</option>
-            <option value="B">Learner (10-16 yrs)</option>
-            <option value="C">Hesitant (17-24 yrs)</option>
-            <option value="D">IELTS (17-24 yrs)</option>
-            <option value="E">Professional (24-34 yrs)</option>
-        </select>
+        <h2 style="margin:0; text-align:center;">Talk24AI</h2>
+        <div class="skill-grid">
+            <div class="skill-option" onclick="selectTrack('A', this)">Beginner</div>
+            <div class="skill-option" onclick="selectTrack('B', this)">Learner</div>
+            <div class="skill-option" onclick="selectTrack('C', this)">Hesitant</div>
+            <div class="skill-option" onclick="selectTrack('D', this)">IELTS</div>
+            <div class="skill-option" onclick="selectTrack('E', this)">Pro</div>
+        </div>
         <button class="btn-start" onclick="startSession()">🚀 START MAGIC</button>
     </div>
 </div>
 
-<div id="chat-screen" style="display:none;">
-    <div style="padding:10px; width:100%; display:flex; justify-content:space-between; background:#001e17;">
-        <span>Level: <span id="lvl-display">1</span></span>
-        <button onclick="downloadNotes()" style="background:#00ffcc; color:#000; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;">💾 Save Notes</button>
+<div id="chat-screen">
+    <div class="avatar-box" id="avatar-container">
+        <div class="face">
+            <div class="eye left"></div><div class="eye right"></div>
+            <div class="mouth"></div>
+        </div>
+        <button onclick="downloadNotes()" style="position: absolute; right: 15px; top: 15px; background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 5px; cursor: pointer; font-size: 10px; padding: 4px 8px;">💾 Save Notes</button>
     </div>
     <div id="messages"></div>
     <div class="bottom-area">
-        <input type="text" id="userInput" class="input-box" placeholder="Type here..." onkeypress="if(event.key==='Enter')sendToAI(this.value)">
-        <button onclick="sendToAI(document.getElementById('userInput').value)" style="padding:10px; border-radius:10px; background:#00ffcc; border:none; cursor:pointer;">Send</button>
+        <div class="input-deck">
+            <button id="mic-btn" onclick="toggleMic()">🎙️</button>
+            <input type="text" id="userInput" class="input-box" placeholder="Speak or Type..." onkeypress="if(event.key==='Enter')sendToAI(this.value)">
+        </div>
     </div>
 </div>
 
@@ -54,10 +87,16 @@
     const SERVER_URL = "https://talk24ai.onrender.com"; 
     let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
     localStorage.setItem('talk24_uid', USER_ID);
-    let state = { skill: 'A', level: 1, score: 0, notes: [] };
+    let state = { skill: null, notes: [] };
+
+    function selectTrack(code, el) {
+        document.querySelectorAll('.skill-option').forEach(d => d.classList.remove('selected'));
+        el.classList.add('selected');
+        state.skill = code;
+    }
 
     function startSession() {
-        state.skill = document.getElementById('trackSelect').value;
+        if(!state.skill) return alert("Select a Track!");
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('chat-screen').style.display = 'flex';
         callAPI({ message: "Action!", systemInstruction: `Skill Level: ${state.skill}`, userId: USER_ID });
@@ -71,43 +110,48 @@
     }
 
     async function callAPI(payload) {
+        const btn = document.getElementById('mic-btn');
+        btn.classList.add('active');
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
-            if(data.instruction) {
-                const timestamp = new Date().toLocaleTimeString();
-                state.notes.push({ time: timestamp, content: data.instruction.replace(/\\n/g, '\n') });
-            }
-            if(data.new_total_score) {
-                state.score = data.new_total_score;
-                state.level = Math.floor(state.score / 1000) + 1;
-                document.getElementById('lvl-display').innerText = state.level;
-            }
+            btn.classList.remove('active');
+            if(data.instruction) state.notes.push(data.instruction);
             addMsg(data.reply, 'ai', data.instruction);
-        } catch(e) { console.error(e); }
+        } catch(e) { btn.classList.remove('active'); }
     }
 
     function addMsg(t, sender, note) {
         const box = document.getElementById('messages');
         const d = document.createElement('div');
         d.className = `bubble ${sender}-bubble`;
-        d.innerHTML = sender === 'ai' && note ? `${t}<br><small style="color:#aabeb8"><i>${note}</i></small>` : t;
+        d.innerHTML = sender === 'ai' && note ? `${t}<div class="mentor-note">${note}</div>` : t;
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
-        if(sender === 'ai') { const u = new SpeechSynthesisUtterance(t); window.speechSynthesis.speak(u); }
+
+        if(sender === 'ai') {
+            const utter = new SpeechSynthesisUtterance(t);
+            utter.onstart = () => document.getElementById('avatar-container').classList.add('talking');
+            utter.onend = () => document.getElementById('avatar-container').classList.remove('talking');
+            window.speechSynthesis.speak(utter);
+        }
     }
 
     function downloadNotes() {
-        if(state.notes.length === 0) return alert("No notes collected yet!");
-        let fileContent = `TALK24AI LEARNING JOURNAL\nDate: ${new Date().toLocaleDateString()}\n==========================================\n`;
-        state.notes.forEach((note, index) => {
-            fileContent += `[NOTE #${index + 1}] Time: ${note.time}\n${note.content}\n------------------------------------------\n`;
-        });
-        const blob = new Blob([fileContent], {type: 'text/plain'});
+        if(state.notes.length === 0) return alert("No notes!");
+        const blob = new Blob([state.notes.join('\n\n')], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `Talk24AI_Notes_${Date.now()}.txt`;
+        a.download = `Talk24AI_Notes.txt`;
         a.click();
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = SpeechRecognition ? new SpeechRecognition() : null;
+    function toggleMic() {
+        if(!rec) return alert("Mic not supported.");
+        rec.start();
+        rec.onresult = (e) => sendToAI(e.results[0][0].transcript);
     }
 </script>
 </body>
