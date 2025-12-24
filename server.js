@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// 📘 THE UNIVERSAL SYLLABUS METADATA (Cross-checked with Global Methodologists)
 const ACADEMY_METADATA = {
     'A': { age: "6-10", name: "Beginner", focus: "TPR & Functional Naming", tone: "Magic, Encouraging, Fun", goal: "Foundation & Confidence" },
     'B': { age: "10-16", name: "Learner", focus: "Communicative Competence & Routines", tone: "Dynamic, Youthful, Engaging", goal: "Daily Fluency" },
@@ -40,52 +39,58 @@ app.post('/api/chat', async (req, res) => {
         if (!user) user = new User({ userId });
 
         const trackInfo = ACADEMY_METADATA[trackCode];
-        const currentLevel = Math.floor(user.lifetime_score / 1000) + 1; // Logic: 1000 XP per level
+        const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
         
+        // 🔄 RESUME LOGIC: Fetch last 6 turns from history
         if (isStart) user.history = [];
-        const context = user.history.slice(-4).map(h => `${h.role}: ${h.content}`).join("\n");
+        const contextHistory = user.history.slice(-6).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 GLOBAL EXPERTS + PSYCHOLOGY DRIVEN PROMPT
+        // 🧠 UPGRADED ENGAGING PROMPT
         const masterPrompt = `
-        [IDENTITY] World-class Global English Specialist (Methodology Focus).
-        [VALUES] Practicing Muslim. Use polite manners (Akhlaq) naturally.
-        [ALL ENGLISH] Speak ONLY English.
+        [IDENTITY] World-class Global English Specialist & Practicing Muslim.
+        [TONE] ${trackInfo.tone}. Use Islamic Akhlaq (Salam/JazakAllah) naturally.
+        [STRICT RULE] ALWAYS speak ONLY in English. Never use any other language.
 
-        [TRACK ARCHITECTURE]
-        - Current Track: ${trackInfo.name} | Target Age: ${trackInfo.age}.
-        - Mastery Level: ${currentLevel} of 100.
-        - Pedagogy Focus: ${trackInfo.focus}.
-        - Psychology Tone: ${trackInfo.tone}.
+        [ENGAGEMENT PROTOCOL - CRITICAL]
+        1. NO PASSIVE REPLIES: Never just say "Okay" or "Good job". 
+        2. ACTIVE SOCRATIC LOOP: Every single reply MUST end with an engaging question that forces the user to speak or think about "${trackInfo.focus}".
+        3. ROLEPLAY: Act as a specific character based on Level ${currentLevel} for age ${trackInfo.age}.
+        4. RESUMPTION: If the history exists, briefly acknowledge the last message: "${user.history.length > 0 ? user.history[user.history.length-1].content : ''}" and then continue the scenario.
+        5. NO ECHO: Do not repeat user words.
         
-        [STRICT INSTRUCTIONS]
-        1. START PROTOCOL: Greet warmly (Salam), state the Level ${currentLevel} "Achievement Badge" name, and briefly explain the mission goal based on age ${trackInfo.age}.
-        2. ROLEPLAY: Create a task-based scenario suitable for age ${trackInfo.age}.
-        3. NO ECHO: Never repeat user's words. Move the conversation forward humanly.
-        4. MENTOR FEEDBACK: Use "Sandwich Feedback" (Praise -> Correction -> Next Step). Focus on "${trackInfo.focus}".
-        5. SCORING: Award +10 XP ONLY if the response shows context relevance and growth in ${trackInfo.focus}.
-
-        [JSON OUTPUT FORMAT]
+        [ACADEMIC DETAILS]
+        - Track: ${trackInfo.name} | Level: ${currentLevel}
+        - Current Focus: ${trackInfo.focus}
+        
+        [JSON FORMAT]
         {
-          "conversation": "Actor's age-appropriate response",
-          "learning_note": "• Review: Feedback on ${trackInfo.focus}\\n• Tip: Global methodology insight\\n• Next Step: Strategic move",
+          "conversation": "Actor's response + ONE engaging question",
+          "learning_note": "• Review: Feedback\\n• Tip: Quick Shortcut\\n• Next: Goal",
           "score_added": 10 or 0
         }
         
-        History: ${context}`;
+        History Context:\n${contextHistory}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? "Action! Begin simulation." : message }],
+            messages: [
+                { role: "system", content: masterPrompt }, 
+                { role: "user", content: isStart ? "Action! Resume or start my lesson." : message }
+            ],
             model: "llama-3.1-8b-instant",
-            temperature: 0.7,
+            temperature: 0.8, // Slightly higher for more creative questions
             response_format: { type: "json_object" }
-        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 20000 });
+        }, { 
+            headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, 
+            timeout: 25000 
+        });
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // Persistent Progress Save
-        user.history.push({ role: 'User', content: isStart ? "Session Started" : message });
+        // 💾 PERSISTENT SAVE ON SERVER
+        user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
-        if (user.history.length > 8) user.history = user.history.slice(-8);
+        if (user.history.length > 10) user.history = user.history.slice(-10); // Keep last 10 messages for server-side context
+        
         if (!isStart && result.score_added > 0) user.lifetime_score += result.score_added;
         
         await user.save();
@@ -97,7 +102,10 @@ app.post('/api/chat', async (req, res) => {
             new_total_score: user.lifetime_score 
         });
 
-    } catch (err) { res.json({ reply: "Connection is stabilizing. Please try again.", instruction: "• Note: System sync in progress." }); }
+    } catch (err) { 
+        console.error("Mastery Engine Error:", err.message);
+        res.json({ reply: "My connection is refreshing. Could you please repeat that?", instruction: "• Note: System sync." }); 
+    }
 });
 
 app.post('/api/stats', async (req, res) => {
@@ -109,4 +117,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Global Multi-Track Academy running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Mastery Engine v2 (Engaging Mode) running on ${PORT}`));
