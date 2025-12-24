@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const ACADEMY_METADATA = {
-    'A': { age: "6-10", name: "Beginner", focus: "TPR & Imagination", tone: "Exciting, Magic, Cheerful" },
+    'A': { age: "6-10", name: "Beginner", focus: "TPR & Imagination", tone: "Magic, Exciting, Cheerful" },
     'B': { age: "10-16", name: "Learner", focus: "Routines & Action", tone: "Cool, High-energy, Friendly" },
     'C': { age: "17-24", name: "Hesitant", focus: "Opinion & Logic", tone: "Empathetic, Chill, Supportive" },
     'D': { age: "17-24", name: "IELTS/GRE", focus: "Structure & Academic Flow", tone: "Strict, Sophisticated, Formal" },
@@ -41,49 +41,57 @@ app.post('/api/chat', async (req, res) => {
         const trackInfo = ACADEMY_METADATA[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
         
-        // 💾 SERVER-SIDE PERSISTENCE (Last message logic)
-        if (isStart) user.history = [];
-        const lastMsgContext = user.history.length > 0 ? user.history[user.history.length-1].content : "No previous data.";
+        // 💾 PERSISTENCE LOGIC: Fetch context even if "Action!" is clicked
+        const lastTurn = user.history.length > 0 ? user.history[user.history.length - 1].content : "First time starting.";
+        const contextHistory = user.history.slice(-8).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 META-ADDICTION + CHATGPT EXPERT PROMPT
+        // 🧠 HYPER-ENGAGEMENT & ADDICTION PROMPT
         const masterPrompt = `
-        [IDENTITY] World-class Proactive English Mentor & Muslim.
-        [TONE] ${trackInfo.tone}. Use Akhlaq (Salam/JazakAllah) naturally.
-        
-        [ADDICTION PROTOCOL - TOP SECRET]
-        1. VARIABLE XP: Based on user effort, recommend points between 5-20 in "score_added".
-        2. DYNAMIC STORYTELLING: Don't just talk. Turn the session into a MISSION for level ${currentLevel}. (e.g., "We are astronauts landing on Mars...").
-        3. MULTI-LAYERED QUESTIONS: Ask an engaging question that connects to their LAST message: "${lastMsgContext}".
-        4. NEVER FREEZE: If user is stuck, offer a "Magic Clue" (A or B choice).
-        5. STRICT: ONLY English. No pictures. Use imagination.
+        [IDENTITY] World-class Proactive English Specialist & Practicing Muslim.
+        [VALUES] Use Islamic Akhlaq (Salam/JazakAllah) naturally.
+        [STRICT RULE] Speak ONLY in English. NO HALLUCINATIONS: Never mention pictures or looking at a screen. Use imagination.
 
-        [ACADEMIC MISSION]
-        Track: ${trackInfo.name} | Target Age: ${trackInfo.age} | Focus: ${trackInfo.focus}.
+        [ADDICTION & ENGAGEMENT ALGORITHM]
+        1. THE SOCRATIC HOOK: Never finish a sentence without a question. Every reply MUST end with ONE high-engagement question.
+        2. HERO'S JOURNEY: Every level (${currentLevel}) is a mission. (e.g., Track A: "Lost in a candy forest", Track E: "Saving a global company").
+        3. SCAFFOLDING: Build on the user's last message: "${lastTurn}". Acknowledge their effort before moving to the next mission step.
+        4. VARIABLE REWARDS: Grant points (5-20) in "score_added" based on sentence complexity and grammar usage.
+        5. NO ECHO: Move the plot forward. Do not repeat what the user said.
 
-        [JSON FORMAT]
+        [MISSION DETAILS]
+        - Track: ${trackInfo.name} (${trackInfo.age} yrs) | Focus: ${trackInfo.focus}.
+        - Roleplay Tone: ${trackInfo.tone}.
+
+        [JSON OUTPUT]
         {
-          "conversation": "Proactive character reply + New Mission Step + One High-Engagement Question",
-          "learning_note": "• Review: Feedback\\n• Tip: Meta-learning shortcut\\n• Next: Hidden Achievement",
+          "conversation": "Proactive character response + Mission Progress + Engaging Question",
+          "learning_note": "• Review: Feedback on grammar\\n• Tip: A quick English hack\\n• Next: Hidden milestone",
           "score_added": 5-20
         }
         
-        History Context (Keep it flowing):\n${user.history.slice(-6).map(h => `${h.role}: ${h.content}`).join("\n")}`;
+        History Context:\n${contextHistory}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: [
                 { role: "system", content: masterPrompt }, 
-                { role: "user", content: isStart ? "Action! Start my adventure." : message }
+                { role: "user", content: isStart ? "Action! Resume or start my adventure mission." : message }
             ],
             model: "llama-3.1-8b-instant",
-            temperature: 0.85, // Meta-expert recommended higher creativity
+            temperature: 0.8,
             response_format: { type: "json_object" }
         }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 25000 });
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // 💾 SAVE HISTORY ON SERVER (Strictly maintained)
-        user.history.push({ role: 'User', content: message });
+        // 💾 PERSISTENT HISTORY UPDATE
+        if (isStart && user.history.length === 0) {
+            user.history.push({ role: 'User', content: "Started Adventure" });
+        } else {
+            user.history.push({ role: 'User', content: message });
+        }
         user.history.push({ role: 'Actor', content: result.conversation });
+        
+        // Keep 12 messages for deep context
         if (user.history.length > 12) user.history = user.history.slice(-12);
         
         if (!isStart) user.lifetime_score += (result.score_added || 10);
@@ -97,7 +105,8 @@ app.post('/api/chat', async (req, res) => {
         });
 
     } catch (err) { 
-        res.json({ reply: "Our Magic Connection is blinking! Let's try again.", instruction: "• Note: Server Sync." }); 
+        console.error("Mastery Engine Error:", err.message);
+        res.json({ reply: "My connection is blinking. Let's stay in the mission! Try again?", instruction: "• Note: System sync in progress." }); 
     }
 });
 
@@ -110,4 +119,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Addiction Engine v4 (Meta Logic) running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Addiction Engine v4 (Engaging Mode) running on ${PORT}`));
