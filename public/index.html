@@ -1,44 +1,102 @@
-function renderAiMsg(reply, perf, notes) {
-    const box = document.getElementById('messages');
-    const d = document.createElement('div');
-    d.className = 'bubble ai-bubble';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    let cleanText = reply;
-    let choices = [];
+    <title>Talk24AI | #1 Spoken English Practice Lab & AI Mentor</title>
+    <meta name="description" content="Master Spoken English with Talk24AI. 400+ topics, real-time AI assessment, and gamified English missions. Start your fluency journey today!">
+    <meta name="keywords" content="Spoken English, Learn English AI, IELTS Speaking Practice, English Lab, Spoken English Bangladesh, English Conversation App">
+    <meta name="author" content="Talk24AI Team">
     
-    // 🛠️ Improved Regex to catch options even if AI makes minor formatting errors
-    const match = reply.match(/\[A\.(.*)\|.*B\.(.*)\]/) || reply.match(/\[A:(.*)\|.*B:(.*)\]/);
+    <meta property="og:title" content="Talk24AI - The Ultimate Spoken English Lab">
+    <meta property="og:description" content="Speak English fluently with AI. 400 Topics, XP Rewards, and Real-time Feedback.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://talk24ai.xyz">
     
-    if(match) {
-        cleanText = reply.split('[')[0];
-        choices = [match[1].trim(), match[2].trim()];
-    } else {
-        // Fallback: If no options found, provide default ones to keep the flow
-        choices = ["That's interesting!", "Tell me more!"];
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Talk24AI",
+      "url": "https://talk24ai.xyz",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web, Android, iOS",
+      "description": "An AI-powered Spoken English Lab with 400 topics and gamified rewards.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      }
     }
+    </script>
 
-    d.innerHTML = `<div>${cleanText}</div>`;
-    if(perf) d.innerHTML += `<div class="assessment-card">📊 ASSESSMENT: ${perf}</div>`;
-    if(notes) d.innerHTML += `<div class="mentor-note">${notes.replace(/\\n/g, '<br>')}</div>`;
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    // 🔘 Render Buttons
-    const cBox = document.createElement('div');
-    cBox.className = 'choice-box';
-    choices.forEach(c => {
-        const b = document.createElement('button');
-        b.className = 'choice-btn';
-        b.innerText = c;
-        b.onclick = () => sendToAI(c, 'click'); 
-        cBox.appendChild(b);
-    });
-    d.appendChild(cBox);
+    <style>
+        :root { 
+            --bg: #002b20; --card: #001e17; --input: #00382e; --cyan: #00ffcc; --gray: #aabeb8; 
+            --fire: #ff4500; --gold: #ffd700;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; overflow: hidden; }
 
-    const hint = document.createElement('div');
-    hint.className = 'xp-hint';
-    hint.innerText = "🔥 SPEAK via Mic to earn 20 XP!";
-    d.appendChild(hint);
+        /* --- SCREENS --- */
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 15px; z-index: 5000; }
+        .active-screen { display: flex; }
+        .hero-card { width: 100%; max-width: 550px; background: var(--card); border: 2px solid #004d40; border-radius: 25px; padding: 25px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; gap: 15px; }
 
-    box.appendChild(d);
-    box.scrollTop = box.scrollHeight;
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(cleanText));
-}
+        /* --- 📊 TOP NAV --- */
+        .top-nav { padding: 15px 20px; display: flex; align-items: center; width: 100%; max-width: 600px; gap: 12px; background: var(--bg); border-bottom: 1px solid #004d40; }
+        .progress-track { flex: 1; height: 8px; background: #00382e; border-radius: 5px; }
+        .progress-fill { height: 100%; background: var(--cyan); border-radius: 5px; transition: width 0.5s; box-shadow: 0 0 10px var(--cyan); }
+        .badge { background: var(--input); border: 1px solid var(--cyan); padding: 5px 10px; border-radius: 8px; color: var(--cyan); font-weight: 900; font-size: 11px; }
+        .streak-box { display: flex; align-items: center; gap: 4px; color: var(--fire); font-weight: 900; font-size: 14px; }
+
+        /* --- 💬 MESSAGES --- */
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 600px; padding-bottom: 150px; }
+        .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; }
+        .ai-bubble { background: var(--input); align-self: flex-start; border: 1px solid #004d40; }
+        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
+        .assessment-card { margin-top: 10px; padding: 12px; border: 1.5px solid var(--cyan); border-radius: 12px; font-size: 11px; color: var(--cyan); font-weight: 800; background: rgba(0, 255, 204, 0.05); }
+        .mentor-note { margin-top: 8px; font-size: 12px; color: var(--gray); border-left: 3px solid var(--cyan); padding-left: 10px; font-style: italic; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 5px; }
+
+        /* --- 🎙️ VOICE CENTER --- */
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 25px; background: linear-gradient(to top, var(--bg) 80%, transparent); display: flex; justify-content: center; backdrop-filter: blur(10px); }
+        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--input); border: 4px solid var(--cyan); color: var(--cyan); font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+        #mic-btn.listening { background: #ff2e63; border-color: #ff2e63; color: white; animation: pulse 1s infinite; }
+        .mic-bonus-badge { position: absolute; top: -10px; right: -10px; background: var(--gold); color: black; font-size: 9px; padding: 3px 6px; border-radius: 6px; font-weight: 900; }
+
+        /* --- 🔘 CHOICES --- */
+        .choice-box { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .choice-btn { background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 25px; font-size: 13px; font-weight: 800; cursor: pointer; }
+        .xp-hint { font-size: 10px; color: #ff8c00; font-weight: 800; margin-top: 8px; }
+
+        /* --- TOPIC GRID --- */
+        .topic-scroll { flex: 1; overflow-y: auto; width: 100%; margin-top: 10px; }
+        .topic-group { background: #00382e; color: var(--cyan); padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 900; margin: 15px 0 10px 0; border-left: 4px solid var(--cyan); }
+        .topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .topic-btn { background: rgba(255,255,255,0.05); border: 1px solid #004d40; padding: 15px; border-radius: 12px; color: white; font-size: 13px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="snd-levelup" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+
+<h1 style="display:none;">Talk24AI - Best Spoken English Lab with AI Assessment</h1>
+<p style="display:none;">Practice 400 topics like Greetings, Family, IELTS, and Business English through voice-active learning and XP rewards.</p>
+
+<div id="home-screen" class="screen active-screen">
+    <div style="font-family:'Fredoka'; color:var(--cyan); font-size:40px; margin-bottom:20px;">Talk24AI</div>
+    <div class="hero-card">
+        <div style="font-weight:900; color:var(--gray); font-size:12px; text-transform:uppercase; text-align:center;">Practice Spoken English missions</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <button onclick="loadTopics('A')" style="padding:30px 10px; border-radius:20px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900; font-size:18px;">BEGINNER</button>
+            <button onclick="loadTopics('B')" style="padding:30px 10px; border-radius:20px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900; font-size:18px;">LEARNER</button>
+            <button onclick="loadTopics('C')" style="padding:30px 10px; border-radius:20px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900; font-size:18px;">HESITANT</button>
+            <button onclick="loadTopics('D')" style="padding:30px 10px; border-radius:20px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900; font-size:18px;">PRO</button>
+        </div>
+    </div>
+</div>
