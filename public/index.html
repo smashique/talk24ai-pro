@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Master English</title>
+    <title>Talk24AI | 400 Topics Mastery</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* --- 🎨 THEME: DARK CYBER ISLAMIC --- */
         :root { 
             --bg-color: #002b20; --card-bg: #001e17; --input-bg: #00382e;
             --text-white: #ffffff; --text-gray: #aabeb8; --accent-cyan: #00ffcc; 
@@ -32,52 +31,51 @@
         .logo { font-family: 'Fredoka', sans-serif; font-size: 32px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
         .hero-card { width: 100%; max-width: 500px; background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow: hidden; }
 
-        /* HOOK BOX */
-        .hook-box { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 15px; text-align: center; border: 1px dashed #004d40; margin-bottom: 5px;}
-        .pain-point { font-size: 13px; color: #ffab91; font-weight: 800; line-height: 1.4; margin-bottom: 5px; text-transform: uppercase; }
-        .achievement-hook { font-size: 12px; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.5px; }
+        .hook-box { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 15px; text-align: center; border: 1px dashed #004d40; }
+        .pain-point { font-size: 13px; color: #ffab91; font-weight: 800; text-transform: uppercase; }
+        .achievement-hook { font-size: 12px; color: var(--accent-cyan); font-weight: 700; }
 
-        /* STATS BAR */
-        .stats-bar { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; padding: 0 5px; }
-        .stat-item { text-align: center; }
-        .stat-label { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; }
+        .stats-bar { display: flex; justify-content: space-between; width: 100%; margin-bottom: 5px; padding: 0 5px; }
         .stat-value { font-size: 16px; font-weight: 900; color: var(--accent-cyan); }
 
-        /* GRID FOR MODULES */
         .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 15px; padding: 15px 10px; cursor: pointer; text-align: center; transition: 0.3s; }
+        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 15px; padding: 15px 10px; cursor: pointer; text-align: center; }
         .skill-option:active { transform: scale(0.95); background: #004d40; }
         .skill-head { font-weight: 800; font-size: 15px; color: var(--accent-cyan); }
-        .skill-sub { font-size: 10px; color: var(--text-gray); margin-top: 2px; }
 
-        /* TOPIC LIST UI (FIXED) */
         .topic-scroll { flex: 1; overflow-y: auto; padding-right: 8px; margin-top: 5px; width: 100%; }
         .topic-group-header { background: #00382e; color: var(--accent-cyan); padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; margin: 12px 0 8px 0; text-transform: uppercase; border-left: 3px solid var(--accent-cyan); }
         .topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .topic-btn { background: rgba(255,255,255,0.05); border: 1px solid #004d40; padding: 12px 8px; border-radius: 10px; color: white; cursor: pointer; font-size: 12px; font-weight: 600; text-align: left; }
-        .topic-btn:active { background: var(--accent-cyan); color: #000; }
+        .topic-btn { background: rgba(255,255,255,0.05); border: 1px solid #004d40; padding: 12px 8px; border-radius: 10px; color: white; cursor: pointer; font-size: 12px; text-align: left; }
 
-        .btn-back { background: transparent; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 8px 12px; border-radius: 8px; cursor: pointer; align-self: flex-start; font-size: 11px; font-weight: 800; }
+        .btn-back { background: transparent; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 800; }
 
         /* CHAT UI */
         .top-nav { padding: 12px 20px; background: var(--bg-color); border-bottom: 1px solid #004d40; display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 600px; gap: 10px;}
         .progress-track { flex: 1; height: 6px; background: #00382e; border-radius: 5px; } 
         .progress-fill { height: 100%; background: var(--accent-cyan); width: 0%; border-radius: 5px; transition: width 0.5s; box-shadow: 0 0 10px var(--accent-cyan); }
         
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 600px; padding-bottom: 110px; }
-        .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; line-height: 1.4; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 600px; padding-bottom: 110px; }
+        .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; position: relative; }
         .ai-bubble { background: var(--input-bg); align-self: flex-start; border: 1px solid #004d40; }
         .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
+        
+        .performance-card { margin-top: 10px; padding: 10px; background: rgba(0, 255, 204, 0.05); border: 1px solid var(--accent-cyan); border-radius: 10px; font-size: 11px; color: var(--accent-cyan); font-weight: 800; }
         .mentor-note { margin-top: 8px; font-size: 12px; color: var(--text-gray); border-left: 2px solid var(--accent-cyan); padding-left: 10px; font-style: italic; background: rgba(0,0,0,0.2); border-radius: 5px; padding: 8px; }
+
+        /* INTERACTIVE CHOICES */
+        .choice-container { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .choice-btn { background: #00382e; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .choice-btn:active { background: var(--accent-cyan); color: #001e17; }
 
         .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: rgba(0, 30, 23, 0.95); display: flex; justify-content: center; backdrop-filter: blur(10px); }
         .input-deck { width: 100%; max-width: 600px; display: flex; gap: 10px; }
         .input-box { flex: 1; background: var(--input-bg); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; }
         #mic-btn { width: 50px; height: 50px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         #mic-btn.listening { background: #ff2e63; color: white; border-color: #ff2e63; animation: pulse 1s infinite; }
+        
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,46,99,0); } }
 
-        /* LEVEL UP MODAL */
         #level-up-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 8000; align-items: center; justify-content: center; }
         .levelup-card { background: var(--card-bg); padding: 30px; border-radius: 25px; text-align: center; border: 2px solid var(--accent-cyan); box-shadow: 0 0 50px rgba(0,255,204,0.3); }
     </style>
@@ -101,20 +99,20 @@
 
 <div id="home-screen" class="screen active-screen">
     <div class="logo">Talk24AI</div>
-    <div class="stats-bar" style="width:100%; max-width:450px;">
-        <div class="stat-item"><div class="stat-label">Level</div><div class="stat-value" id="home-lvl">1</div></div>
-        <div class="stat-item"><div class="stat-label">Total XP</div><div class="stat-value" id="home-xp">0</div></div>
+    <div class="stats-bar" style="max-width:450px;">
+        <div class="stat-item"><div class="stat-value" id="home-lvl">1</div></div>
+        <div class="stat-item"><div class="stat-value" id="home-xp">0</div></div>
     </div>
     <div class="hero-card">
         <div class="hook-box">
             <div class="pain-point">Tired of "Freezing" in English?</div>
-            <div class="achievement-hook">🚀 Break the silence and speak like a Global Pro!</div>
+            <div class="achievement-hook">🚀 Get Real-Time Mastery Reports & Speak like a Pro!</div>
         </div>
         <div class="skill-grid">
-            <div class="skill-option" onclick="loadTopics('A')"><div class="skill-head">Beginner</div><div class="skill-sub">Kids (6-10 yrs)</div></div>
-            <div class="skill-option" onclick="loadTopics('B')"><div class="skill-head">Learner</div><div class="skill-sub">Teens (10-16 yrs)</div></div>
-            <div class="skill-option" onclick="loadTopics('C')"><div class="skill-head">Hesitant</div><div class="skill-sub">IELTS (17-24 yrs)</div></div>
-            <div class="skill-option" onclick="loadTopics('D')"><div class="skill-head">Pro</div><div class="skill-sub">Adults (24-34 yrs)</div></div>
+            <div class="skill-option" onclick="loadTopics('A')"><div class="skill-head">Beginner</div></div>
+            <div class="skill-option" onclick="loadTopics('B')"><div class="skill-head">Learner</div></div>
+            <div class="skill-option" onclick="loadTopics('C')"><div class="skill-head">Hesitant</div></div>
+            <div class="skill-option" onclick="loadTopics('D')"><div class="skill-head">Pro</div></div>
         </div>
     </div>
 </div>
@@ -122,7 +120,6 @@
 <div id="topic-screen" class="screen">
     <div class="hero-card">
         <button class="btn-back" onclick="changeScreen('home-screen')">← Back</button>
-        <div style="font-weight:900; color:var(--accent-cyan); font-size:13px; text-align:center; margin-bottom:5px;">CHOOSE YOUR MISSION</div>
         <div id="topic-container" class="topic-scroll"></div>
     </div>
 </div>
@@ -131,8 +128,7 @@
     <div class="top-nav">
         <div id="chat-lvl-badge" style="background:var(--input-bg); border:1px solid var(--accent-cyan); padding:5px 8px; border-radius:8px; font-weight:900; font-size:11px; color:var(--accent-cyan);">LVL 1</div>
         <div class="progress-container" style="flex:1;"><div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div></div>
-        <button onclick="downloadNotes()" style="background:#00ffcc; border:none; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; font-size:10px; color:#001e17;">💾 NOTES</button>
-        <button onclick="location.reload()" style="background:#444; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-size:10px;">EXIT</button>
+        <button onclick="downloadNotes()" style="background:#00ffcc; border:none; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; font-size:10px;">💾 DOWNLOAD REPORT</button>
     </div>
     <div id="messages"></div>
     <div class="bottom-area">
@@ -148,44 +144,18 @@
     let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
     localStorage.setItem('talk24_uid', USER_ID);
 
-    let savedScore = parseInt(localStorage.getItem('talk24_score')) || 0;
-    let savedLevel = parseInt(localStorage.getItem('talk24_level')) || 1;
-    let state = { module: null, topic: null, score: savedScore, level: savedLevel, notes: [] };
+    let state = { module: null, topic: null, score: parseInt(localStorage.getItem('talk24_score')) || 0, level: parseInt(localStorage.getItem('talk24_level')) || 1, notes: [] };
 
-    // 📘 FULL SYLLABUS DATA (Exactly matching your modules)
     const SYLLABUS = {
-        'A': { name: "Beginner", groups: [
-            { title: "1-10: Greetings", items: ["Hello & Hi", "Good Morning", "Good Night", "My Name", "My Age", "Boy or Girl?", "How are you?", "I am Fine", "Goodbye", "Thank You"] },
-            { title: "11-20: Family", items: ["Mother", "Father", "Brother", "Sister", "Baby", "Grandfather", "Grandmother", "Uncle", "Aunt", "Cousin"] },
-            { title: "21-30: Colors", items: ["Red Apple", "Blue Sky", "Green Grass", "Yellow Sun", "Orange Fruit", "Black Hair", "White Teeth", "Pink Flower", "Brown Bear", "Purple Dress"] },
-            { title: "31-40: Counting", items: ["One to Five", "Six to Ten", "Phone Number", "Counting Fingers", "Counting Chairs", "First & Second", "Big & Small", "Tall & Short", "Heavy & Light", "Fast & Slow"] },
-            { title: "41-100: Actions & House", items: ["My Head", "Eyes & Nose", "Hands & Legs", "Animals", "Cat & Dog", "Cow & Lion", "Food & Drink", "Milk & Bread", "My Room", "Actions"] }
-        ]},
-        'B': { name: "Learner", groups: [
-            { title: "1-10: School Life", items: ["My School", "Favorite Teacher", "Best Friend", "Homework", "Exam Fear", "Lunch Break", "School Bus", "Library", "Sports Day", "Late for Class"] },
-            { title: "11-20: Hobbies", items: ["Cricket", "Football", "Mobile Games", "Drawing", "Singing", "Dancing", "Storybooks", "Cycling", "Swimming", "Gardening"] },
-            { title: "21-100: Tech & Routine", items: ["Smartphone", "YouTube", "Facebook", "Ordering Food", "Daily Routine", "Shopping", "Travel", "Weather", "Social Skills"] }
-        ]},
-        'C': { name: "Hesitant", groups: [
-            { title: "1-10: IELTS Prep", items: ["Hometown", "Work or Study", "Accommodation", "Neighbors", "Transport", "Weather", "Gift Giving", "Mirrors", "Robots", "Leisure Time"] },
-            { title: "11-100: University & Life", items: ["Social Issues", "Assignments", "Online Learning", "Relationships", "Health", "Success", "Entertainment", "Public Speaking"] }
-        ]},
-        'D': { name: "Professional", groups: [
-            { title: "1-10: Interview", items: ["Self Intro", "Strengths", "Hire You?", "Salary", "5-Year Plan", "Failure", "Leadership", "Resume Gap", "Negotiation"] },
-            { title: "11-100: Corporate", items: ["Meetings", "Communication", "Office Dynamics", "Business Concepts", "Client Handling", "HR & Tech", "Global Biz"] }
-        ]}
+        'A': { groups: [{ title: "Greetings", items: ["Hello & Hi", "My Name", "My Age"] }, { title: "Colors", items: ["Red Apple", "Blue Sky"] }] },
+        'B': { groups: [{ title: "School", items: ["My School", "Favorite Teacher"] }] },
+        'C': { groups: [{ title: "IELTS", items: ["Hometown", "Daily Transport"] }] },
+        'D': { groups: [{ title: "Business", items: ["Interview Skills", "Meetings"] }] }
     };
 
     const play = (id) => document.getElementById(id)?.play().catch(()=>{});
 
-    window.onload = async () => {
-        updateUI(state.score, state.level);
-        try {
-            const res = await fetch(`${SERVER_URL}/api/stats`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId: USER_ID}) });
-            const data = await res.json();
-            updateUI(data.score, data.level);
-        } catch(e) {}
-    };
+    window.onload = () => updateUI(state.score, state.level);
 
     function updateUI(score, level) {
         if(level > state.level && state.score > 0) {
@@ -197,8 +167,8 @@
         state.score = score; state.level = level;
         localStorage.setItem('talk24_score', score);
         localStorage.setItem('talk24_level', level);
-        document.getElementById('home-xp').innerText = score;
-        document.getElementById('home-lvl').innerText = level;
+        document.getElementById('home-xp').innerText = score + " XP";
+        document.getElementById('home-lvl').innerText = "Level " + level;
         document.getElementById('chat-lvl-badge').innerText = `LVL ${level}`;
         document.getElementById('xp-bar').style.width = `${(score % 1000 / 1000) * 100}%`;
     }
@@ -240,42 +210,82 @@
     }
 
     async function callAPI(payload) {
-        document.getElementById('mic-btn').classList.add('listening');
+        const mic = document.getElementById('mic-btn');
+        mic.classList.add('listening');
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             const data = await res.json();
-            document.getElementById('mic-btn').classList.remove('listening');
+            mic.classList.remove('listening');
             if(data.score_added > 0) {
                 play('snd-success');
                 confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
                 updateUI(data.new_total_score, Math.floor(data.new_total_score / 1000) + 1);
             }
-            if(data.instruction) state.notes.push(`[${state.topic}] ${data.instruction.replace(/\\n/g, ' ')}`);
-            addMsg(data.reply, 'ai', data.instruction);
-        } catch(e) { document.getElementById('mic-btn').classList.remove('listening'); }
+            addAiMsgWithChoices(data.reply, data.instruction);
+        } catch(e) { mic.classList.remove('listening'); }
     }
 
-    function addMsg(t, sender, note) {
+    function addAiMsgWithChoices(reply, instruction) {
+        const box = document.getElementById('messages');
+        const d = document.createElement('div');
+        d.className = 'bubble ai-bubble';
+        
+        // 🛠️ Parse Choices [A. ... | B. ...]
+        let cleanReply = reply;
+        let choices = [];
+        const choiceMatch = reply.match(/\[A\.(.*)\|.*B\.(.*)\]/);
+        if(choiceMatch) {
+            cleanReply = reply.split('[')[0];
+            choices = [choiceMatch[1].trim(), choiceMatch[2].trim()];
+        }
+
+        d.innerHTML = cleanReply;
+
+        // 📊 Performance Card UI
+        if(instruction) {
+            const lines = instruction.split('\\n');
+            const perfLine = lines[0]; // Performance Status
+            const notes = lines.slice(1).join('<br>');
+            d.innerHTML += `<div class="performance-card">📊 ASSESSMENT: ${perfLine}</div>`;
+            d.innerHTML += `<div class="mentor-note">${notes}</div>`;
+            state.notes.push(`[${state.topic}] ${instruction.replace(/\\n/g, ' ')}`);
+        }
+
+        // 🔘 Interactive Choice Buttons
+        if(choices.length > 0) {
+            const cDiv = document.createElement('div');
+            cDiv.className = 'choice-container';
+            choices.forEach(c => {
+                const b = document.createElement('button');
+                b.className = 'choice-btn';
+                b.innerText = c;
+                b.onclick = () => sendToAI(c);
+                cDiv.appendChild(b);
+            });
+            d.appendChild(cDiv);
+        }
+
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+        const u = new SpeechSynthesisUtterance(cleanReply); u.rate=0.95; window.speechSynthesis.speak(u);
+    }
+
+    function addMsg(t, sender) {
         const d = document.createElement('div'); d.className = `bubble ${sender}-bubble`;
-        d.innerHTML = sender === 'ai' && note ? `${t}<div class="mentor-note">${note}</div>` : t;
+        d.innerText = t;
         document.getElementById('messages').appendChild(d);
         document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
-        if(sender==='ai'){ const u = new SpeechSynthesisUtterance(t); u.rate=0.95; window.speechSynthesis.speak(u); }
     }
 
     function downloadNotes() {
-        if(state.notes.length === 0) return alert("No learning notes yet!");
-        const blob = new Blob([`TALK24AI MASTERY JOURNAL\nDate: ${new Date().toLocaleDateString()}\n\n${state.notes.join('\n\n')}`], {type:'text/plain'});
-        const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Talk24AI_Notes.txt`; a.click();
+        if(state.notes.length === 0) return alert("No reports yet!");
+        const blob = new Blob([`TALK24AI MASTERY JOURNAL\n\n${state.notes.join('\n\n')}`], {type:'text/plain'});
+        const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Mastery_Report.txt`; a.click();
     }
 
     const rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = rec ? new rec() : null;
-    function toggleMic() { 
-        if(!recognition) return alert("Mic not supported."); 
-        recognition.start(); 
-        recognition.onresult=(e)=>sendToAI(e.results[0][0].transcript); 
-    }
+    let r = rec ? new rec() : null;
+    function toggleMic() { if(!r) return alert("Mic not supported."); r.start(); r.onresult=(e)=>sendToAI(e.results[0][0].transcript); }
 </script>
 </body>
 </html>
