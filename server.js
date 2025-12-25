@@ -4,14 +4,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const app = express(); // ✅ ডেপ্লয়মেন্ট ফিক্স: app এখন শুরুতেই ডিফাইন করা
+const app = express(); // ✅ Fixed: 'app' definition at the very top
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Engine Live & Optimized!"))
-.catch(err => console.error("❌ DB Error:", err));
+.then(() => console.log("🚀 Talk24AI Engine Synced!"))
+.catch(err => console.error("❌ DB Connection Error:", err));
 
 const User = mongoose.model('User', new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
@@ -29,14 +29,19 @@ app.post('/api/chat', async (req, res) => {
         let user = await User.findOne({ userId }) || new User({ userId });
         if (isStart) user.history = [];
 
-        // 🔥 SPEED OPTIMIZED PROMPT
-        const masterPrompt = `Role:Character Mentor. Identity:Muslim English Mentor (Use Salam). 
-        Task:Talk about the topic. Rules:STRICTLY ONLY English. No repetitive options.
-        Format:Return JSON {"reply":"Dialog + Question + [A. Option 1 | B. Option 2]", "perf":"Assess String", "note":"Feedback", "xp":10}. 
-        ⚠️Options MUST be in brackets at the very end of "reply".`;
+        const historyContext = user.history.slice(-6).map(h => `${h.role}:${h.content}`).join("\n");
+
+        // 🧠 LEAN & FAST PROMPT
+        const masterPrompt = `Identity:Proactive Muslim English Mentor (Use Salam). 
+        Task:Talk about topic and assess user message. 
+        Format:Return JSON {"reply":" dialogue + question + [A. Option 1 | B. Option 2]", "perf":"Assessment String", "note":"Feedback", "xp":10}. 
+        ⚠️CRITICAL: Options MUST be in brackets at end of "reply". Avoid mentioning A/B in dialog.`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: message }],
+            messages: [
+                { role: "system", content: masterPrompt }, 
+                { role: "user", content: isStart ? `Start: ${message}` : message }
+            ],
             model: "llama-3.1-8b-instant",
             temperature: 0.6,
             response_format: { type: "json_object" }
@@ -49,8 +54,15 @@ app.post('/api/chat', async (req, res) => {
         if (!isStart) user.lifetime_score += points;
         await user.save();
 
-        res.json({ reply: result.reply, performance: result.perf, notes: result.note, score_added: points, new_total_score: user.lifetime_score, streak: user.speak_streak });
-    } catch (err) { res.json({ reply: "My system is re-syncing! [A. Retry | B. Okay]" }); }
+        res.json({ 
+            reply: result.reply, 
+            performance: result.perf, // ✅ String format fix
+            notes: result.note, 
+            score_added: points, 
+            new_total_score: user.lifetime_score,
+            streak: user.speak_streak 
+        });
+    } catch (err) { res.json({ reply: "Magic link syncing. Say it again? [A. Sure! | B. Okay]" }); }
 });
 
 app.post('/api/stats', async (req, res) => {
