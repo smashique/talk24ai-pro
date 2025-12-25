@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | 400 Topics Mastery</title>
+    <title>Talk24AI | Master English</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -33,41 +33,41 @@
         .hero-card { width: 100%; max-width: 500px; background: var(--card-bg); border: 2px solid #004d40; border-radius: 25px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow: hidden; }
 
         /* HOOK BOX */
-        .hook-box { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 15px; text-align: center; border: 1px dashed #004d40; }
+        .hook-box { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 15px; text-align: center; border: 1px dashed #004d40; margin-bottom: 5px;}
         .pain-point { font-size: 13px; color: #ffab91; font-weight: 800; line-height: 1.4; margin-bottom: 5px; text-transform: uppercase; }
         .achievement-hook { font-size: 12px; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.5px; }
 
         /* STATS BAR */
-        .stats-bar { display: flex; justify-content: space-between; width: 100%; margin-bottom: 5px; }
+        .stats-bar { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; padding: 0 5px; }
         .stat-item { text-align: center; }
         .stat-label { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; }
         .stat-value { font-size: 16px; font-weight: 900; color: var(--accent-cyan); }
 
         /* GRID FOR MODULES */
         .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 15px; padding: 15px 10px; cursor: pointer; text-align: center; }
+        .skill-option { background: var(--input-bg); border: 1px solid transparent; border-radius: 15px; padding: 15px 10px; cursor: pointer; text-align: center; transition: 0.3s; }
         .skill-option:active { transform: scale(0.95); background: #004d40; }
         .skill-head { font-weight: 800; font-size: 15px; color: var(--accent-cyan); }
         .skill-sub { font-size: 10px; color: var(--text-gray); margin-top: 2px; }
 
-        /* TOPIC LIST UI (Fix: Ensure scrolling works) */
-        .topic-scroll { flex: 1; overflow-y: auto; padding-right: 8px; margin-top: 5px; scroll-behavior: smooth; }
+        /* TOPIC LIST UI (FIXED) */
+        .topic-scroll { flex: 1; overflow-y: auto; padding-right: 8px; margin-top: 5px; width: 100%; }
         .topic-group-header { background: #00382e; color: var(--accent-cyan); padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; margin: 12px 0 8px 0; text-transform: uppercase; border-left: 3px solid var(--accent-cyan); }
         .topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .topic-btn { background: rgba(255,255,255,0.05); border: 1px solid #004d40; padding: 12px 8px; border-radius: 10px; color: white; cursor: pointer; font-size: 12px; font-weight: 600; text-align: left; transition: 0.2s; }
-        .topic-btn:active { background: var(--accent-cyan); color: var(--bg-color); }
+        .topic-btn { background: rgba(255,255,255,0.05); border: 1px solid #004d40; padding: 12px 8px; border-radius: 10px; color: white; cursor: pointer; font-size: 12px; font-weight: 600; text-align: left; }
+        .topic-btn:active { background: var(--accent-cyan); color: #000; }
 
-        .btn-back { background: transparent; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 8px 12px; border-radius: 8px; cursor: pointer; align-self: flex-start; font-size: 11px; margin-bottom: 5px; font-weight: 800; }
+        .btn-back { background: transparent; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 8px 12px; border-radius: 8px; cursor: pointer; align-self: flex-start; font-size: 11px; font-weight: 800; }
 
         /* CHAT UI */
         .top-nav { padding: 12px 20px; background: var(--bg-color); border-bottom: 1px solid #004d40; display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 600px; gap: 10px;}
         .progress-track { flex: 1; height: 6px; background: #00382e; border-radius: 5px; } 
         .progress-fill { height: 100%; background: var(--accent-cyan); width: 0%; border-radius: 5px; transition: width 0.5s; box-shadow: 0 0 10px var(--accent-cyan); }
         
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 600px; padding-bottom: 100px; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 600px; padding-bottom: 110px; }
         .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; line-height: 1.4; }
         .ai-bubble { background: var(--input-bg); align-self: flex-start; border: 1px solid #004d40; }
-        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; box-shadow: 0 4px 10px rgba(0, 131, 176, 0.3); }
+        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
         .mentor-note { margin-top: 8px; font-size: 12px; color: var(--text-gray); border-left: 2px solid var(--accent-cyan); padding-left: 10px; font-style: italic; background: rgba(0,0,0,0.2); border-radius: 5px; padding: 8px; }
 
         .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: rgba(0, 30, 23, 0.95); display: flex; justify-content: center; backdrop-filter: blur(10px); }
@@ -75,7 +75,6 @@
         .input-box { flex: 1; background: var(--input-bg); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; }
         #mic-btn { width: 50px; height: 50px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         #mic-btn.listening { background: #ff2e63; color: white; border-color: #ff2e63; animation: pulse 1s infinite; }
-        
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,46,99,0); } }
 
         /* LEVEL UP MODAL */
@@ -102,7 +101,7 @@
 
 <div id="home-screen" class="screen active-screen">
     <div class="logo">Talk24AI</div>
-    <div class="stats-bar" style="max-width:450px;">
+    <div class="stats-bar" style="width:100%; max-width:450px;">
         <div class="stat-item"><div class="stat-label">Level</div><div class="stat-value" id="home-lvl">1</div></div>
         <div class="stat-item"><div class="stat-label">Total XP</div><div class="stat-value" id="home-xp">0</div></div>
     </div>
@@ -111,7 +110,6 @@
             <div class="pain-point">Tired of "Freezing" in English?</div>
             <div class="achievement-hook">🚀 Break the silence and speak like a Global Pro!</div>
         </div>
-        <div style="font-weight:900; color:var(--text-gray); font-size:11px; text-transform:uppercase; text-align:center;">Select Your Mission Level</div>
         <div class="skill-grid">
             <div class="skill-option" onclick="loadTopics('A')"><div class="skill-head">Beginner</div><div class="skill-sub">Kids (6-10 yrs)</div></div>
             <div class="skill-option" onclick="loadTopics('B')"><div class="skill-head">Learner</div><div class="skill-sub">Teens (10-16 yrs)</div></div>
@@ -124,14 +122,14 @@
 <div id="topic-screen" class="screen">
     <div class="hero-card">
         <button class="btn-back" onclick="changeScreen('home-screen')">← Back</button>
-        <div style="font-weight:900; color:var(--accent-cyan); font-size:13px; text-align:center;">Choose Your Practice Mission</div>
+        <div style="font-weight:900; color:var(--accent-cyan); font-size:13px; text-align:center; margin-bottom:5px;">CHOOSE YOUR MISSION</div>
         <div id="topic-container" class="topic-scroll"></div>
     </div>
 </div>
 
 <div id="chat-screen" class="screen" style="padding:0; justify-content:flex-start;">
     <div class="top-nav">
-        <div class="level-badge" id="chat-lvl-badge" style="background:var(--input-bg); border:1px solid var(--accent-cyan); padding:5px 8px; border-radius:8px; font-weight:900; font-size:11px; color:var(--accent-cyan);">LVL 1</div>
+        <div id="chat-lvl-badge" style="background:var(--input-bg); border:1px solid var(--accent-cyan); padding:5px 8px; border-radius:8px; font-weight:900; font-size:11px; color:var(--accent-cyan);">LVL 1</div>
         <div class="progress-container" style="flex:1;"><div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div></div>
         <button onclick="downloadNotes()" style="background:#00ffcc; border:none; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; font-size:10px; color:#001e17;">💾 NOTES</button>
         <button onclick="location.reload()" style="background:#444; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-size:10px;">EXIT</button>
@@ -150,48 +148,37 @@
     let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
     localStorage.setItem('talk24_uid', USER_ID);
 
-    // Persistence: Load previous progress from localStorage
     let savedScore = parseInt(localStorage.getItem('talk24_score')) || 0;
     let savedLevel = parseInt(localStorage.getItem('talk24_level')) || 1;
     let state = { module: null, topic: null, score: savedScore, level: savedLevel, notes: [] };
 
-    // 📘 FULL 400 TOPICS DATA (Complete mapping for unblocking)
+    // 📘 FULL SYLLABUS DATA (Exactly matching your modules)
     const SYLLABUS = {
         'A': { name: "Beginner", groups: [
             { title: "1-10: Greetings", items: ["Hello & Hi", "Good Morning", "Good Night", "My Name", "My Age", "Boy or Girl?", "How are you?", "I am Fine", "Goodbye", "Thank You"] },
             { title: "11-20: Family", items: ["Mother", "Father", "Brother", "Sister", "Baby", "Grandfather", "Grandmother", "Uncle", "Aunt", "Cousin"] },
             { title: "21-30: Colors", items: ["Red Apple", "Blue Sky", "Green Grass", "Yellow Sun", "Orange Fruit", "Black Hair", "White Teeth", "Pink Flower", "Brown Bear", "Purple Dress"] },
-            { title: "31-40: Numbers", items: ["One to Five", "Six to Ten", "Phone Number", "Counting Fingers", "Counting Chairs", "First & Second", "Big & Small", "Tall & Short", "Heavy & Light", "Fast & Slow"] },
-            { title: "41-50: Body Parts", items: ["My Head", "My Eyes", "My Nose", "My Mouth", "My Ears", "My Hands", "My Legs", "My Stomach", "My Hair", "My Teeth"] },
-            { title: "51-60: Animals", items: ["Cat (Meow)", "Dog (Bark)", "Cow (Moo)", "Lion (Roar)", "Tiger", "Elephant", "Monkey", "Bird", "Fish", "Snake"] },
-            { title: "61-70: Food & Drink", items: ["Water", "Milk", "Egg", "Bread", "Rice", "Chicken", "Apple", "Banana", "Mango", "Chocolate"] },
-            { title: "71-80: House", items: ["My Room", "Bed", "Chair", "Table", "Door", "Window", "Fan", "Light", "TV", "Kitchen"] },
-            { title: "81-90: School Objects", items: ["School Bag", "Pencil", "Pen", "Book", "Eraser", "Ruler", "Sharpener", "Tiffin Box", "Water Bottle", "Blackboard"] },
-            { title: "91-100: Actions", items: ["Run", "Jump", "Eat", "Sleep", "Drink", "Play", "Walk", "Sit Down", "Stand Up", "Clap Hands"] }
+            { title: "31-40: Counting", items: ["One to Five", "Six to Ten", "Phone Number", "Counting Fingers", "Counting Chairs", "First & Second", "Big & Small", "Tall & Short", "Heavy & Light", "Fast & Slow"] },
+            { title: "41-100: Actions & House", items: ["My Head", "Eyes & Nose", "Hands & Legs", "Animals", "Cat & Dog", "Cow & Lion", "Food & Drink", "Milk & Bread", "My Room", "Actions"] }
         ]},
         'B': { name: "Learner", groups: [
             { title: "1-10: School Life", items: ["My School", "Favorite Teacher", "Best Friend", "Homework", "Exam Fear", "Lunch Break", "School Bus", "Library", "Sports Day", "Late for Class"] },
-            { title: "11-20: Hobbies", items: ["Cricket", "Football", "Mobile Games", "Drawing", "Singing", "Dancing", "Reading", "Cycling", "Swimming", "Gardening"] },
-            { title: "21-30: Technology", items: ["Smartphone", "YouTube", "Selfies", "Facebook", "Online Games", "WiFi Issues", "Charging", "Cartoons", "Action Movies", "Music"] },
-            { title: "31-40: Food & Restaurants", items: ["Pizza", "Burger", "Ice Cream", "Biryani", "Noodles", "Spicy Food", "Ordering Food", "Street Food", "Favorite Drink", "Cooking"] },
-            { title: "41-100: Routine & Skills", items: ["Waking Up", "Emotions", "Shopping", "Travel", "Nature", "Social Skills"] }
+            { title: "11-20: Hobbies", items: ["Cricket", "Football", "Mobile Games", "Drawing", "Singing", "Dancing", "Storybooks", "Cycling", "Swimming", "Gardening"] },
+            { title: "21-100: Tech & Routine", items: ["Smartphone", "YouTube", "Facebook", "Ordering Food", "Daily Routine", "Shopping", "Travel", "Weather", "Social Skills"] }
         ]},
         'C': { name: "Hesitant", groups: [
             { title: "1-10: IELTS Prep", items: ["Hometown", "Work or Study", "Accommodation", "Neighbors", "Transport", "Weather", "Gift Giving", "Mirrors", "Robots", "Leisure Time"] },
-            { title: "11-20: Social Issues", items: ["Traffic Jams", "Pollution", "Climate Change", "Unemployment", "Poverty", "Corruption", "Equality", "Mental Health", "Fast Fashion", "Plastic Ban"] },
-            { title: "21-100: University & Beyond", items: ["Campus Life", "Ethics", "Solo Travel", "Relationships", "Health", "Concepts", "Entertainment", "Situations"] }
+            { title: "11-100: University & Life", items: ["Social Issues", "Assignments", "Online Learning", "Relationships", "Health", "Success", "Entertainment", "Public Speaking"] }
         ]},
         'D': { name: "Professional", groups: [
-            { title: "1-10: Interview", items: ["Self Intro", "Strengths", "Hire You?", "Salary", "5-Year Plan", "Failure", "Leadership", "Resume Gap", "Interview Questions", "Negotiation"] },
-            { title: "11-20: Meetings", items: ["Agenda Setting", "Opening", "Brainstorming", "Taking Minutes", "Status Updates", "Problem Solving", "Asking Opinion", "Agreeing", "Closing", "Zoom Etiquette"] },
-            { title: "21-100: Corporate Excellence", items: ["Email Writing", "Office Dynamics", "Business Concepts", "Client Handling", "HR & Career", "Business Tech", "Global Business"] }
+            { title: "1-10: Interview", items: ["Self Intro", "Strengths", "Hire You?", "Salary", "5-Year Plan", "Failure", "Leadership", "Resume Gap", "Negotiation"] },
+            { title: "11-100: Corporate", items: ["Meetings", "Communication", "Office Dynamics", "Business Concepts", "Client Handling", "HR & Tech", "Global Biz"] }
         ]}
     };
 
     const play = (id) => document.getElementById(id)?.play().catch(()=>{});
 
     window.onload = async () => {
-        // Initial UI Update from LocalStorage
         updateUI(state.score, state.level);
         try {
             const res = await fetch(`${SERVER_URL}/api/stats`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId: USER_ID}) });
@@ -201,19 +188,15 @@
     };
 
     function updateUI(score, level) {
-        // Dopamine Level Up Animation
         if(level > state.level && state.score > 0) {
             play('snd-levelup');
             document.getElementById('modal-lvl').innerText = level;
             document.getElementById('level-up-modal').style.display = 'flex';
             confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
         }
-        
         state.score = score; state.level = level;
-        // Save to Persistence
         localStorage.setItem('talk24_score', score);
         localStorage.setItem('talk24_level', level);
-
         document.getElementById('home-xp').innerText = score;
         document.getElementById('home-lvl').innerText = level;
         document.getElementById('chat-lvl-badge').innerText = `LVL ${level}`;
@@ -244,8 +227,6 @@
     function startMission(t) {
         play('snd-click');
         state.topic = t;
-        document.getElementById('active-topic').innerText = t;
-        document.getElementById('active-mod').innerText = SYLLABUS[state.module].name;
         changeScreen('chat-screen');
         callAPI({ message: `Mission Start: ${t}`, systemInstruction: `Skill Level: ${state.module}`, userId: USER_ID });
     }
@@ -259,21 +240,19 @@
     }
 
     async function callAPI(payload) {
-        const mic = document.getElementById('mic-btn');
-        mic.classList.add('listening');
+        document.getElementById('mic-btn').classList.add('listening');
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             const data = await res.json();
-            mic.classList.remove('listening');
-            
+            document.getElementById('mic-btn').classList.remove('listening');
             if(data.score_added > 0) {
                 play('snd-success');
-                confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 }, colors: ['#00ffcc', '#ff2e63'] });
+                confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
                 updateUI(data.new_total_score, Math.floor(data.new_total_score / 1000) + 1);
             }
             if(data.instruction) state.notes.push(`[${state.topic}] ${data.instruction.replace(/\\n/g, ' ')}`);
             addMsg(data.reply, 'ai', data.instruction);
-        } catch(e) { mic.classList.remove('listening'); }
+        } catch(e) { document.getElementById('mic-btn').classList.remove('listening'); }
     }
 
     function addMsg(t, sender, note) {
@@ -285,15 +264,15 @@
     }
 
     function downloadNotes() {
-        if(state.notes.length === 0) return alert("No learning notes collected yet!");
+        if(state.notes.length === 0) return alert("No learning notes yet!");
         const blob = new Blob([`TALK24AI MASTERY JOURNAL\nDate: ${new Date().toLocaleDateString()}\n\n${state.notes.join('\n\n')}`], {type:'text/plain'});
-        const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Talk24AI_Notes_${Date.now()}.txt`; a.click();
+        const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Talk24AI_Notes.txt`; a.click();
     }
 
     const rec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = rec ? new rec() : null;
     function toggleMic() { 
-        if(!recognition) return alert("Mic not supported in this browser."); 
+        if(!recognition) return alert("Mic not supported."); 
         recognition.start(); 
         recognition.onresult=(e)=>sendToAI(e.results[0][0].transcript); 
     }
