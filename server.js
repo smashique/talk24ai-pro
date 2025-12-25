@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 // 🌍 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Value-Driven Engine Connected!"))
+.then(() => console.log("🚀 Talk24AI Assessment Engine Connected!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const userSchema = new mongoose.Schema({
@@ -22,10 +22,10 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const SYLLABUS = {
-    'A': { name: "Beginner", age: "6-10", goal: "Basic Vocabulary", tone: "Magic, Fun" },
-    'B': { name: "Learner", age: "10-16", goal: "Daily Routine Fluency", tone: "Cool, Friendly" },
-    'C': { name: "Hesitant", age: "17-24", goal: "IELTS & Opinion Flow", tone: "Relaxed, Supportive" },
-    'D': { name: "Professional", age: "24-34", goal: "Corporate Leadership", tone: "Assertive, Sharp" }
+    'A': { name: "Beginner", age: "6-10", goal: "Basic Needs" },
+    'B': { name: "Learner", age: "10-16", goal: "Routine Fluency" },
+    'C': { name: "Hesitant", age: "17-24", goal: "Opinion & IELTS" },
+    'D': { name: "Professional", age: "24-34", goal: "Corporate Leadership" }
 };
 
 app.post('/api/chat', async (req, res) => {
@@ -33,7 +33,7 @@ app.post('/api/chat', async (req, res) => {
     const trackCode = systemInstruction.match(/Skill Level: ([A-D])/) ? systemInstruction.match(/Skill Level: ([A-D])/)[1] : 'A';
     
     const topicMatch = message.match(/Mission Start: (.+)/);
-    const currentTopic = topicMatch ? topicMatch[1] : "General Conversation";
+    const currentTopic = topicMatch ? topicMatch[1] : "General Practice";
     const isStart = !!topicMatch || message === "Action!";
 
     try {
@@ -41,84 +41,64 @@ app.post('/api/chat', async (req, res) => {
         if (!user) user = new User({ userId });
 
         if (isStart) user.history = [];
-        const trackInfo = SYLLABUS[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
-        
         const historyContext = user.history.slice(-10).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 THE "VALUE-PERCEPTION" MASTER PROMPT
+        // 🧠 STRICT ASSESSMENT PROMPT
         const masterPrompt = `
-        [IDENTITY] Proactive English Mentor & Character Actor. Practicing Muslim.
-        [RULES] Salam/Islamic Akhlaq only. Speak English ONLY.
+        [IDENTITY] Proactive English Mentor & Actor. Muslim. ONLY English.
+        
+        [IMMERSIVE ROLE]
+        Act as: ${currentTopic === "General Practice" ? "A friendly guide" : "Character for " + currentTopic}.
+        Roleplay MUST be situational. No teacher tone.
+        
+        [INTERACTIVE PROTOCOL]
+        1. CONVERSATION: One human reply + Engaging question.
+        2. CHOICE BUTTONS: At the end, provide exactly 2 short options like: [A. Option 1 | B. Option 2].
+        3. ASSESSMENT: Evaluate the user's input "${message}" out of 100 for Fluency, Grammar, and Vocab.
 
-        [THE CHARACTER LOCK]
-        Instantly become: ${currentTopic === "General Conversation" ? "A friendly guide" : "Character related to " + currentTopic}. 
-        NO teacher tone. Talk naturally like a friend/seller/manager.
-
-        [VALUE-ADDED ASSESSMENT LOGIC - NEW]
-        Evaluate the user's LAST message: "${message}" based on:
-        1. Fluency (0-100)
-        2. Grammar (0-100)
-        3. Vocabulary (0-100)
-        Provide a "Performance Status" (e.g., Novice, Growing, Pro).
-
-        [ADDICTION & SCAFFOLDING]
-        1. SOCRATIC HOOK: End with a character-based question.
-        2. SMART OPTIONS: Provide 2 short choices: [A. Option | B. Option]
-        3. VARIABLE XP: Assign 5-20 points based on assessment quality.
-
-        [JSON OUTPUT FORMAT]
+        [JSON OUTPUT]
         {
-          "conversation": "Character reply + Question + [A. Choice 1 | B. Choice 2]",
-          "learning_note": "• Review: Feedback\\n• Tip: English Hack\\n• Next: Road to Level ${currentLevel + 1}",
-          "performance_card": "Fluency: X% | Grammar: Y% | Vocab: Z% | Status: Level ${currentLevel}",
-          "score_added": 5-20
+          "reply": "Character response + Question + [A. ... | B. ...]",
+          "performance": "Fluency: X | Grammar: Y | Vocab: Z | Status: Growing",
+          "notes": "• Review: Feedback\\n• Tip: A quick hack\\n• Next: Mission Target",
+          "xp": 5-20
         }
         
-        History:\n${historyContext}`;
+        History Context:\n${historyContext}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [
-                { role: "system", content: masterPrompt }, 
-                { role: "user", content: isStart ? `Mission: ${currentTopic}` : message }
-            ],
+            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? `Start: ${currentTopic}` : message }],
             model: "llama-3.1-8b-instant",
-            temperature: 0.8,
+            temperature: 0.7,
             response_format: { type: "json_object" }
         }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 25000 });
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // 💾 Save to Server History
         user.history.push({ role: 'User', content: message });
-        user.history.push({ role: 'Actor', content: result.conversation });
-        if (user.history.length > 15) user.history = user.history.slice(-15);
+        user.history.push({ role: 'Actor', content: result.reply });
         
-        if (!isStart) user.lifetime_score += (result.score_added || 10);
+        const addedXP = result.xp || 10;
+        if (!isStart) user.lifetime_score += addedXP;
         await user.save();
 
-        // Include the performance card in the instruction for display
-        const finalInstruction = result.performance_card + "\\n" + result.learning_note;
-
         res.json({ 
-            reply: result.conversation, 
-            instruction: finalInstruction, 
-            score_added: result.score_added || 10, 
+            reply: result.reply, 
+            instruction: result.performance + "\\n" + result.notes, 
+            score_added: addedXP, 
             new_total_score: user.lifetime_score 
         });
 
-    } catch (err) { 
-        res.json({ reply: "My system is stabilizing! Let's try again, buddy.", instruction: "• Note: Assessment sync in progress." }); 
-    }
+    } catch (err) { res.json({ reply: "Magic link syncing. Try again, buddy!", instruction: "System: Assessment Sync." }); }
 });
 
 app.post('/api/stats', async (req, res) => {
     try {
         const user = await User.findOne({ userId: req.body.userId });
-        if (user) res.json({ score: user.lifetime_score, level: Math.floor(user.lifetime_score/1000)+1 });
-        else res.json({ score: 0, level: 1 });
+        res.json({ score: user ? user.lifetime_score : 0, level: user ? Math.floor(user.lifetime_score/1000)+1 : 1 });
     } catch(e) { res.json({ score: 0, level: 1 }); }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Mastery & Assessment Engine (v6) running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Mastery Engine v7 running on ${PORT}`));
