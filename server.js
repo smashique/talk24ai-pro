@@ -32,7 +32,6 @@ app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     const trackCode = systemInstruction.match(/Skill Level: ([A-D])/) ? systemInstruction.match(/Skill Level: ([A-D])/)[1] : 'A';
     
-    // Detect Topic from Message (Frontend sends: "Action! Mission Start: TopicName")
     const topicMatch = message.match(/Mission Start: (.+)/);
     const currentTopic = topicMatch ? topicMatch[1] : "General Conversation";
     const isStart = !!topicMatch || message === "Action!";
@@ -45,37 +44,32 @@ app.post('/api/chat', async (req, res) => {
         const trackInfo = SYLLABUS[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
         
-        // 🔄 Context Persistence
         const historyContext = user.history.slice(-8).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 EXPERT-DRIVEN MASTER PROMPT
+        // 🧠 EXPERT PROMPT WITH SMART SCAFFOLDING & POSITIVE REINFORCEMENT
         const masterPrompt = `
         [IDENTITY] World-class Proactive English Mentor & Practicing Muslim. 
-        [VALUES] Use Salam and Islamic etiquette naturally. ONLY speak English.
+        [VALUES] Use Salam and Islamic etiquette. ONLY speak English. NO Bengali.
+
+        [PEDAGOGY PROTOCOL - SMART SCAFFOLDING]
+        1. POSITIVE REINFORCEMENT: If the user provides their name or a good answer, praise them enthusiastically (e.g., "What a beautiful name!", "Excellent choice!").
+        2. SMART OPTIONS: For tracks A & B, or whenever a user might be stuck, include 2 short answer choices in brackets at the end of your question. 
+           Example: "What brings you here today? [A. I want a toy | B. I want an apple]"
+        3. THE HOOK: Every reply MUST end with an engaging question.
+        4. NO HALLUCINATION: TEXT-ONLY. Never mention pictures or screens.
 
         [MISSION CONFIGURATION]
-        - Track: ${trackInfo.name} (Age: ${trackInfo.age}) | Goal: ${trackInfo.goal}
-        - Current Topic: ${currentTopic} | Level: ${currentLevel}
-        
-        [FIXED ROLES - CRITICAL]
-        Based on the topic "${currentTopic}", create a realistic role-play:
-        1. AI ROLE: A friendly character (e.g., Shopkeeper, Coach, Interviewer, or Mentor).
-        2. USER ROLE: A specific character (e.g., Customer, Student, Candidate, or Seeker).
-        
-        [ADDICTION & METHODOLOGY RULES]
-        1. THE HOOK: Never reply without a question. Every message MUST end with a high-engagement question to keep the user "busy".
-        2. SCAFFOLDING: Acknowledge the user's last message: "${user.history.length > 0 ? user.history[user.history.length-1].content : 'None'}".
-        3. NO HALLUCINATION: This is TEXT-ONLY. Never ask the user to look at pictures.
-        4. VARIABLE XP: Assign 5-20 points in "score_added" based on the user's English quality and effort.
+        - Track: ${trackInfo.name} (Age: ${trackInfo.age}) | Topic: ${currentTopic} | Level: ${currentLevel}
+        - AI ROLE: Friendly character based on topic. USER ROLE: Appropriate counterpart.
 
         [JSON OUTPUT]
         {
-          "conversation": "Role-play character response + Engaging Question",
-          "learning_note": "• Review: Feedback on ${currentTopic}\\n• Tip: A methodology-based shortcut\\n• Next: Mission Milestone",
+          "conversation": "Enthusiastic character response + Engaging Question + [A. Option 1 | B. Option 2]",
+          "learning_note": "• Review: Feedback on usage\\n• Tip: A simple trick for this topic\\n• Next: Mission goal",
           "score_added": 5-20
         }
         
-        History:\n${historyContext}`;
+        History Context:\n${historyContext}`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
             messages: [
@@ -89,7 +83,6 @@ app.post('/api/chat', async (req, res) => {
 
         const result = JSON.parse(response.data.choices[0].message.content);
 
-        // 💾 Save History to Server
         user.history.push({ role: 'User', content: message });
         user.history.push({ role: 'Actor', content: result.conversation });
         if (user.history.length > 12) user.history = user.history.slice(-12);
@@ -105,8 +98,7 @@ app.post('/api/chat', async (req, res) => {
         });
 
     } catch (err) { 
-        console.error(err.message);
-        res.json({ reply: "My magic book is syncing. Can you repeat that, please?", instruction: "• Note: Server update in progress." }); 
+        res.json({ reply: "My connection is blinking. Let's try again, my friend!", instruction: "• Note: System sync." }); 
     }
 });
 
@@ -119,4 +111,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Multi-Track Expert Engine running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Multi-Track Expert Engine (Smart Scaffolding) running on port ${PORT}`));
