@@ -1,138 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <style>
-        :root { --bg: #002b20; --card: #001e17; --input: #00382e; --cyan: #00ffcc; --gray: #aabeb8; }
-        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; overflow: hidden; }
-        
-        /* 💡 XP Badge and Hint Styling */
-        .mic-badge { position: absolute; top: -8px; right: -8px; background: gold; color: black; font-size: 8px; padding: 2px 5px; border-radius: 5px; font-weight: 900; box-shadow: 0 0 10px gold; animation: bounce 2s infinite; }
-        .xp-hint { font-size: 10px; color: #ff8c00; font-weight: 800; text-align: center; margin-top: 8px; font-style: italic; animation: flash 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+<style>
+    /* 🔥 Streak Animation Styling */
+    .streak-box { display: flex; align-items: center; gap: 5px; background: rgba(255, 69, 0, 0.1); border: 1px solid #ff4500; padding: 5px 10px; border-radius: 20px; color: #ff4500; font-weight: 900; font-size: 12px; animation: glow 2s infinite alternate; }
+    @keyframes glow { from { box-shadow: 0 0 5px #ff4500; } to { box-shadow: 0 0 15px #ff4500; } }
+</style>
 
-        /* ... (Existing Screen, Bubble, and Nav styles remain same) */
-        
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 15px; z-index: 5000; }
-        .active-screen { display: flex; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 600px; padding-bottom: 120px; }
-        .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; }
-        .ai-bubble { background: var(--input); align-self: flex-start; border: 1px solid #004d40; }
-        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
-        .assessment-card { margin-top: 10px; padding: 10px; border: 1.5px solid var(--cyan); border-radius: 10px; font-size: 11px; color: var(--cyan); font-weight: 800; background: rgba(0, 255, 204, 0.05); }
-        .choice-box { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-        .choice-btn { background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan); padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: rgba(0, 30, 23, 0.95); display: flex; justify-content: center; }
-        .input-deck { width: 100%; max-width: 600px; display: flex; gap: 10px; align-items: center; position: relative; }
-        #mic-btn { width: 45px; height: 45px; border-radius: 12px; background: var(--input); border: 1.5px solid var(--cyan); color: var(--cyan); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
-        .input-box { flex: 1; background: var(--input); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; font-size: 15px; }
-    </style>
-</head>
-<body>
-
-<div id="chat-screen" class="screen" style="padding:0;">
-    <div class="top-nav">
-        <div class="badge" id="chat-lvl">LVL 1</div>
-        <div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div>
-        <button onclick="location.reload()" style="background:#444; border:none; padding:8px; border-radius:8px; color:white; cursor:pointer;">EXIT</button>
-    </div>
-    <div id="messages"></div>
-    <div class="bottom-area">
-        <div class="input-deck">
-            <button id="mic-btn" onclick="toggleMic()">🎙️ <span class="mic-badge">2X XP</span></button>
-            <input type="text" id="userInput" class="input-box" placeholder="Speak to earn Double XP..." onkeypress="if(event.key==='Enter')sendToAI(this.value, 'click')">
-        </div>
-    </div>
+<div class="top-nav">
+    <div class="badge" id="chat-lvl">LVL 1</div>
+    <div class="streak-box" id="streak-display">🔥 0</div> <div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div>
+    <button onclick="location.reload()" style="background:#444; border:none; padding:8px; border-radius:8px; color:white; font-size:10px; cursor:pointer;">EXIT</button>
 </div>
 
 <script>
-    const SERVER_URL = "https://talk24ai.onrender.com"; 
-    let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
-    localStorage.setItem('talk24_uid', USER_ID);
-    
-    let state = { score: parseInt(localStorage.getItem('talk24_score')) || 0 };
+    // ... (Existing script setup)
 
-    window.onload = () => updateUI(state.score);
-
-    function updateUI(s) {
+    function updateUI(s, streak = 0) {
         state.score = s;
-        localStorage.setItem('talk24_score', s);
         const lvl = Math.floor(s/1000)+1;
         document.getElementById('chat-lvl').innerText = `LVL ${lvl}`;
         document.getElementById('xp-bar').style.width = `${(s % 1000 / 1000) * 100}%`;
-    }
-
-    // 🔥 Added type parameter to sendToAI
-    async function sendToAI(text, type = 'click') {
-        if(!text.trim()) return;
-        const d = document.createElement('div'); d.className = 'bubble user-bubble'; d.innerText = text;
-        document.getElementById('messages').appendChild(d);
-        document.getElementById('userInput').value = "";
-        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         
-        callAPI({ message: text, systemInstruction: "Skill Level: A", userId: USER_ID, inputType: type });
+        // Update Streak Display
+        document.getElementById('streak-display').innerText = `🔥 ${streak}`;
+        if(streak >= 3) {
+             document.getElementById('streak-display').style.background = "#ff4500";
+             document.getElementById('streak-display').style.color = "white";
+        }
     }
 
     async function callAPI(payload) {
-        const mic = document.getElementById('mic-btn');
-        mic.style.opacity = "0.5";
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             const data = await res.json();
-            mic.style.opacity = "1";
+            
             if(data.score_added > 0) {
-                confetti({ particleCount: 30, origin: { y: 0.8 }, colors: ['#00ffcc', '#ffd700'] });
-                updateUI(data.new_total_score);
+                confetti({ particleCount: 30, origin: { y: 0.8 }, colors: ['#ff4500', '#ffd700'] });
+                updateUI(data.new_total_score, data.streak); // Passing streak to UI
             }
+            
+            // 🔥 Special Achievement Alert
+            if(data.streak === 3 && payload.inputType === 'voice') {
+                alert("🎉 Amazing! You are a '3-Day Speak Master'! Keep going!");
+            }
+
             renderAiMsg(data.reply, data.performance, data.notes);
-        } catch(e) { mic.style.opacity = "1"; }
+        } catch(e) {}
     }
 
-    function renderAiMsg(reply, perf, notes) {
-        const box = document.getElementById('messages');
-        const d = document.createElement('div'); d.className = 'bubble ai-bubble';
-        
-        let cleanText = reply;
-        let choices = [];
-        const match = reply.match(/\[A\.(.*)\|.*B\.(.*)\]/);
-        if(match) { cleanText = reply.split('[')[0]; choices = [match[1].trim(), match[2].trim()]; }
-
-        let displayPerf = typeof perf === 'object' ? JSON.stringify(perf).replace(/[{}"]/g, '') : perf;
-        d.innerHTML = `<div>${cleanText}</div>`;
-        if(displayPerf) d.innerHTML += `<div class="assessment-card">📊 ASSESSMENT: ${displayPerf}</div>`;
-        if(notes) d.innerHTML += `<div class="mentor-note">${notes.replace(/\\n/g, '<br>')}</div>`;
-        
-        if(choices.length > 0) {
-            const cBox = document.createElement('div'); cBox.className = 'choice-box';
-            choices.forEach(c => {
-                const b = document.createElement('button'); b.className='choice-btn'; b.innerText=c;
-                // Clicking button gives normal XP
-                b.onclick=()=>sendToAI(c, 'click'); 
-                cBox.appendChild(b);
-            });
-            d.appendChild(cBox);
-
-            // 💡 XP Hint added under buttons
-            const hint = document.createElement('div');
-            hint.className = 'xp-hint';
-            hint.innerText = "🔥 SPEAK via Mic to earn 20 XP! (Click = 10 XP)";
-            d.appendChild(hint);
-        }
-        box.appendChild(d); box.scrollTop = box.scrollHeight;
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance(cleanText));
-    }
-
-    const rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = rec ? new rec() : null;
-    function toggleMic() { 
-        if(!recognition) return alert("Mic not supported."); 
-        recognition.start(); 
-        recognition.onresult=(e)=> {
-            const speech = e.results[0][0].transcript;
-            // 🎙️ Speaking into Mic gives Double XP
-            sendToAI(speech, 'voice'); 
-        };
-    }
+    // Initial load from stats endpoint
+    window.onload = async () => {
+        const res = await fetch(`${SERVER_URL}/api/stats`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId: USER_ID}) });
+        const data = await res.json();
+        updateUI(data.score, data.streak);
+    };
 </script>
-</body>
-</html>
