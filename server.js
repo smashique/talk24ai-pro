@@ -9,9 +9,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🌍 DATABASE CONNECTION (Expert Persistence Logic)
+// 🌍 DATABASE CONNECTION
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Immersive Engine Connected!"))
+.then(() => console.log("🚀 Talk24AI Value-Driven Engine Connected!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const userSchema = new mongoose.Schema({
@@ -22,17 +22,16 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const SYLLABUS = {
-    'A': { name: "Beginner", age: "6-10", goal: "Basic Vocabulary & Simple Needs", tone: "Exciting, Magic, Cheerful" },
-    'B': { name: "Learner", age: "10-16", goal: "Expressing Likes/Dislikes & Daily Routine", tone: "Cool, High-energy, Friendly" },
-    'C': { name: "Hesitant", age: "17-24", goal: "IELTS Prep & Abstract Opinions", tone: "Empathetic, Supportive, Relaxed" },
-    'D': { name: "Professional", age: "24-34", goal: "Corporate Communication & Leadership", tone: "Corporate, Assertive, Sharp" }
+    'A': { name: "Beginner", age: "6-10", goal: "Basic Vocabulary", tone: "Magic, Fun" },
+    'B': { name: "Learner", age: "10-16", goal: "Daily Routine Fluency", tone: "Cool, Friendly" },
+    'C': { name: "Hesitant", age: "17-24", goal: "IELTS & Opinion Flow", tone: "Relaxed, Supportive" },
+    'D': { name: "Professional", age: "24-34", goal: "Corporate Leadership", tone: "Assertive, Sharp" }
 };
 
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId } = req.body;
     const trackCode = systemInstruction.match(/Skill Level: ([A-D])/) ? systemInstruction.match(/Skill Level: ([A-D])/)[1] : 'A';
     
-    // 🎯 TOPIC DETECTION LOGIC
     const topicMatch = message.match(/Mission Start: (.+)/);
     const currentTopic = topicMatch ? topicMatch[1] : "General Conversation";
     const isStart = !!topicMatch || message === "Action!";
@@ -45,34 +44,34 @@ app.post('/api/chat', async (req, res) => {
         const trackInfo = SYLLABUS[trackCode];
         const currentLevel = Math.floor(user.lifetime_score / 1000) + 1;
         
-        // 🔄 Context Persistence (Last 10 turns for deep memory)
         const historyContext = user.history.slice(-10).map(h => `${h.role}: ${h.content}`).join("\n");
 
-        // 🧠 THE EXPERT CHARACTER-LOCK PROMPT
+        // 🧠 THE "VALUE-PERCEPTION" MASTER PROMPT
         const masterPrompt = `
-        [IDENTITY] World-class Proactive English Mentor & Practicing Muslim. 
-        [VALUES] Use Salam naturally. ONLY speak English. NO BENGALI.
+        [IDENTITY] Proactive English Mentor & Character Actor. Practicing Muslim.
+        [RULES] Salam/Islamic Akhlaq only. Speak English ONLY.
 
-        [THE CHARACTER LOCK - CRITICAL BUG FIX]
-        You MUST NOT explain the topic or act like a teacher. Become the character IMMEDIATELY.
-        - Topic "Best Friend" -> You are the User's closest childhood friend. Use slang like "buddy" or "mate".
-        - Topic "Red Apple" -> You are a friendly fruit seller.
-        - Topic "Interview" -> You are a strict but fair HR Manager.
-        
-        [ADDITION & METHODOLOGY RULES]
-        1. THE SOCRATIC HOOK: Never finish a message without a question. Keep the user "Addicted" to replying.
-        2. SMART SCAFFOLDING: Always provide 2 short answer choices in brackets at the very end.
-           - Format: [A. Option 1 | B. Option 2]
-        3. SCAFFOLDING FEEDBACK: Acknowledge the user's previous sentence: "${user.history.length > 0 ? user.history[user.history.length-1].content : 'Starting now'}".
-        4. VARIABLE XP: Assign 5-20 points in "score_added" based on English grammar and effort.
+        [THE CHARACTER LOCK]
+        Instantly become: ${currentTopic === "General Conversation" ? "A friendly guide" : "Character related to " + currentTopic}. 
+        NO teacher tone. Talk naturally like a friend/seller/manager.
 
-        [MISSION CONFIG]
-        Track: ${trackInfo.name} | Topic: ${currentTopic} | Tone: ${trackInfo.tone}
+        [VALUE-ADDED ASSESSMENT LOGIC - NEW]
+        Evaluate the user's LAST message: "${message}" based on:
+        1. Fluency (0-100)
+        2. Grammar (0-100)
+        3. Vocabulary (0-100)
+        Provide a "Performance Status" (e.g., Novice, Growing, Pro).
+
+        [ADDICTION & SCAFFOLDING]
+        1. SOCRATIC HOOK: End with a character-based question.
+        2. SMART OPTIONS: Provide 2 short choices: [A. Option | B. Option]
+        3. VARIABLE XP: Assign 5-20 points based on assessment quality.
 
         [JSON OUTPUT FORMAT]
         {
-          "conversation": "Character-locked immersive reply + Engaging Question + [A. Choice 1 | B. Choice 2]",
-          "learning_note": "• Review: Feedback\\n• Tip: A quick English hack\\n• Next: Milestone",
+          "conversation": "Character reply + Question + [A. Choice 1 | B. Choice 2]",
+          "learning_note": "• Review: Feedback\\n• Tip: English Hack\\n• Next: Road to Level ${currentLevel + 1}",
+          "performance_card": "Fluency: X% | Grammar: Y% | Vocab: Z% | Status: Level ${currentLevel}",
           "score_added": 5-20
         }
         
@@ -98,15 +97,18 @@ app.post('/api/chat', async (req, res) => {
         if (!isStart) user.lifetime_score += (result.score_added || 10);
         await user.save();
 
+        // Include the performance card in the instruction for display
+        const finalInstruction = result.performance_card + "\\n" + result.learning_note;
+
         res.json({ 
             reply: result.conversation, 
-            instruction: result.learning_note, 
+            instruction: finalInstruction, 
             score_added: result.score_added || 10, 
             new_total_score: user.lifetime_score 
         });
 
     } catch (err) { 
-        res.json({ reply: "My magic character mask is slipping! Let's try again, buddy.", instruction: "• Note: Server sync." }); 
+        res.json({ reply: "My system is stabilizing! Let's try again, buddy.", instruction: "• Note: Assessment sync in progress." }); 
     }
 });
 
@@ -119,4 +121,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Multi-Track Expert Engine (Version 5) running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Mastery & Assessment Engine (v6) running on port ${PORT}`));
