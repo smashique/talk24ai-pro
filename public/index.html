@@ -11,29 +11,36 @@
         body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; overflow: hidden; }
         .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 15px; z-index: 5000; }
         .active-screen { display: flex; }
-        .hero-card { width: 100%; max-width: 500px; background: var(--card); border: 2px solid #004d40; border-radius: 25px; padding: 20px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+        .hero-card { width: 100%; max-width: 500px; background: var(--card); border: 2px solid #004d40; border-radius: 25px; padding: 20px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* 📊 STATS & PROGRESS BAR */
-        .top-nav { padding: 12px 20px; display: flex; align-items: center; width: 100%; max-width: 600px; gap: 10px; background: var(--bg); border-bottom: 1px solid #004d40; }
+        /* 📊 PROGRESS & STATS */
+        .top-nav { padding: 15px 20px; display: flex; align-items: center; width: 100%; max-width: 600px; gap: 12px; background: var(--bg); border-bottom: 1px solid #004d40; }
         .progress-track { flex: 1; height: 8px; background: #00382e; border-radius: 5px; }
         .progress-fill { height: 100%; background: var(--cyan); border-radius: 5px; transition: width 0.5s; box-shadow: 0 0 10px var(--cyan); }
         .badge { background: var(--input); border: 1px solid var(--cyan); padding: 5px 10px; border-radius: 8px; color: var(--cyan); font-weight: 900; font-size: 11px; }
 
-        /* 💬 CHAT UI */
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 600px; padding-bottom: 120px; }
+        /* 💬 CHAT DESIGN [Exactly like screenshot] */
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 600px; padding-bottom: 120px; }
         .bubble { padding: 12px 16px; border-radius: 15px; font-size: 15px; max-width: 85%; }
         .ai-bubble { background: var(--input); align-self: flex-start; border: 1px solid #004d40; }
         .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
-        .assessment-card { margin-top: 10px; padding: 10px; border: 1px solid var(--cyan); border-radius: 10px; font-size: 11px; color: var(--cyan); font-weight: 800; background: rgba(0, 255, 204, 0.05); }
-        .mentor-note { margin-top: 8px; font-size: 12px; color: var(--gray); border-left: 2px solid var(--cyan); padding-left: 10px; font-style: italic; }
+        
+        .assessment-card { margin-top: 10px; padding: 10px; border: 1.5px solid var(--cyan); border-radius: 10px; font-size: 11px; color: var(--cyan); font-weight: 800; background: rgba(0, 255, 204, 0.05); }
+        .mentor-note { margin-top: 8px; font-size: 12px; color: var(--gray); border-left: 3px solid var(--cyan); padding-left: 10px; font-style: italic; background: rgba(0,0,0,0.1); border-radius: 5px; padding: 8px; }
 
         /* 🔘 CHOICE BUTTONS */
-        .choice-box { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-        .choice-btn { background: #00382e; border: 1px solid var(--cyan); color: var(--cyan); padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .choice-box { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .choice-btn { background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan); padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .choice-btn:active { background: var(--cyan); color: #000; }
 
-        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; display: flex; justify-content: center; background: rgba(0, 30, 23, 0.95); }
-        .input-box { flex: 1; background: var(--input); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; }
+        /* 🎙️ MIC & INPUT [Fixed Positioning] */
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 15px; background: rgba(0, 30, 23, 0.95); display: flex; justify-content: center; backdrop-filter: blur(10px); }
+        .input-deck { width: 100%; max-width: 600px; display: flex; gap: 10px; align-items: center; }
+        #mic-btn { width: 45px; height: 45px; border-radius: 12px; background: var(--input); border: 1.5px solid var(--cyan); color: var(--cyan); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #mic-btn.listening { background: #ff2e63; color: white; border-color: #ff2e63; animation: pulse 1s infinite; }
+        .input-box { flex: 1; background: var(--input); border: 1px solid #004d40; border-radius: 12px; padding: 12px; color: white; outline: none; font-size: 15px; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,46,99,0); } }
     </style>
 </head>
 <body>
@@ -41,21 +48,22 @@
 <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
 <div id="home-screen" class="screen active-screen">
+    <div class="logo">Talk24AI</div>
     <div class="hero-card">
-        <h2 style="text-align:center;">Talk24AI</h2>
+        <h2 style="text-align:center; color:var(--cyan);">Select Module</h2>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <button onclick="loadTopics('A')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer;">Beginner</button>
-            <button onclick="loadTopics('B')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer;">Learner</button>
-            <button onclick="loadTopics('C')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer;">Hesitant</button>
-            <button onclick="loadTopics('D')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer;">Pro</button>
+            <button onclick="loadTopics('A')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900;">Beginner</button>
+            <button onclick="loadTopics('B')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900;">Learner</button>
+            <button onclick="loadTopics('C')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900;">Hesitant</button>
+            <button onclick="loadTopics('D')" style="padding:20px; border-radius:15px; background:var(--input); color:var(--cyan); border:none; cursor:pointer; font-weight:900;">Pro</button>
         </div>
     </div>
 </div>
 
 <div id="topic-screen" class="screen">
     <div class="hero-card">
-        <button onclick="location.reload()" style="background:transparent; color:var(--gray); border:none; cursor:pointer;">← Back</button>
-        <div id="topic-container" style="overflow-y:auto; margin-top:10px;"></div>
+        <button onclick="location.reload()" style="background:transparent; color:var(--gray); border:none; cursor:pointer; font-weight:900;">← Back</button>
+        <div id="topic-container" style="overflow-y:auto; margin-top:10px; display:flex; flex-direction:column; gap:5px;"></div>
     </div>
 </div>
 
@@ -63,11 +71,14 @@
     <div class="top-nav">
         <div class="badge" id="chat-lvl">LVL 1</div>
         <div class="progress-track"><div class="progress-fill" id="xp-bar"></div></div>
-        <button onclick="downloadReport()" style="background:var(--cyan); border:none; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; font-size:10px;">💾 REPORT</button>
+        <button onclick="downloadReport()" style="background:var(--cyan); border:none; padding:8px; border-radius:8px; font-weight:900; cursor:pointer; font-size:10px; color:#001e17;">💾 REPORT</button>
     </div>
     <div id="messages"></div>
     <div class="bottom-area">
-        <input type="text" id="userInput" class="input-box" placeholder="Speak your mind..." onkeypress="if(event.key==='Enter')sendToAI(this.value)">
+        <div class="input-deck">
+            <button id="mic-btn" onclick="toggleMic()">🎙️</button>
+            <input type="text" id="userInput" class="input-box" placeholder="Speak your mind..." onkeypress="if(event.key==='Enter')sendToAI(this.value)">
+        </div>
     </div>
 </div>
 
@@ -92,9 +103,10 @@
         state.mod = m;
         const container = document.getElementById('topic-container');
         container.innerHTML = "";
-        ["Greetings", "Family", "Food", "Hobbies", "Business"].forEach(t => {
+        const topics = m==='A'?["Greetings","Family","Colors"]:m==='B'?["School","Hobbies"]:m==='C'?["IELTS","Traffic"]:["Interview","Leadership"];
+        topics.forEach(t => {
             const b = document.createElement('button');
-            b.innerText = t; b.style = "width:100%; padding:15px; margin-bottom:5px; border-radius:10px; background:#00382e; color:white; border:none; cursor:pointer;";
+            b.innerText = t; b.style = "padding:15px; border-radius:10px; background:#00382e; color:white; border:1px solid #004d40; cursor:pointer; font-weight:700;";
             b.onclick = () => startMission(t);
             container.appendChild(b);
         });
@@ -114,22 +126,26 @@
         const d = document.createElement('div'); d.className = 'bubble user-bubble'; d.innerText = text;
         document.getElementById('messages').appendChild(d);
         document.getElementById('userInput').value = "";
+        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         callAPI({ message: text, systemInstruction: `Skill Level: ${state.mod}`, userId: USER_ID });
     }
 
     async function callAPI(payload) {
+        const mic = document.getElementById('mic-btn');
+        mic.classList.add('listening');
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             const data = await res.json();
+            mic.classList.remove('listening');
             if(data.score_added > 0) {
                 confetti({ particleCount: 30, origin: { y: 0.8 } });
                 updateUI(data.new_total_score);
             }
-            renderAiMsg(data.reply, data.instruction);
-        } catch(e) {}
+            renderAiMsg(data.reply, data.performance, data.notes);
+        } catch(e) { mic.classList.remove('listening'); }
     }
 
-    function renderAiMsg(reply, instruction) {
+    function renderAiMsg(reply, perf, notes) {
         const box = document.getElementById('messages');
         const d = document.createElement('div'); d.className = 'bubble ai-bubble';
         
@@ -138,25 +154,34 @@
         const match = reply.match(/\[A\.(.*)\|.*B\.(.*)\]/);
         if(match) { cleanText = reply.split('[')[0]; choices = [match[1].trim(), match[2].trim()]; }
 
-        d.innerHTML = cleanText;
-        if(instruction) {
-            const parts = instruction.split('\\n');
-            d.innerHTML += `<div class="assessment-card">📊 ASSESSMENT: ${parts[0]}</div>`;
-            d.innerHTML += `<div class="mentor-note">${parts.slice(1).join('<br>')}</div>`;
-            state.notes.push(`[${state.topic}] ${instruction}`);
-        }
+        d.innerHTML = `<div>${cleanText}</div>`;
+        if(perf) d.innerHTML += `<div class="assessment-card">📊 ASSESSMENT: ${perf}</div>`;
+        if(notes) d.innerHTML += `<div class="mentor-note">${notes.replace(/\\n/g, '<br>')}</div>`;
+        
         if(choices.length > 0) {
             const cBox = document.createElement('div'); cBox.className = 'choice-box';
-            choices.forEach(c => { const b = document.createElement('button'); b.className='choice-btn'; b.innerText=c; b.onclick=()=>sendToAI(c); cBox.appendChild(b); });
+            choices.forEach(c => {
+                const b = document.createElement('button'); b.className='choice-btn'; b.innerText=c;
+                b.onclick=()=>sendToAI(c); cBox.appendChild(b);
+            });
             d.appendChild(cBox);
         }
         box.appendChild(d); box.scrollTop = box.scrollHeight;
+        state.notes.push(`[${state.topic}] ${perf} | ${notes}`);
         window.speechSynthesis.speak(new SpeechSynthesisUtterance(cleanText));
     }
 
     function downloadReport() {
         const blob = new Blob([state.notes.join('\n\n')], {type:'text/plain'});
         const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Mastery_Report.txt`; a.click();
+    }
+
+    const rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = rec ? new rec() : null;
+    function toggleMic() { 
+        if(!recognition) return alert("Mic not supported."); 
+        recognition.start(); 
+        recognition.onresult=(e)=>sendToAI(e.results[0][0].transcript); 
     }
 </script>
 </body>
