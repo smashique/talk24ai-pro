@@ -4,13 +4,13 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const app = express(); // ✅ Fixed ReferenceError
+const app = express(); 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Engine Synced!"))
+.then(() => console.log("🚀 Talk24AI Engine Optimized!"))
 .catch(err => console.error("❌ DB Error:", err));
 
 const User = mongoose.model('User', new mongoose.Schema({
@@ -23,54 +23,41 @@ const User = mongoose.model('User', new mongoose.Schema({
 
 app.post('/api/chat', async (req, res) => {
     let { message, systemInstruction, userId, inputType } = req.body; 
-    const trackCode = systemInstruction.match(/Skill Level: ([A-D])/) ? systemInstruction.match(/Skill Level: ([A-D])/)[1] : 'A';
-    const topicMatch = message.match(/Mission Start: (.+)/);
-    const currentTopic = topicMatch ? topicMatch[1] : "General Practice";
-    const isStart = !!topicMatch || message === "Action!";
+    const currentTopic = message.match(/Mission Start: (.+)/)?.[1] || "General Practice";
+    const isStart = !!message.match(/Mission Start:/) || message === "Action!";
 
     try {
-        let user = await User.findOne({ userId });
-        if (!user) user = new User({ userId });
+        let user = await User.findOne({ userId }) || new User({ userId });
         if (isStart) user.history = [];
 
-        // 🔥 STREAK LOGIC
+        // 🔥 SPEED STREAK LOGIC
         if (inputType === 'voice') {
             const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
             if (user.last_speak_date !== today) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
                 user.speak_streak = (user.last_speak_date === yesterdayStr) ? user.speak_streak + 1 : 1;
                 user.last_speak_date = today;
             }
         }
 
-        const historyContext = user.history.slice(-10).map(h => `${h.role}: ${h.content}`).join("\n");
+        const historyContext = user.history.slice(-6).map(h => `${h.role}:${h.content}`).join("\n");
 
-        const masterPrompt = `
-        [IDENTITY] World-class Proactive English Mentor. Muslim.
-        [TASK] Act as character for topic: "${currentTopic}". 
-        [STRICT RULE] Use Salaam and Islamic Akhlaq. ONLY English.
-        
-        [STRICT OUTPUT FORMAT]
-        Return a JSON object:
-        1. "reply": Character dialogue ending with a question + [A. Option 1 | B. Option 2].
-        2. "performance": Assessment STRING (Example: "Fluency: 85% | Grammar: 80% | Status: Growing"). 
-           ⚠️ MUST BE A STRING to avoid [object Object] error.
-        3. "notes": Mentoring feedback (Review, Tip, Next).
-        4. "xp": Number 10.
-
-        History:\n${historyContext}`;
+        // 🧠 LEAN MASTER PROMPT (Faster Inference)
+        const masterPrompt = `Role:Character for "${currentTopic}". Identity:Proactive Muslim English Mentor. Use Salam. 
+        Rules:Strictly ONLY English. Keep it situational. No teacher tone.
+        Format:Return JSON {"reply":"Dialog + Question + [A. Option 1 | B. Option 2]", "perf":"Fluency:X%|Grammar:Y%|Status:Z", "note":"Feedback", "xp":10}. 
+        ⚠️Options MUST be in brackets at end of "reply".`;
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: isStart ? `Start: ${currentTopic}` : message }],
+            messages: [{ role: "system", content: masterPrompt }, { role: "user", content: message }],
             model: "llama-3.1-8b-instant",
-            temperature: 0.7,
+            temperature: 0.6, // Lower temperature for faster & consistent output
             response_format: { type: "json_object" }
-        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 25000 });
+        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` }, timeout: 15000 });
 
         const result = JSON.parse(response.data.choices[0].message.content);
-        let points = (inputType === 'voice') ? (result.xp || 10) * 2 : (result.xp || 10);
+        let points = (inputType === 'voice') ? 20 : 10;
 
         user.history.push({ role: 'User', content: message }, { role: 'Actor', content: result.reply });
         if (!isStart) user.lifetime_score += points;
@@ -78,13 +65,13 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ 
             reply: result.reply, 
-            performance: result.performance, // ✅ Always string
-            notes: result.notes, 
+            performance: result.perf, 
+            notes: result.note, 
             score_added: points, 
             new_total_score: user.lifetime_score,
             streak: user.speak_streak 
         });
-    } catch (err) { res.json({ reply: "Connection blink! Say it again? [A. Sure! | B. Okay]", performance: "Syncing...", notes: "Re-syncing." }); }
+    } catch (err) { res.json({ reply: "My system is catching its breath! Let's try again. [A. Sure! | B. Okay]", performance: "Syncing...", notes: "Network lag." }); }
 });
 
 app.post('/api/stats', async (req, res) => {
@@ -95,4 +82,4 @@ app.post('/api/stats', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Mastery Engine running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Optimized Mastery Engine on ${PORT}`));
