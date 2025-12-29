@@ -2,14 +2,14 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const path = require('path'); // পাথ হ্যান্ডেল করার জন্য
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🟢 গুরুত্বপূর্ণ: এই লাইনটি আপনার 'public' ফোল্ডারের ফাইলগুলো সার্ভ করবে
+// Public folder theke static files serve kora
 app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
@@ -22,12 +22,11 @@ const User = mongoose.model('User', new mongoose.Schema({
     history: [{ role: String, content: String }]
 }));
 
-// API Routes
 app.post('/api/chat', async (req, res) => {
     let { message, userId, inputType } = req.body; 
     try {
         let user = await User.findOne({ userId }) || new User({ userId });
-        const masterPrompt = `Identity: You are a friendly, encouraging MALE English Mentor. Style: Calm and simple dialogue. Greet with 'Assalamu Alaikum'.`;
+        const masterPrompt = `Identity: Friendly MALE English Mentor. Style: Simple dialogue like NotebookLM. Greet with 'Assalamu Alaikum'.`;
         const historyContext = user.history.slice(-6).map(h => ({ role: h.role === 'User' ? 'user' : 'assistant', content: h.content }));
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
@@ -42,18 +41,12 @@ app.post('/api/chat', async (req, res) => {
         user.lifetime_score += points;
         await user.save();
         res.json({ reply: replyText, score_added: points, new_total_score: user.lifetime_score });
-    } catch (err) { res.json({ reply: "Assalamu Alaikum! Say that again?" }); }
+    } catch (err) { res.json({ reply: "Assalamu Alaikum! Amar connection ektu somossa korche. Abar bolbe?" }); }
 });
 
-app.post('/api/stats', async (req, res) => {
-    const user = await User.findOne({ userId: req.body.userId });
-    res.json({ score: user ? user.lifetime_score : 0 });
-});
-
-// 🟢 রুট পাথে সরাসরি index.html সার্ভ করার ব্যাকআপ লজিক
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Kids-Talk Engine running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
