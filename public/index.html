@@ -9,150 +9,112 @@
     <style>
         :root { --bg: #002b20; --card: #001e17; --input: #00382e; --cyan: #00ffcc; --gray: #aabeb8; --fire: #ff4500; --gold: #ffd700; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; overflow: hidden; user-select: none; }
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
-        .active-screen { display: flex; }
-        .hero-card { width: 100%; max-width: 550px; background: var(--card); border: 2px solid #004d40; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .stats-bar { display: flex; justify-content: space-between; width: 100%; max-width: 450px; margin-bottom: 10px; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 600px; padding-bottom: 150px; }
-        .bubble { padding: 14px 18px; border-radius: 18px; font-size: 15px; max-width: 85%; line-height: 1.5; }
-        .ai-bubble { background: var(--input); align-self: flex-start; border: 1px solid #004d40; }
-        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; }
-        .assessment-card { margin-top: 10px; padding: 12px; border: 1.5px solid var(--cyan); border-radius: 12px; font-size: 11px; color: var(--cyan); font-weight: 800; background: rgba(0, 255, 204, 0.05); }
-        .choice-box { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .choice-btn { background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan); padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 800; cursor: pointer; }
-        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 30px; background: linear-gradient(to top, var(--bg) 80%, transparent); display: flex; justify-content: center; backdrop-filter: blur(10px); }
-        #mic-btn { width: 80px; height: 80px; border-radius: 50%; background: var(--input); border: 4px solid var(--cyan); color: var(--cyan); font-size: 35px; cursor: pointer; position: relative; }
-        .mic-badge { position: absolute; top: -10px; right: -10px; background: var(--gold); color: black; font-size: 10px; padding: 4px 8px; border-radius: 8px; font-weight: 900; }
+        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; overflow: hidden; }
+        
+        /* 📱 Header & Stats Area */
+        .app-header { background: var(--card); padding: 10px 15px; border-bottom: 2px solid #004d40; display: flex; flex-direction: column; gap: 8px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; }
+        .user-meta { font-size: 10px; color: var(--gray); font-weight: bold; }
+        .stats-row { display: flex; gap: 10px; align-items: center; }
+        .badge { background: var(--input); border: 1px solid var(--cyan); padding: 4px 10px; border-radius: 20px; color: var(--cyan); font-weight: 900; font-size: 11px; }
+
+        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 120px; height: calc(100vh - 180px); }
+        .bubble { padding: 14px 18px; border-radius: 18px; font-size: 15px; max-width: 85%; line-height: 1.5; animation: fadeIn 0.3s; }
+        .ai-bubble { background: var(--input); align-self: flex-start; border: 1px solid #004d40; border-bottom-left-radius: 2px; }
+        .user-bubble { background: linear-gradient(135deg, #00b4db, #0083b0); align-self: flex-end; border-bottom-right-radius: 2px; }
+        
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 20px; background: linear-gradient(to top, var(--bg) 80%, transparent); display: flex; justify-content: center; backdrop-filter: blur(10px); }
+        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--input); border: 4px solid var(--cyan); color: var(--cyan); font-size: 30px; cursor: pointer; position: relative; box-shadow: 0 0 20px rgba(0,255,204,0.3); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
-<div id="home-screen" class="screen active-screen">
-    <div style="font-family:'Fredoka'; color:var(--cyan); font-size:40px; margin-bottom:15px;">Talk24AI</div>
-    <div class="stats-bar">
-        <div><div style="font-size:10px; color:var(--gray);">Level</div><div id="home-lvl" style="font-weight:900; color:var(--cyan);">1</div></div>
-        <div style="text-align:right;"><div style="font-size:10px; color:var(--gray);">Total XP</div><div id="home-xp" style="font-weight:900; color:var(--cyan);">0</div></div>
+<header class="app-header">
+    <div class="top-row">
+        <div style="font-family:'Fredoka'; color:var(--cyan); font-size:22px;">Talk24AI</div>
+        <button onclick="alert('Open browser menu > Install/Add to Home Screen')" style="background:var(--cyan); color:black; border:none; padding:5px 12px; border-radius:15px; font-weight:900; font-size:10px;">📲 DOWNLOAD APP</button>
     </div>
-    <div class="hero-card">
-        <div style="background:rgba(255,255,255,0.05); border-radius:15px; padding:15px; text-align:center; border:1px dashed #004d40;">
-            <div style="font-size:13px; color:#ffab91; font-weight:800;">Tired of "Freezing" in English?</div>
-            <div style="font-size:12px; color:var(--cyan); font-weight:700;">🚀 Real-time AI Reports & Speak like a Pro!</div>
+    <div class="top-row">
+        <div class="user-meta">UID: <span id="display-uid">...</span></div>
+        <div class="stats-row">
+            <div id="streak-box" style="color:var(--fire); font-weight:900; font-size:12px;">🔥 0</div>
+            <div id="chat-lvl" class="badge">LVL 1</div>
+            <div style="font-size:11px; color:var(--gold); font-weight:900;">XP: <span id="home-xp">0</span></div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="background:var(--input); padding:20px; border-radius:15px; text-align:center; cursor:pointer;" onclick="loadTopics('A')">BEGINNER</div>
-            <div style="background:var(--input); padding:20px; border-radius:15px; text-align:center; cursor:pointer;" onclick="loadTopics('B')">LEARNER</div>
-            <div style="background:var(--input); padding:20px; border-radius:15px; text-align:center; cursor:pointer;" onclick="loadTopics('C')">HESITANT</div>
-            <div style="background:var(--input); padding:20px; border-radius:15px; text-align:center; cursor:pointer;" onclick="loadTopics('D')">PRO</div>
-        </div>
-        <button style="background:transparent; border:1px solid var(--cyan); color:var(--cyan); padding:10px; border-radius:12px; font-weight:800; cursor:pointer; font-size:11px; margin-top:5px;" onclick="alert('Use browser menu to install!')">📲 DOWNLOAD APP</button>
     </div>
-</div>
+</header>
 
-<div id="topic-screen" class="screen">
-    <div class="hero-card">
-        <button onclick="location.reload()" style="background:transparent; color:var(--gray); border:1px solid #444; padding:8px; border-radius:10px; align-self:flex-start; cursor:pointer;">← BACK</button>
-        <div id="topic-container" style="margin-top:10px;"></div>
-    </div>
-</div>
+<div id="messages"></div>
 
-<div id="chat-screen" class="screen" style="padding:0; justify-content:flex-start;">
-    <div style="padding:15px; display:flex; align-items:center; width:100%; max-width:600px; gap:12px; background:var(--bg); border-bottom:1px solid #004d40;">
-        <div id="chat-lvl" style="background:var(--input); border:1px solid var(--cyan); padding:5px 10px; border-radius:8px; color:var(--cyan); font-weight:900; font-size:11px;">LVL 1</div>
-        <div style="color:var(--fire); font-weight:900;" id="streak-box">🔥 0</div>
-        <div style="flex:1; height:8px; background:#00382e; border-radius:5px;"><div id="xp-bar" style="height:100%; background:var(--cyan); width:0%; border-radius:5px;"></div></div>
-        <button onclick="location.reload()" style="background:#444; border:none; padding:5px 10px; border-radius:8px; color:white; font-size:10px; cursor:pointer;">EXIT</button>
-    </div>
-    <div id="messages"></div>
-    <div class="bottom-area">
-        <button id="mic-btn" onclick="toggleMic()">🎙️ <span class="mic-badge">2X XP</span></button>
-    </div>
+<div class="bottom-area">
+    <button id="mic-btn" onclick="toggleMic()">🎙️</button>
 </div>
 
 <script>
     const SERVER_URL = "https://talk24ai.onrender.com";
     let USER_ID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
     localStorage.setItem('talk24_uid', USER_ID);
-    let state = { score: parseInt(localStorage.getItem('talk24_score')) || 0 };
+    document.getElementById('display-uid').innerText = USER_ID;
 
-    const SYLLABUS = {
-        'A': [{t: "1-10: GREETINGS 👋", i: ["Hello & Hi", "My Name"]}],
-        'B': [{t: "1-10: SCHOOL 🏫", i: ["My School", "My Best Friend"]}],
-        'C': [{t: "1-10: IELTS 🎓", i: ["Hometown", "Accommodation"]}],
-        'D': [{t: "1-10: CAREER 👔", i: ["Self Intro", "Interview Qs"]}]
-    };
+    let state = { score: parseInt(localStorage.getItem('talk24_score')) || 0 };
 
     window.onload = async () => {
         updateUI(state.score);
-        try {
-            const res = await fetch(`${SERVER_URL}/api/stats`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId: USER_ID}) });
-            const data = await res.json();
-            updateUI(data.score, data.streak);
-        } catch(e) {}
+        // অ্যাপ খুললেই চ্যাট শুরু হবে
+        callAPI({ message: "Action!", userId: USER_ID, inputType: 'click' });
     };
 
     function updateUI(s, streak = 0) {
         state.score = s; localStorage.setItem('talk24_score', s);
         const lvl = Math.floor(s/1000)+1;
-        document.getElementById('home-lvl').innerText = lvl; document.getElementById('home-xp').innerText = s;
-        document.getElementById('chat-lvl').innerText = `LVL ${lvl}`; document.getElementById('streak-box').innerText = `🔥 ${streak}`;
-        document.getElementById('xp-bar').style.width = `${(s % 1000 / 1000) * 100}%`;
-    }
-
-    function loadTopics(m) {
-        state.mod = m; const container = document.getElementById('topic-container'); container.innerHTML = "";
-        SYLLABUS[m].forEach(g => {
-            const h = document.createElement('div'); h.style="background:#00382e; color:var(--cyan); padding:10px; border-radius:8px; font-weight:900; font-size:12px; margin:15px 0 10px 0; border-left:4px solid var(--cyan);"; h.innerText=g.t; container.appendChild(h);
-            const grid = document.createElement('div'); grid.style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;";
-            g.i.forEach(topic => {
-                const b = document.createElement('button'); b.style="background:rgba(255,255,255,0.05); border:1px solid #004d40; padding:15px; border-radius:12px; color:white; font-size:13px; cursor:pointer; text-align:left;"; b.innerText=topic;
-                b.onclick = () => startMission(topic); grid.appendChild(b);
-            });
-            container.appendChild(grid);
-        });
-        document.getElementById('home-screen').style.display='none'; document.getElementById('topic-screen').style.display='flex';
-    }
-
-    function startMission(t) {
-        document.getElementById('topic-screen').style.display='none'; document.getElementById('chat-screen').style.display='flex';
-        callAPI({ message: `Mission Start: ${t}`, systemInstruction: `Skill Level: ${state.mod}`, userId: USER_ID, inputType: 'click' });
+        document.getElementById('home-xp').innerText = s;
+        document.getElementById('chat-lvl').innerText = `LVL ${lvl}`; 
+        document.getElementById('streak-box').innerText = `🔥 ${streak}`;
     }
 
     async function callAPI(payload) {
         const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
         const data = await res.json();
-        if(data.score_added > 0) { document.getElementById('snd-success').play(); confetti({ particleCount: 30 }); updateUI(data.new_total_score, data.streak); }
-        renderAiMsg(data.reply, data.performance, data.notes);
+        if(data.score_added > 0) { document.getElementById('snd-success').play(); updateUI(data.new_total_score, data.streak); }
+        renderAiMsg(data.reply);
     }
 
-    function renderAiMsg(reply, perf, notes) {
-        const box = document.getElementById('messages'); const d = document.createElement('div'); d.className = 'bubble ai-bubble';
-        let cleanText = reply; let choices = [];
-        
-        // 🛠️ SMART PARSER: ব্র্যাকেট থাকুক বা না থাকুক, অপশন খুঁজে বের করবে
-        const match = reply.match(/\[?\s*A[\.:]\s*(.*?)\s*\|\s*B[\.:]\s*(.*?)\s*\]?/i);
-        if(match) { cleanText = reply.replace(match[0], "").trim(); choices = [match[1].trim(), match[2].trim()]; }
-        else { choices = ["Share My Progress!", "Let's Continue"]; }
+    function renderAiMsg(reply) {
+        const box = document.getElementById('messages');
+        const d = document.createElement('div');
+        d.className = 'bubble ai-bubble';
+        d.innerText = reply;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+        speak(reply);
+    }
 
-        d.innerHTML = `<div>${cleanText}</div>`;
-        if(perf) d.innerHTML += `<div class="assessment-card">📊 ASSESSMENT: ${typeof perf === 'object' ? JSON.stringify(perf).replace(/[{}"]/g, '') : perf}</div>`;
-        if(notes) d.innerHTML += `<div style="font-size:11px; color:var(--gray); margin-top:8px; border-left:2px solid var(--cyan); padding-left:10px;">${notes}</div>`;
-        
-        const cBox = document.createElement('div'); cBox.className = 'choice-box';
-        choices.forEach(c => {
-            const b = document.createElement('button'); b.className = 'choice-btn'; b.innerText = c;
-            b.onclick = () => callAPI({ message: c, userId: USER_ID, inputType: 'click' });
-            cBox.appendChild(b);
-        });
-        d.appendChild(cBox); box.appendChild(d); box.scrollTop = box.scrollHeight;
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance(cleanText));
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        // পুরুষ কণ্ঠ সিলেক্ট করার চেষ্টা
+        const maleVoice = voices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('google uk english male')) || voices[0];
+        utterance.voice = maleVoice;
+        utterance.rate = 0.9; // একটু ধীর গতি যাতে বাচ্চারা বোঝে
+        window.speechSynthesis.speak(utterance);
     }
 
     const rec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = rec ? new rec() : null;
-    function toggleMic() { if(!recognition) return alert("Mic not supported."); recognition.start(); recognition.onresult=(e)=> callAPI({ message: e.results[0][0].transcript, userId: USER_ID, inputType: 'voice' }); }
+    function toggleMic() {
+        if(!recognition) return alert("Mic not supported.");
+        recognition.start();
+        recognition.onresult = (e) => {
+            const transcript = e.results[0][0].transcript;
+            const u = document.createElement('div'); u.className = 'bubble user-bubble'; u.innerText = transcript;
+            document.getElementById('messages').appendChild(u);
+            callAPI({ message: transcript, userId: USER_ID, inputType: 'voice' });
+        }
+    }
 </script>
 </body>
 </html>
