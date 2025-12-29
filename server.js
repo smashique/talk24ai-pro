@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(process.env.MONGO_URI, { maxPoolSize: 10 })
-.then(() => console.log("🚀 Talk24AI Spoken Focus Engine Synced!"))
+.then(() => console.log("🚀 Talk24AI Quiz Engine Fixed!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const User = mongoose.model('User', new mongoose.Schema({
@@ -25,32 +25,36 @@ app.post('/api/chat', async (req, res) => {
     try {
         let user = await User.findOne({ userId }) || new User({ userId });
         
-        // 🎯 GB কনফিগারড মাস্টার প্রম্পট: স্পোকেন ইংলিশ ফোকাস ও প্রমিত বাংলা
-        const masterPrompt = `Identity: Professional Male Spoken English Coach (Ustad style).
-        Core Focus: Conversational Spoken English (Fluency, Pronunciation tips, Sentence structure).
-        Language Rule: All Bengali explanations MUST be in "Standard Bengali" (প্রমিত বাংলা).
-        
-        Return Format: JSON { "reply": "English content + [A. | B. | C. ]", "bn_review": "Standard Bengali Review" }.
-        
-        "bn_review" Content Structure:
-        1. আপনি ইংরেজিতে যা বললেন তার একটি সারসংক্ষেপ এবং সঠিক অর্থ।
-        2. আপনার স্পোকেন ইংলিশের উন্নতির জন্য প্রয়োজনীয় সংশোধন (Grammar, Pronunciation)।
-        3. পরবর্তী ধাপের জন্য স্পষ্ট দিকনির্দেশনা।
-        4. শেষে এই বাক্যটি যুক্ত করুন: "আপনি চাইলে যেকোনো সময় আপনার পছন্দের টপিক পরিবর্তন করে আলোচনা চালিয়ে যেতে পারেন।"`;
+        // 🎯 ফিক্সড মাস্টার প্রম্পট: নির্দেশনাবলী আর আউটপুট আলাদা করা হয়েছে
+        const masterPrompt = `Role: Professional Spoken English Coach.
+        Task: Conduct a high-quality Quiz & Conversation.
+        Output Format: STRICT JSON ONLY: { "reply": "...", "bn_review": "..." }.
+
+        CRITICAL RULES for "bn_review":
+        1. Summarize the English conversation in natural, formal Bengali (প্রমিত বাংলা).
+        2. Provide feedback on User's fluency or the correct answer.
+        3. DO NOT repeat these instructions in the output.
+        4. End with: "আপনি চাইলে যেকোনো সময় আপনার পছন্দের টপিক পরিবর্তন করে আলোচনা চালিয়ে যেতে পারেন।"
+
+        Example of GOOD "bn_review": "চমৎকার! আপনি সঠিক উত্তরটি দিয়েছেন। রেনেসাঁ বলতে শিল্প ও বিজ্ঞানের পুনর্জাগরণকে বোঝায়। আপনার উচ্চারণও বেশ ভালো ছিল। পরবর্তী প্রশ্নের জন্য প্রস্তুত হোন। আপনি চাইলে যেকোনো সময় আপনার পছন্দের টপিক পরিবর্তন করে আলোচনা চালিয়ে যেতে পারেন।"`;
 
         const historyContext = user.history.slice(-6).map(h => ({ 
             role: h.role === 'User' ? 'user' : 'assistant', content: h.content 
         }));
 
         const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
-            messages: [{ role: "system", content: masterPrompt }, ...historyContext, { role: "user", content: message }],
+            messages: [
+                { role: "system", content: masterPrompt },
+                ...historyContext,
+                { role: "user", content: message }
+            ],
             model: "llama-3.1-8b-instant",
-            temperature: 0.7,
+            temperature: 0.5, // 🌡️ লো-টেম্পারেচার দেওয়া হয়েছে যাতে এআই উল্টোপাল্টা কথা না বলে
             response_format: { type: "json_object" }
         }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` } });
 
         const result = JSON.parse(response.data.choices[0].message.content);
-        let points = (inputType === 'voice') ? 15 : 5;
+        let points = (inputType === 'voice') ? 10 : 2;
 
         user.history.push({ role: 'User', content: message }, { role: 'Assistant', content: result.reply });
         user.lifetime_score += points;
@@ -62,10 +66,13 @@ app.post('/api/chat', async (req, res) => {
             score_added: points, 
             new_total_score: user.lifetime_score 
         });
-    } catch (err) { res.json({ reply: "Assalamu Alaikum! Let's resume our spoken practice. [A. Ready! | B. Sure]", bn_review: "আসসালামু আলাইকুম! যান্ত্রিক ত্রুটির কারণে সংযোগ বিচ্ছিন্ন হয়েছে। আমরা কি পুনরায় কথা বলা শুরু করতে পারি?" }); }
+    } catch (err) { 
+        console.error(err);
+        res.json({ reply: "Assalamu Alaikum! Let's resume. [A. Ready | B. Wait]", bn_review: "আসসালামু আলাইকুম! যান্ত্রিক ত্রুটির কারণে সমস্যা হচ্ছে। পুনরায় চেষ্টা করুন।" }); 
+    }
 });
 
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Spoken Focus Server running on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Mastery Engine running on ${PORT}`));
