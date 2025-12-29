@@ -10,8 +10,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI || '', { maxPoolSize: 10 })
-.then(() => console.log("🚀 Spoken Lab Engine Synced!"))
+.then(() => console.log("🚀 Talk24AI Engine Synced!"))
 .catch(err => console.error("❌ DB Connection Error:", err));
 
 const User = mongoose.model('User', new mongoose.Schema({
@@ -25,15 +26,17 @@ app.post('/api/chat', async (req, res) => {
     try {
         let user = await User.findOne({ userId }) || new User({ userId });
         
-        const masterPrompt = `Role: Professional Male English Mentor. 
+        // 🎯 Professional Prompt Logic
+        const masterPrompt = `Role: Professional Male English Mentor.
         Instructions:
-        1. STRICTLY ENGLISH ONLY. No labels like (Teach), (Review), or [].
-        2. Evaluate the user's last message. If it's a correct response to your previous question/task, start your reply with the hidden tag [CORRECT]. If it's incorrect or just a general talk, use [EFFORT].
-        3. FLOW: Give natural feedback, teach a tiny tip, and ask a question.
-        4. Provide 2-3 numbered options at the end (e.g., 1. Yes, 2. No).
-        5. Mode: ${mode}.`;
+        1. STRICTLY ENGLISH ONLY. No (Teach) or (Review) labels.
+        2. Evaluate the user's input: if they followed your previous task correctly, include [CORRECT] at the start. Otherwise, include [EFFORT].
+        3. FLOW: Give natural feedback -> teach a tiny tip -> ask a situational quiz/question.
+        4. List 2-3 spoken practice options at the end (e.g., 1. Option A, 2. Option B).
+        5. Current Level: ${mode}. Use vocabulary suited for this level.
+        6. DO NOT repeat greetings or previous messages. Continue the conversation flow.`;
 
-        const historyContext = user.history.slice(-10).map(h => ({ 
+        const historyContext = user.history.slice(-8).map(h => ({ 
             role: h.role === 'User' ? 'user' : 'assistant', content: h.content 
         }));
 
@@ -42,14 +45,14 @@ app.post('/api/chat', async (req, res) => {
             model: "llama-3.1-8b-instant",
             temperature: 0.7,
             response_format: { type: "json_object" }
-        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY}` } });
+        }, { headers: { "Authorization": `Bearer ${process.env.GROQ_API_KEY.trim()}` } });
 
-        let result = JSON.parse(response.data.choices[0].message.content);
-        let replyText = result.reply;
-        
-        // Scoring Logic: Correct = 100, Effort/Wrong = 5
-        let points = replyText.includes("[CORRECT]") ? 100 : 5;
-        let cleanReply = replyText.replace("[CORRECT]", "").replace("[EFFORT]", "").trim();
+        const result = JSON.parse(response.data.choices[0].message.content);
+        let rawReply = result.reply;
+
+        // 🏆 Scoring: Correct=100, Effort=5
+        let points = rawReply.includes("[CORRECT]") ? 100 : 5;
+        let cleanReply = rawReply.replace("[CORRECT]", "").replace("[EFFORT]", "").trim();
 
         user.history.push({ role: 'User', content: message }, { role: 'Assistant', content: cleanReply });
         user.lifetime_score += points;
@@ -57,9 +60,11 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ reply: cleanReply, score_added: points, new_total_score: user.lifetime_score });
     } catch (err) { 
-        res.json({ reply: "Let's continue our practice! 1. Yes! 2. Sure!", score_added: 0 }); 
+        res.json({ reply: "Let's keep practicing! 1. Yes, I'm ready! 2. Sure!", score_added: 0 }); 
     }
 });
 
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server on ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Spoken Lab running on ${PORT}`));
