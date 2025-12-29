@@ -3,34 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Spoken Quiz Lab</title>
+    <title>Talk24AI | Interactive Quiz Lab</title>
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --bg: #002b20; --card: #001e17; --input: #00382e; --cyan: #00ffcc; --gray: #aabeb8; --gold: #ffd700; }
-        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; }
+        body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         .app-header { background: var(--card); padding: 15px; border-bottom: 2px solid #004d40; }
-        .stats-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 150px; }
-        .bubble { padding: 16px; border-radius: 15px; font-size: 15px; max-width: 90%; line-height: 1.6; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 150px; }
+        .bubble { padding: 18px; border-radius: 18px; font-size: 15px; max-width: 90%; line-height: 1.6; position: relative; }
         .ai-bubble { background: var(--input); border: 1px solid #004d40; align-self: flex-start; }
         .user-bubble { background: #005f6b; align-self: flex-end; }
-        .choice-btn { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); padding: 8px 15px; border-radius: 20px; font-size: 13px; margin: 5px; cursor: pointer; }
-        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 30px; display: flex; justify-content: center; backdrop-filter: blur(8px); }
-        #mic-btn { width: 70px; height: 70px; border-radius: 50%; background: var(--input); border: 3px solid var(--cyan); color: var(--cyan); font-size: 25px; cursor: pointer; }
+        
+        /* 🇧🇩 বাংলা রিভিউ ব্লক ডিজাইন */
+        .bn-review-box { 
+            margin-top: 15px; 
+            padding-top: 12px; 
+            border-top: 1px dashed rgba(0, 255, 204, 0.3); 
+            font-size: 13px; 
+            color: #d1d1d1; 
+            font-family: 'Fredoka', sans-serif; 
+        }
+        
+        .choice-btn { background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan); padding: 8px 18px; border-radius: 20px; font-size: 13px; margin: 5px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .choice-btn:hover { background: var(--cyan); color: black; }
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 30px; display: flex; justify-content: center; backdrop-filter: blur(10px); }
+        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--input); border: 4px solid var(--cyan); color: var(--cyan); font-size: 28px; cursor: pointer; box-shadow: 0 0 25px rgba(0,255,204,0.2); }
     </style>
 </head>
 <body>
 
 <header class="app-header">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div style="color:var(--cyan); font-size:22px; font-weight:900;">Talk24AI</div>
-        <button style="background:var(--cyan); border:none; padding:5px 12px; border-radius:15px; font-weight:900; font-size:10px;">📲 DOWNLOAD APP</button>
+        <div style="color:var(--cyan); font-size:24px; font-weight:900;">Talk24AI</div>
+        <button onclick="alert('Use browser menu to install!')" style="background:var(--cyan); border:none; padding:6px 15px; border-radius:15px; font-weight:900; font-size:10px;">📲 DOWNLOAD APP</button>
     </div>
-    <div class="stats-row">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
         <div style="font-size:10px; color:var(--gray);">UID: <span id="display-uid">...</span></div>
-        <div style="display:flex; gap:10px; font-weight:900; font-size:12px;">
+        <div style="display:flex; gap:12px; font-weight:900; font-size:12px;">
             <div style="color:#ff4500;">🔥 0</div>
             <div style="color:var(--cyan);">LVL 1</div>
             <div style="color:var(--gold);">XP: <span id="xp-val">0</span></div>
@@ -50,23 +61,25 @@
     window.onload = () => callAPI({ message: "Action!", userId: UID, inputType: 'click' });
 
     async function callAPI(payload) {
-        const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-        const data = await res.json();
-        if(data.score_added > 0) { 
-            confetti({ particleCount: 30, origin: { y: 0.8 } });
-            document.getElementById('xp-val').innerText = data.new_total_score;
-        }
-        renderMsg(data.reply, 'ai');
+        try {
+            const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+            const data = await res.json();
+            if(data.score_added > 0) { 
+                confetti({ particleCount: 30, origin: { y: 0.8 } });
+                document.getElementById('xp-val').innerText = data.new_total_score;
+            }
+            renderMsg(data.reply, 'ai', data.bn_review);
+        } catch(e) { renderMsg("Assalamu Alaikum! Let's try again.", 'ai', "কানেকশনে সমস্যা হচ্ছে, চলুন আবার চেষ্টা করি!"); }
     }
 
-    function renderMsg(txt, sender) {
+    function renderMsg(txt, sender, review = "") {
         const box = document.getElementById('messages');
         const d = document.createElement('div');
         d.className = `bubble ${sender}-bubble`;
         
-        // অপশন বাটন পার্সিং
         let cleanTxt = txt;
         const match = txt.match(/\[(.*?)\]/);
+        
         if(match) {
             cleanTxt = txt.replace(match[0], "");
             const options = match[1].split('|');
@@ -80,9 +93,17 @@
             });
         } else { d.innerText = txt; }
 
+        // 🇧🇩 বাংলা রিভিউ ব্লক যোগ করা (ভয়েস হবে না)
+        if(sender === 'ai' && review) {
+            const rBox = document.createElement('div');
+            rBox.className = 'bn-review-box';
+            rBox.innerHTML = `<strong>রিভিউ:</strong> ${review}`;
+            d.appendChild(rBox);
+        }
+
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
-        if(sender === 'ai') speak(cleanTxt);
+        if(sender === 'ai') speak(cleanTxt); // কেবল ইংরেজি অংশটি ভয়েস পড়বে
     }
 
     function speak(t) {
