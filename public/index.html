@@ -3,114 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Interactive Spoken Lab</title>
+    <title>Talk24AI | Pure Spoken Lab</title>
     <link rel="manifest" href="/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@500;600&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --bg: #002b20; --card: #001e17; --input: #00382e; --cyan: #00ffcc; --gray: #aabeb8; --gold: #ffd700; }
         body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* 🚀 Introduction Pop-up Style */
         #intro-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(8px); }
-        .modal-content { background: var(--card); border: 2px solid var(--cyan); width: 92%; max-width: 450px; padding: 30px; border-radius: 30px; text-align: center; font-family: 'Hind Siliguri', sans-serif; animation: popUp 0.5s ease-out; }
-        @keyframes popUp { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content { background: var(--card); border: 2px solid var(--cyan); width: 92%; max-width: 450px; padding: 30px; border-radius: 30px; text-align: center; }
+        
+        .mode-selection { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
+        .mode-btn { background: var(--input); border: 1px solid var(--cyan); color: white; padding: 12px; border-radius: 15px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .mode-btn:hover { background: var(--cyan); color: black; }
 
-        /* 🌊 New CSS Sound Wave Animation Style */
-        .animation-box { display: flex; justify-content: center; align-items: center; gap: 8px; height: 100px; margin: 20px 0; background: rgba(0, 255, 204, 0.05); border-radius: 20px; }
-        .wave-bar { width: 8px; height: 30px; background: var(--cyan); border-radius: 5px; animation: sound-wave 1s ease-in-out infinite; }
-        .wave-bar:nth-child(1) { animation-delay: 0.0s; }
-        .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 50px; }
-        .wave-bar:nth-child(3) { animation-delay: 0.4s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.2s; height: 50px; }
-        .wave-bar:nth-child(5) { animation-delay: 0.0s; }
-        @keyframes sound-wave {
-            0%, 100% { transform: scaleY(1); opacity: 0.6; }
-            50% { transform: scaleY(2); opacity: 1; background: var(--gold); box-shadow: 0 0 15px var(--cyan); }
-        }
+        .app-header { background: var(--card); padding: 10px 15px; border-bottom: 2px solid #004d40; display: flex; justify-content: space-between; align-items: center; }
+        #mode-selector { background: var(--input); color: var(--cyan); border: 1px solid var(--cyan); border-radius: 8px; font-size: 12px; padding: 5px; font-weight: 700; }
 
-        .modal-btn { background: var(--cyan); color: black; border: none; padding: 12px 40px; border-radius: 25px; font-weight: 900; margin-top: 15px; cursor: pointer; font-size: 16px; box-shadow: 0 5px 15px rgba(0,255,204,0.3); transition: 0.3s; }
-        .modal-btn:hover { transform: scale(1.05); background: var(--gold); }
-
-        .app-header { background: var(--card); padding: 15px; border-bottom: 2px solid #004d40; }
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 150px; }
-        
-        /* ✨ Highlight Effect Style */
-        .highlight { color: var(--gold); font-weight: 900; background: rgba(255, 215, 0, 0.1); border-radius: 4px; padding: 0 2px; transition: all 0.2s; }
-        
+        .highlight { color: var(--gold); font-weight: 900; background: rgba(255, 215, 0, 0.1); border-radius: 4px; padding: 0 2px; }
         .bubble { padding: 18px; border-radius: 18px; font-size: 16px; max-width: 90%; line-height: 1.6; }
         .ai-bubble { background: var(--input); border: 1px solid #004d40; align-self: flex-start; }
         .user-bubble { background: #005f6b; align-self: flex-end; }
         
-        .bn-review-box { margin-top: 15px; padding-top: 12px; border-top: 1px dashed rgba(0, 255, 204, 0.3); font-size: 13px; color: #d1d1d1; font-family: 'Hind Siliguri', sans-serif; }
-        
-        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 30px; display: flex; justify-content: center; background: linear-gradient(transparent, var(--bg) 50%); }
-        
-        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--input); border: 4px solid var(--cyan); color: var(--cyan); font-size: 30px; cursor: pointer; transition: 0.3s; }
+        .choice-btn { background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan); padding: 8px 18px; border-radius: 20px; margin: 5px; cursor: pointer; font-weight: 700; }
+        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 30px; display: flex; justify-content: center; }
+        #mic-btn { width: 75px; height: 75px; border-radius: 50%; background: var(--input); border: 4px solid var(--cyan); color: var(--cyan); font-size: 30px; cursor: pointer; }
         #mic-btn.active { border-color: #ff4500; color: #ff4500; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
 
 <div id="intro-modal">
     <div class="modal-content">
-        <h2 style="color:var(--cyan); margin-bottom:5px;">Talk24AI ল্যাবে স্বাগতম!</h2>
-        <p style="color:var(--gray); font-size:13px; margin-bottom:15px;">আপনার ব্যক্তিগত স্পোকেন ইংলিশ মেন্টর</p>
-        
-        <div class="animation-box">
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
+        <h2 style="color:var(--cyan); margin-bottom:10px;">Choose Your Level</h2>
+        <p>Select a mode to start practicing English!</p>
+        <div class="mode-selection">
+            <button class="mode-btn" onclick="setMode('Junior')">👶 JUNIOR (Kids/Beginner)</button>
+            <button class="mode-btn" onclick="setMode('Senior')">👨‍🎓 SENIOR (General Learner)</button>
+            <button class="mode-btn" onclick="setMode('Pro')">🚀 PRO (Advanced/Career)</button>
         </div>
-
-        <p style="line-height:1.6; font-size:15px; color:#eee;">
-            এখানে আপনি এআই-এর সাথে সরাসরি কথা বলে ইংরেজি চর্চা করবেন। 
-            <br>
-            <span style="color:var(--gold); font-size:13px;">(কথা বলার সময় উপরের অ্যানিমেশনের মতো ওয়েভ তৈরি হবে)</span>
-        </p>
-        
-        <button class="modal-btn" onclick="startChat()">শুরু করি ইনশাআল্লাহ</button>
     </div>
 </div>
 
 <header class="app-header">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div style="color:var(--cyan); font-size:24px; font-weight:900;">Talk24AI</div>
+    <div style="display:flex; flex-direction:column;">
+        <div style="color:var(--cyan); font-size:20px; font-weight:900;">Talk24AI</div>
+        <select id="mode-selector" onchange="changeMode(this.value)">
+            <option value="Junior">Junior Mode</option>
+            <option value="Senior">Senior Mode</option>
+            <option value="Pro">Pro Mode</option>
+        </select>
+    </div>
+    <div style="text-align:right;">
         <div style="font-weight:900; font-size:12px; color:var(--gold);">XP: <span id="xp-val">0</span></div>
     </div>
 </header>
 
 <div id="messages"></div>
-
-<div class="bottom-area">
-    <button id="mic-btn" onclick="toggleMic()">🎙️</button>
-</div>
+<div class="bottom-area"><button id="mic-btn" onclick="toggleMic()">🎙️</button></div>
 
 <script>
     const SERVER_URL = window.location.origin;
     let UID = localStorage.getItem('talk24_uid') || 'ID-' + Math.floor(Math.random() * 900000);
     localStorage.setItem('talk24_uid', UID);
+    
+    let currentMode = localStorage.getItem('talk24_mode') || 'Senior';
 
-    function startChat() {
-        const modal = document.getElementById('intro-modal');
-        modal.style.opacity = '0'; // Fade out effect
-        setTimeout(() => { modal.style.display = 'none'; }, 500); // Wait for animation
-        callAPI({ message: "Action!", userId: UID, inputType: 'click' });
+    function setMode(mode) {
+        currentMode = mode;
+        localStorage.setItem('talk24_mode', mode);
+        document.getElementById('mode-selector').value = mode;
+        document.getElementById('intro-modal').style.display = 'none';
+        callAPI({ message: `Mission Start in ${mode} mode`, userId: UID, inputType: 'click', mode: mode });
+    }
+
+    function changeMode(mode) {
+        currentMode = mode;
+        localStorage.setItem('talk24_mode', mode);
+        renderMsg(`System: Switching to ${mode} mode...`, 'ai');
+        callAPI({ message: `Switch to ${mode} mode`, userId: UID, inputType: 'click', mode: mode });
     }
 
     async function callAPI(payload) {
+        payload.mode = currentMode;
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
             const data = await res.json();
             if(data.score_added > 0) document.getElementById('xp-val').innerText = data.new_total_score;
-            renderMsg(data.reply, 'ai', data.bn_review);
-        } catch(e) { renderMsg("Assalamu Alaikum! Say hello to start.", 'ai'); }
+            renderMsg(data.reply, 'ai');
+        } catch(e) { renderMsg("Please check your connection and try again.", 'ai'); }
     }
 
-    function renderMsg(txt, sender, review = "") {
+    function renderMsg(txt, sender) {
         const box = document.getElementById('messages');
         const d = document.createElement('div');
         d.className = `bubble ${sender}-bubble`;
@@ -128,37 +115,27 @@
                 match[1].split('|').forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = 'choice-btn'; btn.innerText = opt.trim();
-                    btn.style = "background:transparent; border:1px solid var(--cyan); color:var(--cyan); padding:8px 15px; border-radius:20px; margin:5px; cursor:pointer; font-weight:700; transition:0.3s;";
-                    btn.onmouseover = (e) => { e.target.style.background = 'var(--cyan)'; e.target.style.color = 'black'; };
-                    btn.onmouseout = (e) => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--cyan)'; };
                     btn.onclick = () => { renderMsg(opt, 'user'); callAPI({ message: opt, userId: UID, inputType: 'click' }); };
                     optDiv.appendChild(btn);
                 });
                 d.appendChild(optDiv);
             }
-            if(review) {
-                const rBox = document.createElement('div'); rBox.className = 'bn-review-box';
-                rBox.innerHTML = `<div style="color:var(--cyan); font-weight:800; font-size:11px;">📋 প্রমিত বাংলা পর্যালোচনা:</div> ${review}`;
-                d.appendChild(rBox);
-            }
-        } else {
-            d.innerText = txt;
-        }
+        } else { d.innerText = txt; }
 
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
-        if(sender === 'ai') speak(cleanTxt, d.querySelector('#current-speech'));
+        if(sender === 'ai' && !txt.startsWith('System:')) speak(cleanTxt, d.querySelector('#current-speech'));
     }
 
     function speak(text, element) {
+        if (!element) return;
         const ut = new SpeechSynthesisUtterance(text);
         const voices = window.speechSynthesis.getVoices();
         ut.voice = voices.find(v => v.name.includes('Male')) || voices[0];
-        ut.rate = 0.9;
-
+        ut.rate = currentMode === 'Junior' ? 0.8 : 0.95;
+        
         const spans = element.querySelectorAll('span');
         let wordIndex = 0;
-
         ut.onboundary = (event) => {
             if (event.name === 'word' && wordIndex < spans.length) {
                 spans.forEach(s => s.classList.remove('highlight'));
@@ -166,19 +143,16 @@
                 wordIndex++;
             }
         };
-
         ut.onend = () => spans.forEach(s => s.classList.remove('highlight'));
         window.speechSynthesis.speak(ut);
     }
 
     const rec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = rec ? new rec() : null;
-    
     function toggleMic() {
-        if(!recognition) return alert("Mic not supported.");
+        if(!recognition) return alert("Microphone not supported on this device.");
         const btn = document.getElementById('mic-btn');
         btn.classList.add('active');
-        
         recognition.start();
         recognition.onresult = (e) => {
             btn.classList.remove('active');
@@ -187,7 +161,6 @@
             callAPI({ message: t, userId: UID, inputType: 'voice' });
         };
         recognition.onerror = () => btn.classList.remove('active');
-        recognition.onspeechend = () => btn.classList.remove('active');
     }
 </script>
 </body>
