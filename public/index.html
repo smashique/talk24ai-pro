@@ -3,130 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Talk24AI | Spoken English Lab</title>
+    <title>Talk24AI | Pure Spoken Lab</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #002b20; --card: #001e17; --cyan: #00ffcc; --gold: #ffd700; }
         body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        .app-header { background: var(--card); padding: 12px 15px; border-bottom: 2px solid #004d40; display: flex; justify-content: space-between; align-items: center; }
-        .nav-actions { display: flex; gap: 8px; }
-        
-        /* App Button Highlight Animation */
-        .action-btn { background: var(--cyan); color: black; border: none; padding: 7px 12px; border-radius: 20px; font-weight: 800; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px var(--cyan); } 50% { box-shadow: 0 0 20px var(--cyan); transform: scale(1.05); } }
-        .highlight-active { animation: glow 0.8s ease-in-out 4; }
+        /* Popup Animation */
+        #intro-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background: var(--card); border: 2px solid var(--cyan); width: 90%; max-width: 450px; padding: 30px; border-radius: 30px; text-align: center; transform: scale(0.9); animation: pop 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards; }
+        @keyframes pop { to { transform: scale(1); } }
 
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 110px; }
-        .bubble { padding: 15px; border-radius: 18px; font-size: 16px; max-width: 85%; line-height: 1.5; }
-        .ai-bubble { background: #00382e; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .user-bubble { background: #005f6b; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .word-hl { color: var(--gold); font-weight: 900; background: rgba(255, 215, 0, 0.1); }
+        .app-header { background: var(--card); padding: 10px 15px; border-bottom: 2px solid #004d40; display: flex; justify-content: space-between; align-items: center; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 150px; }
+        .bubble { padding: 15px; border-radius: 18px; font-size: 16px; max-width: 85%; }
+        .ai-bubble { background: #00382e; align-self: flex-start; }
+        .user-bubble { background: #005f6b; align-self: flex-end; }
+        .word-hl { color: var(--gold); font-weight: 900; background: rgba(255, 215, 0, 0.2); border-radius: 4px; }
 
-        .bottom-area { position: fixed; bottom: 0; width: 100%; padding: 20px; display: flex; justify-content: center; background: linear-gradient(transparent, var(--bg) 50%); }
-        #mic-btn { width: 70px; height: 70px; border-radius: 50%; background: #00382e; border: 4px solid var(--cyan); color: var(--cyan); font-size: 28px; cursor: pointer; }
-        #mic-btn.active { border-color: #ff4500; color: #ff4500; animation: pulse 1s infinite; }
-        @keyframes pulse { 50% { opacity: 0.6; } }
+        /* Bottom Status Bar */
+        .status-bar { background: var(--card); padding: 8px 15px; border-top: 1px solid #004d40; display: flex; justify-content: space-around; font-size: 11px; font-weight: 800; color: var(--gray); }
+        .status-item span { color: var(--cyan); }
+
+        /* Large Mic & Highlight */
+        .bottom-area { position: fixed; bottom: 40px; width: 100%; display: flex; justify-content: center; }
+        #mic-btn { width: 90px; height: 90px; border-radius: 50%; background: #00382e; border: 6px solid var(--cyan); color: var(--cyan); font-size: 40px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+        #mic-btn.active { animation: superGlow 1s infinite; border-color: #ff4500; color: #ff4500; }
+        @keyframes superGlow { 0% { box-shadow: 0 0 10px var(--cyan); transform: scale(1); } 50% { box-shadow: 0 0 40px var(--cyan); transform: scale(1.1); } 100% { box-shadow: 0 0 10px var(--cyan); transform: scale(1); } }
+
+        .mode-btn { background: var(--cyan); color: black; border: none; padding: 12px; border-radius: 15px; width: 100%; margin: 5px 0; font-weight: 800; cursor: pointer; }
+        .how-to { font-size: 12px; color: #aabeb8; margin-bottom: 20px; text-align: left; background: #002b20; padding: 10px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
+<div id="intro-modal">
+    <div class="modal-content">
+        <h2 style="color:var(--cyan);">Start Learning</h2>
+        <div class="how-to">
+            <b>How to use:</b><br>
+            1. Select your level.<br>
+            2. AI will teach & ask questions.<br>
+            3. Use the MIC to speak your answer.<br>
+            4. Earn 100 XP for correct answers!
+        </div>
+        <button class="mode-btn" onclick="startApp('Junior')">👶 JUNIOR MODE</button>
+        <button class="mode-btn" onclick="startApp('Senior')">👨‍🎓 SENIOR MODE</button>
+        <button class="mode-btn" onclick="startApp('Pro')">🚀 PRO MODE</button>
+    </div>
+</div>
+
 <header class="app-header">
-    <div>
-        <div style="color:var(--cyan); font-weight:900;">Talk24AI</div>
-        <select id="mode-selector" onchange="changeMode(this.value)" style="background:none; color:var(--cyan); border:none; font-size:11px; font-weight:700; cursor:pointer;">
-            <option value="Junior">Junior</option>
-            <option value="Senior" selected>Senior</option>
-            <option value="Pro">Pro</option>
-        </select>
-    </div>
-    <div class="nav-actions">
-        <button id="btn-app" class="action-btn">DOWNLOAD APP</button>
-        <button class="action-btn" style="background:var(--gold);" onclick="downloadPDF()">DOWNLOAD NOTE</button>
-    </div>
+    <div style="color:var(--cyan); font-weight:900;">Talk24AI</div>
+    <button class="mode-btn" style="width:auto; padding:5px 10px; font-size:10px;" onclick="downloadPDF()">DOWNLOAD NOTES</button>
 </header>
 
 <div id="messages"></div>
+
 <div class="bottom-area"><button id="mic-btn" onclick="toggleMic()">🎙️</button></div>
+
+<div class="status-bar">
+    <div class="status-item">ID: <span id="st-id">---</span></div>
+    <div class="status-item">SCORE: <span id="st-score">0</span></div>
+    <div class="status-item">LEVEL: <span id="st-lvl">1</span></div>
+</div>
 
 <script>
     const SERVER_URL = window.location.origin;
-    let UID = localStorage.getItem('t24_uid') || 'U-' + Date.now();
+    let UID = localStorage.getItem('t24_uid') || 'U-' + Math.floor(Math.random()*9000);
     localStorage.setItem('t24_uid', UID);
-    let currentMode = localStorage.getItem('t24_mode') || 'Senior';
-    let chatLog = [];
+    
+    let score = parseInt(localStorage.getItem('t24_score')) || 0;
+    let chatHistory = JSON.parse(localStorage.getItem('t24_chat')) || [];
 
-    // 🔔 Halal Chime Sound (Digital Synth)
-    function playChime() {
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine'; 
-            osc.frequency.setValueAtTime(660, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(); osc.stop(ctx.currentTime + 0.6);
-        } catch(e) {}
+    function updateStatus() {
+        document.getElementById('st-id').innerText = UID;
+        document.getElementById('st-score').innerText = score;
+        document.getElementById('st-lvl').innerText = Math.floor(score / 200) + 1;
+        localStorage.setItem('t24_score', score);
+        localStorage.setItem('t24_chat', JSON.stringify(chatHistory));
     }
 
-    async function callAPI(msg, type = 'click') {
+    function startApp(mode) {
+        document.getElementById('intro-modal').style.display = 'none';
+        updateStatus();
+        // Load old chat from local storage
+        chatHistory.forEach(msg => renderMsg(msg.text, msg.sender, false));
+        if(chatHistory.length === 0) callAPI("Hello Mentor, I am ready.", mode);
+    }
+
+    async function callAPI(msg, mode) {
         try {
             const res = await fetch(`${SERVER_URL}/api/chat`, {
                 method:'POST', headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({ message: msg, userId: UID, inputType: type, mode: currentMode })
+                body:JSON.stringify({ message: msg, userId: UID, mode: mode })
             });
             const data = await res.json();
-            if(type === 'voice') {
-                playChime();
-                const b = document.getElementById('btn-app');
-                b.classList.add('highlight-active');
-                setTimeout(() => b.classList.remove('highlight-active'), 3500);
-            }
-            renderMsg(data.reply, 'ai');
-        } catch(e) { renderMsg("Ready! 1. Yes, 2. No", 'ai'); }
+            score = data.new_total_score;
+            renderMsg(data.reply, 'ai', true);
+            updateStatus();
+        } catch(e) { renderMsg("I am ready. 1. Yes, 2. No", 'ai', true); }
     }
 
-    function renderMsg(txt, sender) {
+    function renderMsg(txt, sender, shouldSave) {
         const box = document.getElementById('messages');
         const div = document.createElement('div');
         div.className = `bubble ${sender}-bubble`;
         
         const words = txt.split(' ');
-        div.innerHTML = `<div class="txt-box">` + words.map(w => `<span>${w} </span>`).join('') + `</div>`;
+        div.innerHTML = `<div class="speech-box">` + words.map(w => `<span>${w} </span>`).join('') + `</div>`;
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
-        
-        if(sender === 'ai') speak(txt, div.querySelector('.txt-box'));
-        chatLog.push({ s: sender, t: txt, d: new Date().toLocaleString() });
-    }
 
-    function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFontSize(16); doc.text("Talk24AI Practice Notes", 20, 20);
-        doc.setFontSize(10);
-        let y = 35;
-        chatLog.forEach(log => {
-            if(y > 270) { doc.addPage(); y = 20; }
-            doc.setFont("helvetica", "bold");
-            doc.text(`${log.s.toUpperCase()} (${log.d}):`, 20, y);
-            doc.setFont("helvetica", "normal");
-            const lines = doc.splitTextToSize(log.t, 170);
-            doc.text(lines, 20, y + 5);
-            y += (lines.length * 5) + 12;
-        });
-        doc.save(`Notes_${Date.now()}.pdf`);
+        if(shouldSave) chatHistory.push({ text: txt, sender: sender });
+        if(sender === 'ai' && shouldSave) speak(txt, div.querySelector('.speech-box'));
+        updateStatus();
     }
 
     function speak(text, element) {
         const ut = new SpeechSynthesisUtterance(text);
-        const voices = window.speechSynthesis.getVoices();
-        ut.voice = voices.find(v => v.name.includes('Male')) || voices[0];
-        ut.rate = currentMode === 'Junior' ? 0.85 : 1.0;
         const spans = element.querySelectorAll('span');
         let idx = 0;
         ut.onboundary = (e) => {
@@ -138,23 +135,33 @@
         window.speechSynthesis.speak(ut);
     }
 
-    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let rec = Recognition ? new Recognition() : null;
+    // Microphone & Halal Sound logic ... (toggleMic function similar to before but with updateStatus)
     function toggleMic() {
-        if(!rec) return;
+        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let rec = new Recognition();
         const btn = document.getElementById('mic-btn');
         btn.classList.add('active');
         rec.start();
         rec.onresult = (e) => {
             btn.classList.remove('active');
             const t = e.results[0][0].transcript;
-            renderMsg(t, 'user'); callAPI(t, 'voice');
+            renderMsg(t, 'user', true);
+            callAPI(t, localStorage.getItem('t24_mode'));
         };
         rec.onerror = () => btn.classList.remove('active');
     }
 
-    window.onload = () => { callAPI("Hello, I am ready to start.", 'click'); };
-    function changeMode(m) { currentMode = m; localStorage.setItem('t24_mode', m); renderMsg(`System: Switched to ${m} mode.`, 'ai'); }
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Talk24AI Spoken Notes", 20, 20);
+        let y = 30;
+        chatHistory.forEach(m => {
+            doc.text(`${m.sender}: ${m.text}`, 20, y);
+            y += 10;
+        });
+        doc.save("notes.pdf");
+    }
 </script>
 </body>
 </html>
