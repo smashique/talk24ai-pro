@@ -1,15 +1,26 @@
 {
-  "name": "Talk24AI Spoken Lab",
+  "name": "Talk24AI | Spoken English Lab",
   "short_name": "Talk24AI",
+  "description": "AI-powered interactive English learning platform for kids and pros.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#002b20",
   "theme_color": "#00ffcc",
+  "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2593/2593635.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2593/2593635.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["education", "productivity"]
 }
